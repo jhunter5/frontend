@@ -1,8 +1,11 @@
+'use client';
+
 import Link from "next/link";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Navbar() {
+    const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
     return (
-        
         <nav className="bg-primary-500 text-white p-4">
             <div className="container mx-auto flex items-center justify-between">
                 <div className="text-2xl font-bold">LIMITLESS</div>
@@ -10,8 +13,16 @@ export default function Navbar() {
                     <Link href="/" className="hover:text-gray-200">Home</Link>
                     <Link href="/about-us" className="hover:text-gray-200">About Us</Link>
                     <Link href="/projects" className="hover:text-gray-200">Contact Us</Link>
-                    <Link href="/services" className="hover:text-gray-200">Register</Link>
-                    <Link href="/contact" className="hover:text-gray-200">Login</Link>
+                    {!isAuthenticated && (
+                        <button onClick={() => loginWithRedirect()} className="hover:text-gray-200">
+                            Login
+                        </button>
+                    )}
+                    {isAuthenticated && (
+                        <button onClick={() => logout({ returnTo: window.location.origin })} className="hover:text-gray-200">
+                            Logout
+                        </button>
+                    )}
                     </div>
             </div>
         </nav>
