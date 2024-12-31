@@ -19,7 +19,7 @@ export default function Navbar() {
                         </button>
                     )}
                     {isAuthenticated && (
-                        <button onClick={() => logout({ returnTo: window.location.origin })} className="hover:text-gray-200">
+                        <button onClick={() => logout({ returnTo: window.location.origin + "/" })} className="hover:text-gray-200">
                             Logout
                         </button>
                     )}

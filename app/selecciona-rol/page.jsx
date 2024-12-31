@@ -7,6 +7,9 @@ import { Home, Building2 } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import Image from 'next/image'
 import Navbar from '@/components/ui/navbar'
+import { useAuth0 } from '@auth0/auth0-react'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 
 // Define the roles
 const roles = [
@@ -24,34 +27,58 @@ const roles = [
   }
 ]
 
+async function assignRoleToUser(userId, roleId) {
+  console.log("Empezando a asignar el rol");
+  const response = await fetch('/api/assign-role', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ userId, roleId })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Error al asignar el rol');
+  }
+  return response.json();
+}
+
 export default function SelectRole() {
-  const [selectedRole, setSelectedRole] = useState(null)
-  const [loadingRoles, setLoadingRoles] = useState({}) // Object to track loading for each role
-  const { toast } = useToast()
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth0();
+  const router = useRouter();
 
-  const handleSelectRole = async (roleId) => {
-    setSelectedRole(roleId)
-    setLoadingRoles((prev) => ({ ...prev, [roleId]: true })) // Set loading for the selected role
-
-    console.log(`Assigning role ${roleId}...`)
-
-    try {
-      const userId = 'current-user-id'
-      await assignRole(userId, roleId) // This is the action that assigns the role
+  const mutation = useMutation({
+    mutationFn: ({ userId, roleId }) => assignRoleToUser(userId, roleId),
+    onSuccess: () => {
       toast({
         title: "Rol asignado con éxito",
-        description: `Has sido registrado como ${roleId === 'tenant' ? 'Inquilino' : 'Arrendatario'}.`,
-      })
-    } catch (error) {
+        description: `Has sido registrado como ${selectedRole === 'tenant' ? 'Inquilino' : 'Arrendatario'}.`,
+      });
+      router.push('/dashboard');
+    },
+    onError: () => {
+      console.log("Error al asignar el rol");
+      setIsLoading(false);
+      setSelectedRole(null);
       toast({
         title: "Error al asignar el rol",
         description: "Por favor, inténtalo de nuevo más tarde.",
         variant: "destructive",
-      })
-    } finally {
-      setLoadingRoles((prev) => ({ ...prev, [roleId]: false })) // Reset loading for the selected role
+      });
+    },
+  });
+
+  const handleSelectRole = (roleId) => {
+    setSelectedRole(roleId);
+    setIsLoading(true);
+    if (user) {
+      const userId = user.sub;
+      mutation.mutate({ userId, roleId });
     }
-  }
+  };
 
   return (
     <div>
@@ -85,9 +112,9 @@ export default function SelectRole() {
                   <Button 
                     className="w-full bg-[#27317E] hover:bg-[#1f2666]"
                     onClick={() => handleSelectRole(role.id)}
-                    disabled={loadingRoles[role.id]} // Disable button based on the loading state for this role
+                    disabled={isLoading}
                   >
-                    {loadingRoles[role.id] ? 'Asignando...' : `Seleccionar como ${role.title}`}
+                    { selectedRole === role.id ? 'Asignando...' : `Seleccionar como ${role.title}`}
                   </Button>
                 </CardFooter>
               </Card>
@@ -96,5 +123,5 @@ export default function SelectRole() {
         </div>
       </div>
     </div>
-  )
+  );
 }

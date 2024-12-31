@@ -1,12 +1,11 @@
-'use client'; // Marca el archivo como un componente cliente
+'use client'; 
 import "./globals.css";
 import { Auth0Provider } from '@auth0/auth0-react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from 'react';
+import { Toaster } from "@/components/ui/toaster"
 
-// export const metadata = {
-//   title: "Limitless Holdings",
-//   description: "Gestiona tus propiedades y contratos con facilidad, automatiza los cobros y mantenimientos, y toma decision"
-// };
+const queryClient = new QueryClient();
 
 export default function RootLayout({ children }) {
   
@@ -18,11 +17,14 @@ export default function RootLayout({ children }) {
         redirect_uri: "http://localhost:3000/valida-rol"
       }}
     >
-      <html lang="en">
-        <body>
-          {children}
-        </body>
-      </html>
+      <QueryClientProvider client={queryClient}>
+        <html lang="en">
+          <body>
+            {children}
+            <Toaster />
+          </body>
+        </html>
+      </QueryClientProvider>
     </Auth0Provider>
   );
 }
