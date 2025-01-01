@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
       domain="dev-p3hv1ufn7l6q5x5j.us.auth0.com"
       clientId="VfTOaqE3myUEXYQfqkFae1OFfhXJ31ro"
       authorizationParams={{
-        redirect_uri: "http://localhost:3000/valida-rol"
+        redirect_uri: "http://localhost:3000/set-usuario"
       }}
     >
       <QueryClientProvider client={queryClient}>
