@@ -14,13 +14,13 @@ import { useRouter } from 'next/navigation'
 // Define the roles
 const roles = [
   {
-    id: 'tenant',
+    id: 'Inquilino',
     title: 'Inquilino',
     description: 'Busco propiedades para alquilar y gestionar mi contrato de arrendamiento.',
     icon: <Home className="w-12 h-12" />
   },
   {
-    id: 'landlord',
+    id: 'Arrendatario',
     title: 'Arrendatario',
     description: 'Tengo propiedades para alquilar y quiero gestionarlas eficientemente.',
     icon: <Building2 className="w-12 h-12" />
@@ -29,6 +29,7 @@ const roles = [
 
 async function assignRoleToUser(userId, roleId) {
   console.log("Empezando a asignar el rol");
+  console.log(roleId);
   const response = await fetch('/api/assign-role', {
     method: 'POST',
     headers: { 
@@ -57,7 +58,8 @@ export default function SelectRole() {
         title: "Rol asignado con éxito",
         description: `Has sido registrado como ${selectedRole === 'tenant' ? 'Inquilino' : 'Arrendatario'}.`,
       });
-      router.push('/dashboard');
+      document.cookie = `role=${roleId}; path=/; `;
+      router.push('/crear-perfil');
     },
     onError: () => {
       console.log("Error al asignar el rol");

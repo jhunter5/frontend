@@ -46,15 +46,13 @@ const ValidateRole = () => {
       } */ // Commented out for testing purposes
 
       response = await mockCheckProfile(role, userId);
-      console.log(response);
 
       //const hasProfile = await response.json();
       const hasProfile = response.hasProfile;
-      console.log('hasProfile:', hasProfile);
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
-          router.push('/Arrendatario-dashboard');
+          router.push('/arrendatario-dashboard/propiedades');
         }
         else if (role === 'Inquilino') {
           router.push('/Inquilino-dashboard');
@@ -65,9 +63,24 @@ const ValidateRole = () => {
     }
     catch (error) {
       console.error('Error al verificar el perfil:', error);
-      //router.push('/error');
+      router.push('/error');
     }
   }
+
+  const checkRole = (user) => {
+    const namespace = 'https://limitlessHoldings.com';
+    const roles = user[`${namespace}/roles`] || [];
+    const rol = roles[0];
+
+    if (rol) {
+      document.cookie = `role=${rol}; path=/; `;
+      // document.cookie = `role=${roles[0]}; path=/; secure; HttpOnly; SameSite=Strict`; // Uncomment for production
+      return rol;
+    }
+    else {
+      router.push('/selecciona-rol');
+    }
+  };
 
   useEffect(() => {
     if (isLoading) return;
@@ -79,20 +92,15 @@ const ValidateRole = () => {
     }
 
     if (isAuthenticated && user) {
-      const namespace = 'https://limitlessHoldings.com';
-      const roles = user[`${namespace}/roles`] || [];
 
-      if (roles.length > 0) {
-        // document.cookie = `role=${roles[0]}; path=/; secure; HttpOnly; SameSite=Strict`;
-        document.cookie = `role=${roles[0]}; path=/; `;
+      const rol = checkRole(user);
 
-        if (roles.includes('Arrendatario')) {
+      if (rol) {
+        if (rol === 'Arrendatario') {
           checkProfile('Arrendatario');
-        } else if (roles.includes('Inquilino')) {
+        } else if (rol === 'Inquilino') {
           checkProfile('Inquilino');
         } 
-      } else {
-        router.push('/selecciona-rol');
       }
     } else {
       router.push('/');

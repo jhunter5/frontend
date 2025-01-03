@@ -1,15 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Cookies from 'js-cookie'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PersonalInfoForm } from './personal-info'
 import EconomicInfoForm from './economic-info'
 import { PreferencesForm } from './preferences'
-import { Check, ChevronRight } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from "@/lib/utils"
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import Navbar from '@/components/ui/navbar'
-import Footer from '@/components/ui/footer'
+import { useAuth0 } from "@auth0/auth0-react";
 
 const steps = [
   {
@@ -25,7 +28,7 @@ const steps = [
   {
     id: 'preferences',
     name: 'Preferencias',
-    description: 'Preferencias de vivienda',
+    description: 'Preferencias de vivienda o inquilinos',
   },
 ]
 
@@ -35,6 +38,29 @@ export default function CreateProfile() {
     personal: {},
     economic: {},
     preferences: {},
+  })
+  const [userRole, setUserRole] = useState('inquilino')
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const router = useRouter()
+
+  useEffect(() => {
+    const roleFromCookie = Cookies.get('role');
+    if (roleFromCookie) {
+      setUserRole(roleFromCookie);
+    }
+  }, []);
+
+  const mutation = useMutation({
+    mutationFn: (data, userId, role) => {
+      console.log(data, userId, role)
+      return fetch('/api/submit-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data, userId, role),
+      }).then(res => res.json())
+    },
   })
 
   const handleNext = (data) => {
@@ -49,12 +75,44 @@ export default function CreateProfile() {
     setCurrentStep(prev => prev - 1)
   }
 
+  const handleFinish =  (data) => {
+    
+    setFormData(prev => ({
+      ...prev,
+      [steps[currentStep].id]: data
+    }))
+
+    const dataQuery = {
+      personal: formData.personal,
+      economic: formData.economic,
+      preferences: formData.preferences,
+    }
+
+    console.log(dataQuery);
+    const userId = user.sub;
+   
+    // mutation.mutate({ dataQuery, userId, userRole }, {
+    //   onSuccess: () => {
+    //     console.log('success');
+    //     // document.cookie = `hasProfile=${true}; path=/; `;
+    //     if (userRole === 'Inquilino') {
+    //       router.push('/Inquilino-dashboard');
+    //     } else if (userRole === 'Arrendatario') {
+    //       router.push('/Arrendatario-dashboard');
+    //     }
+    //   },
+    //   onError: (error) => {
+    //     console.log(error);
+    //     router.push('/error');
+    //   }
+    // });
+  }
+
   return (
     <div>
-      <Navbar />
+      <Navbar/>
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
-          {/* Back button */}
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
@@ -64,7 +122,6 @@ export default function CreateProfile() {
           </Button>
 
           <div className="grid md:grid-cols-[250px_1fr] gap-8">
-            {/* Steps sidebar */}
             <nav className="space-y-1">
               {steps.map((step, index) => (
                 <div
@@ -97,7 +154,6 @@ export default function CreateProfile() {
               ))}
             </nav>
 
-            {/* Form content */}
             <Card className="p-6">
               {currentStep === 0 && (
                 <PersonalInfoForm 
@@ -114,17 +170,17 @@ export default function CreateProfile() {
               )}
               {currentStep === 2 && (
                 <PreferencesForm
-                  onNext={handleNext}
+                  onNext={handleFinish}
                   onBack={handleBack}
                   initialData={formData.preferences}
+                  userRole={userRole}
                 />
               )}
             </Card>
           </div>
         </div>
       </div>
-      <Footer />
-    </div>  
+    </div>
   )
 }
 
