@@ -3,12 +3,17 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Building2, Users, UserCheck, BarChart3 } from 'lucide-react'
+import { Building2, Users, UserCheck, BarChart3, User } from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Navbar from "@/components/ui/navbar"
 
 const sidebarNavItems = [
+  {
+    title: "Perfil",
+    href: "/arrendatario-dashboard/perfil",
+    icon: User
+  },
   {
     title: "Mis propiedades",
     href: "/arrendatario-dashboard/propiedades",
@@ -36,7 +41,6 @@ export default function DashboardLayout({ children, modal }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <div className="hidden border-r bg-[#1C2671] lg:block lg:w-64">

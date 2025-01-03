@@ -15,70 +15,70 @@ const properties = [
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "74C Aaliyah River, Bayerhaven",
     agency: "DreamHouse Realty",
-    price: 36025,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Bayerhaven"
+    area: 95,
+    city: "Bogota"
   },
   {
     id: 2,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 45,
+    city: "Bogota"
   },
   {
     id: 3,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 100,
+    city: "Villa Leyva"
   },
   {
     id: 4,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 75,
+    city: "Bogota"
   },
   {
     id: 5,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 50,
+    city: "Chía"
   },
   {
-    id: 6,
+    id: 20,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 100,
+    city: "Soacha"
   },
   {
     id: 7,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 85,
+    city: "Villavicencio"
   }
   // Añade más propiedades según sea necesario
 ]
