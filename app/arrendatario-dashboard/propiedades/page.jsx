@@ -15,70 +15,70 @@ const properties = [
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "74C Aaliyah River, Bayerhaven",
     agency: "DreamHouse Realty",
-    price: 36025,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Bayerhaven"
+    area: 95,
+    city: "Bogota"
   },
   {
     id: 2,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 45,
+    city: "Bogota"
   },
   {
     id: 3,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 100,
+    city: "Villa Leyva"
   },
   {
     id: 4,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 75,
+    city: "Bogota"
   },
   {
     id: 5,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 50,
+    city: "Chía"
   },
   {
-    id: 6,
+    id: 20,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: true,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 100,
+    city: "Soacha"
   },
   {
     id: 7,
     image: "https://www.360agenciainmobiliaria.com/inmuebles/20200611190646_96924e41-0e9c-4c63-9ac8-565b66ea301f.jpg",
     address: "Suite 756 031 Ines Riverway",
     agency: "Trails Real Estate",
-    price: 40176,
+    ocuped: false,
     bedrooms: 2,
-    bathrooms: 2,
-    city: "Riverway"
+    area: 85,
+    city: "Villavicencio"
   }
   // Añade más propiedades según sea necesario
 ]
@@ -101,18 +101,29 @@ export default function PropertiesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-3xl font-bold">Mis Propiedades</h1>
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por ciudad..."
-            value={searchCity}
-            onChange={(e) => setSearchCity(e.target.value)}
-            className="pl-8"
-          />
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between ">
+        <div className="">
+          <h1 className="text-5xl font-spaceGrotesk font-bold ">Mis Propiedades</h1>
         </div>
-      </div>
+        <div className="flex flex-col md:flex-row gap-4">
+           {/* Agregar nueva propiedad */}
+          <Link href="/arrendatario-dashboard/nueva-propiedad">
+            <Button variant="outline" className="h-4/5 w-full flex flex-row items-center justify-center gap-2 bg-[#1C2671] text-neutral-50">
+              <PlusCircle className="h-12 w-12" />
+              <span className="text-lg font-semibold font-inter">Agregar</span>
+            </Button>
+          </Link>
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground font-inter" />
+            <Input
+              placeholder="Buscar por ciudad..."
+              value={searchCity}
+              onChange={(e) => setSearchCity(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+        </div>
+     </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paginatedProperties.map((property) => (
@@ -120,17 +131,6 @@ export default function PropertiesPage() {
         ))}
       </div>
 
-      {/* Agregar nueva propiedad */}
-      <Link href="/arrendatario-dashboard/nueva-propiedad" className="block">
-        <Card className="h-full">
-          <CardContent className="flex items-center justify-center h-full">
-            <Button variant="ghost" className="h-full w-full flex flex-col items-center justify-center gap-2">
-              <PlusCircle className="h-12 w-12" />
-              <span className="text-lg font-semibold">Agregar nueva propiedad</span>
-            </Button>
-          </CardContent>
-        </Card>
-      </Link>
 
       {/* Paginación */}
       <div className="flex items-center justify-center gap-2">
@@ -139,6 +139,7 @@ export default function PropertiesPage() {
           size="icon"
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
+          className = "bg-[#1C2671] text-white"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -150,6 +151,7 @@ export default function PropertiesPage() {
           size="icon"
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
+          className = "bg-[#1C2671] text-white"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

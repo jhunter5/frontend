@@ -27,8 +27,9 @@ const getProperty = (id) => ({
   antiguedad: 5,
   descripcion: "Hermoso apartamento con vista panorámica a la ciudad. Ubicado en una zona tranquila y segura, cerca de parques y centros comerciales. Ideal para familias jóvenes o profesionales.",
   numeroPiso: 8,
-  precio: 450000,
-  enArriendo: false,
+  canon: 2500000,
+  enArriendo: true,
+  arrendatarioId: 123
 })
 
 export default function PropertyDetails({ params }) {
@@ -150,8 +151,8 @@ export default function PropertyDetails({ params }) {
 
             {/* Precio */}
             <div className="mt-6">
-              <h2 className="text-2xl font-bold">Precio</h2>
-              <p className="text-3xl font-bold text-green-600">${property.precio.toLocaleString()}</p>
+              <h2 className="text-2xl font-bold">Canon de Arrendamiento</h2>
+              <p className="text-3xl font-bold text-green-600">${property.canon.toLocaleString()}</p>
             </div>
 
             {/* Botones de acción */}
@@ -164,6 +165,13 @@ export default function PropertyDetails({ params }) {
               <Button onClick={() => setShowDialog(true)} disabled={property.enArriendo}>
                 {property.enArriendo ? 'En arriendo' : 'Poner en arriendo'}
               </Button>
+              {property.enArriendo && (
+                <Button asChild>
+                  <Link href={`/arrendatario-dashboard/Inquilino/${property.arrendatarioId}`}>
+                    Ver perfil del inquilino
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
