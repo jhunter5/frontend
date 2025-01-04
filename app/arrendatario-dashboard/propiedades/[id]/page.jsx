@@ -167,7 +167,7 @@ export default function PropertyDetails({ params }) {
               </Button>
               {property.enArriendo && (
                 <Button asChild>
-                  <Link href={`/dashboard/tenants/${property.tenantId}`}>
+                  <Link href={`/arrendatario-dashboard/Inquilino/${property.arrendatarioId}`}>
                     Ver perfil del inquilino
                   </Link>
                 </Button>
