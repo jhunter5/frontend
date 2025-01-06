@@ -18,7 +18,7 @@ const getTenant = (id) => {
     id,
     nombre: "Sebastian",
     apellido: "Ramirez",
-    correo: "juan.perez@email.com",
+    correo: "Sebas.Ramirez@email.com",
     telefono: "+57 300 123 4567",
     fechaRegistro: "2023-01-15",
     edad: 35,
@@ -31,7 +31,7 @@ const getTenant = (id) => {
     tipoContrato: "Indefinido",
     industria: "Tecnología",
     // Información de arrendamientos
-    calificacionPromedio: 3.0,
+    calificacionPromedio: 4.5,
     clasificacion: "A+",
     contratosPrevios: 3,
     puntualidadPagos: 20,
@@ -60,7 +60,7 @@ export default function TenantProfile({ params }) {
     <div className="container mx-auto py-8">
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="arrendatario-dashboard/propiedades">
+          <Link href="/arrendatario-dashboard/inquilinos">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a inquilinos
           </Link>

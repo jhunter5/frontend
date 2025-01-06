@@ -26,7 +26,6 @@ const getProperty = (id) => ({
   antiguedad: 5,
   descripcion: "Hermoso apartamento con vista panorámica a la ciudad. Ubicado en una zona tranquila y segura, cerca de parques y centros comerciales. Ideal para familias jóvenes o profesionales.",
   numeroPiso: 8,
-  precio: 450000,
 })
 
 export default function EditProperty({ params }) {
@@ -143,17 +142,13 @@ export default function EditProperty({ params }) {
                 <Label htmlFor="numeroPiso">Número de Piso</Label>
                 <Input id="numeroPiso" name="numeroPiso" type="number" value={formData.numeroPiso} onChange={handleChange} required />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="precio">Precio</Label>
-                <Input id="precio" name="precio" type="number" value={formData.precio} onChange={handleChange} required />
-              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="descripcion">Descripción</Label>
               <Textarea id="descripcion" name="descripcion" value={formData.descripcion} onChange={handleChange} required />
             </div>
             <div className="flex justify-end">
-              <Button type="submit">Guardar Cambios</Button>
+              <Button type="submit " className="bg-[#1C2671] text-neutral-50 font-inter font-bold">Guardar Cambios</Button>
             </div>
           </form>
         </CardContent>

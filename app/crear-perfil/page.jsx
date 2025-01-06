@@ -51,14 +51,14 @@ export default function CreateProfile() {
   }, []);
 
   const mutation = useMutation({
-    mutationFn: (data, userId, role) => {
-      console.log(data, userId, role)
+    mutationFn: (data) => {
+      console.log(data);
       return fetch('/api/submit-profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data, userId, role),
+        body: JSON.stringify(data),
       }).then(res => res.json())
     },
   })
@@ -88,24 +88,23 @@ export default function CreateProfile() {
       preferences: formData.preferences,
     }
 
-    console.log(dataQuery);
     const userId = user.sub;
    
-    // mutation.mutate({ dataQuery, userId, userRole }, {
-    //   onSuccess: () => {
-    //     console.log('success');
-    //     // document.cookie = `hasProfile=${true}; path=/; `;
-    //     if (userRole === 'Inquilino') {
-    //       router.push('/Inquilino-dashboard');
-    //     } else if (userRole === 'Arrendatario') {
-    //       router.push('/Arrendatario-dashboard');
-    //     }
-    //   },
-    //   onError: (error) => {
-    //     console.log(error);
-    //     router.push('/error');
-    //   }
-    // });
+    mutation.mutate({ dataQuery, userId, userRole }, {
+      onSuccess: () => {
+        console.log('success');
+        // document.cookie = `hasProfile=${true}; path=/; `;
+        if (userRole === 'Inquilino') {
+          router.push('/Inquilino-dashboard');
+        } else if (userRole === 'Arrendatario') {
+          router.push('/Arrendatario-dashboard');
+        }
+      },
+      onError: (error) => {
+        console.log(error);
+        // router.push('/error');
+      }
+    });
   }
 
   return (

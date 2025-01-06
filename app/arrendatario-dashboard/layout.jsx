@@ -19,7 +19,7 @@ const sidebarNavItems = {
     },
     {
       title: "Inquilinos",
-      href: "/dashboard/tenants",
+      href: "/arrendatario-dashboard/inquilinos",
       icon: Users,
     },
     {
