@@ -76,16 +76,18 @@ export default function CreateProfile() {
   }
 
   const handleFinish =  (data) => {
+
+    const updatedFormData = {
+      ...formData,
+      [steps[currentStep].id]: data,
+    };
     
-    setFormData(prev => ({
-      ...prev,
-      [steps[currentStep].id]: data
-    }))
+    setFormData(updatedFormData);
 
     const dataQuery = {
-      personal: formData.personal,
-      economic: formData.economic,
-      preferences: formData.preferences,
+      personal: updatedFormData.personal,
+      economic: updatedFormData.economic,
+      preferences: updatedFormData.preferences,
     }
 
     const userId = user.sub;
@@ -95,9 +97,9 @@ export default function CreateProfile() {
         console.log('success');
         // document.cookie = `hasProfile=${true}; path=/; `;
         if (userRole === 'Inquilino') {
-          router.push('/Inquilino-dashboard');
+          // router.push('/Inquilino-dashboard');
         } else if (userRole === 'Arrendatario') {
-          router.push('/Arrendatario-dashboard');
+          // router.push('/Arrendatario-dashboard');
         }
       },
       onError: (error) => {
@@ -112,13 +114,9 @@ export default function CreateProfile() {
       <Navbar/>
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
-          <Button
-            variant="ghost"
-            onClick={() => window.history.back()}
-            className="mb-6"
-          >
-            ← Volver al dashboard
-          </Button>
+          <h1 className="text-4xl font-bold font-spaceGrotesk mb-8 text-primary-500">
+            Crea tu perfil
+          </h1>
 
           <div className="grid md:grid-cols-[250px_1fr] gap-8">
             <nav className="space-y-1">
@@ -144,8 +142,8 @@ export default function CreateProfile() {
                     )}
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-medium">{step.name}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="font-medium font-spaceGrotesk">{step.name}</span>
+                    <span className="text-sm text-muted-foreground font-inter">
                       {step.description}
                     </span>
                   </div>

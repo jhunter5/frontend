@@ -31,24 +31,15 @@ const ValidateRole = () => {
       const userId = user.sub;
       let response; 
 
-      /*if (role === 'Arrendatario') {
-        response = await fetch('/api/landlord-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-      } else if (role === 'Inquilino') {
-        response = await fetch('/api/tenant-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-      } */ // Commented out for testing purposes
+      response = await fetch('https://backend-khaki-three-90.vercel.app/api/auth/verifyProfile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId })
+      });
 
-      response = await mockCheckProfile(role, userId);
-
-      //const hasProfile = await response.json();
+      response  = await response.json();
       const hasProfile = response.hasProfile;
+
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
@@ -94,7 +85,7 @@ const ValidateRole = () => {
     if (isAuthenticated && user) {
 
       const rol = checkRole(user);
-
+      
       if (rol) {
         if (rol === 'Arrendatario') {
           checkProfile('Arrendatario');

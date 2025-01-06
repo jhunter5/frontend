@@ -47,8 +47,8 @@ export function PersonalInfoForm({ onNext, initialData = {} }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#27317E]">Información Personal</h2>
-          <p className="text-gray-500">
+          <h2 className="text-2xl font-bold text-[#27317E] font-spaceGrotesk">Información Personal</h2>
+          <p className="text-gray-500 font-inter">
             Por favor, completa tu información personal básica.
           </p>
         </div>
@@ -59,9 +59,9 @@ export function PersonalInfoForm({ onNext, initialData = {} }) {
             name="nombre"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel className="font-inte">Nombre</FormLabel>
                 <FormControl>
-                  <Input placeholder="Juan" {...field} />
+                  <Input placeholder="Juan" {...field} className="font-inter" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -204,7 +204,7 @@ export function PersonalInfoForm({ onNext, initialData = {} }) {
         />
 
         <div className="flex justify-end">
-          <Button type="submit" className="bg-[#27317E] hover:bg-[#1f2666]">
+          <Button type="submit" className="bg-[#27317E] hover:bg-[#1f2666] font-inter">
             Continuar <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
