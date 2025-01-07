@@ -11,21 +11,6 @@ const ValidateRole = () => {
   const { user, isAuthenticated, isLoading, error } = useAuth0();
   const router = useRouter();
 
-  const mockCheckProfile = async (role, userId) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (role === 'Arrendatario') {
-          resolve({ hasProfile: true }); 
-          if (userId === 'auth0|67705cfb16e8d188ded222c6') resolve({ hasProfile: true });
-        } else if (role === 'Inquilino') {
-          if (userId === 'auth0|67706763e1de66b887c34e75') resolve({ hasProfile: false });
-        } else {
-          resolve({ hasProfile: false });
-        }
-      }, 1000); 
-    });
-  }; // Mock function for testing purposes
-
   const checkProfile = async (role) => {
     try {
       const userId = user.sub;
@@ -101,7 +86,7 @@ const ValidateRole = () => {
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4">
       <Image
-        src="/placeholder.svg?height=1080&width=1920"
+        src="/set_usuario_bg.jpg"
         alt="Background"
         fill
         className="object-cover"

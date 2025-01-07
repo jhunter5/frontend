@@ -44,9 +44,7 @@ export default function SelectRole() {
           },
           body: JSON.stringify({ userId, roleName }),
         });
-  
-        console.log(response);
-  
+        
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || 'Error al asignar el rol');

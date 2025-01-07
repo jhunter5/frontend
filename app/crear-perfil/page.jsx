@@ -13,8 +13,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/ui/navbar'
 import { useAuth0 } from "@auth0/auth0-react";
+import { getAuth0Id } from "@/app/utils/getAuth0id"
+import { get } from 'react-hook-form'
+import { useToast } from "@/hooks/use-toast"
 
-const steps = [
+const Inquilinosteps = [
   {
     id: 'personal',
     name: 'Información Personal',
@@ -32,6 +35,19 @@ const steps = [
   },
 ]
 
+const Arrendatariosteps = [
+  {
+    id: 'personal',
+    name: 'Información Personal',
+    description: 'Datos básicos de identificación',
+  },
+  {
+    id: 'preferences',
+    name: 'Preferencias',
+    description: 'Preferencias de vivienda o inquilinos',
+  },
+]
+
 export default function CreateProfile() {
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
@@ -39,9 +55,11 @@ export default function CreateProfile() {
     economic: {},
     preferences: {},
   })
-  const [userRole, setUserRole] = useState('inquilino')
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const [userRole, setUserRole] = useState('')
+  const { user } = useAuth0();
+  const { toast } = useToast();
   const router = useRouter()
+  const steps = userRole === 'Inquilino' ? Inquilinosteps : Arrendatariosteps;
 
   useEffect(() => {
     const roleFromCookie = Cookies.get('role');
@@ -50,19 +68,68 @@ export default function CreateProfile() {
     }
   }, []);
 
-  const mutation = useMutation({
-    mutationFn: (data) => {
-      console.log(data);
-      return fetch('/api/submit-profile', {
+  const Inquilinomutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/tenant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then(res => res.json())
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error en la solicitud');
+      }
+  
+      return response.json();
     },
   })
 
+  const ArrendatarioPerfil = useMutation({
+    mutationFn: async (data) => {
+      console.log('Data', JSON.stringify(data));
+      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error en la solicitud');
+      }
+  
+      return response.json();
+    },
+  })
+
+  const ArrendatarioPreferences = useMutation({
+    mutationFn: async ({ landlordAuthId, preferenceType, preferenceValue }) => {
+      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord-preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tenantAuthID: landlordAuthId,
+          preferenceType,
+          preferenceValue,
+        }),
+      });
+  
+      if (!response.created) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error guardando la preferencia: ${preferenceType}`);
+      }
+  
+      return response.json();
+    },
+  });
+  
   const handleNext = (data) => {
     setFormData(prev => ({
       ...prev,
@@ -84,29 +151,57 @@ export default function CreateProfile() {
     
     setFormData(updatedFormData);
 
-    const dataQuery = {
-      personal: updatedFormData.personal,
-      economic: updatedFormData.economic,
-      preferences: updatedFormData.preferences,
-    }
-
-    const userId = user.sub;
-   
-    mutation.mutate({ dataQuery, userId, userRole }, {
-      onSuccess: () => {
-        console.log('success');
-        // document.cookie = `hasProfile=${true}; path=/; `;
-        if (userRole === 'Inquilino') {
-          // router.push('/Inquilino-dashboard');
-        } else if (userRole === 'Arrendatario') {
-          // router.push('/Arrendatario-dashboard');
-        }
-      },
-      onError: (error) => {
-        console.log(error);
-        // router.push('/error');
+    if (userRole === 'Arrendatario') {
+      const profileData = {
+        id: updatedFormData.personal.cedula,
+        authID: getAuth0Id(user.sub),
+        firstName: updatedFormData.personal.nombre,
+        lastName: updatedFormData.personal.apellido,
+        phone: updatedFormData.personal.telefono,
+        email: user.email,
+        gender: updatedFormData.personal.genero,
       }
-    });
+
+      ArrendatarioPerfil.mutate({ ...profileData }, {
+        onSuccess: async () => {
+          // const arrendatarioId = response._id;
+          const arrendatarioId = getAuth0Id(user.sub);
+          const preferences = formData.preferences;
+          console.log("Arrendatario ID", arrendatarioId);
+
+            try {
+            await Promise.all(
+              Object.entries(preferences).map(([preferenceType, preferenceValue]) => {
+              console.log('Preference', preferenceType, preferenceValue);
+              return ArrendatarioPreferences.mutate({
+                landlordAuthId: arrendatarioId,
+                preferenceType,
+                preferenceValue,
+              });
+              })
+            );
+            toast({
+              title: "Perfil creado",
+              description: "Tu perfil ha sido creado exitosamente.",
+              status: "success",
+              duration: 2000,
+            });
+            router.push('/arrendatario-dashboard/propiedades');
+            } 
+            catch (error) {
+              throw new Error(error.message);
+            }
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: "Ocurrió un error al crear el perfil. Intenta de nuevo",
+            duration: 4000,
+            variant: 'destructive',
+          });
+        }
+      });
+    }
   }
 
   return (
@@ -120,7 +215,8 @@ export default function CreateProfile() {
 
           <div className="grid md:grid-cols-[250px_1fr] gap-8">
             <nav className="space-y-1">
-              {steps.map((step, index) => (
+              {
+              steps.map((step, index) => (
                 <div
                   key={step.id}
                   className={cn(
@@ -156,14 +252,24 @@ export default function CreateProfile() {
                 <PersonalInfoForm 
                   onNext={handleNext}
                   initialData={formData.personal}
+                  userRole={userRole}
                 />
               )}
               {currentStep === 1 && (
+                userRole === 'Inquilino' ? (
                 <EconomicInfoForm
                   onNext={handleNext}
                   onBack={handleBack}
                   initialData={formData.economic}
                 />
+                ) : (
+                  <PreferencesForm
+                    onNext={handleFinish}
+                    onBack={handleBack}
+                    initialData={formData.preferences}
+                    userRole={userRole}
+                  />
+                )
               )}
               {currentStep === 2 && (
                 <PreferencesForm
