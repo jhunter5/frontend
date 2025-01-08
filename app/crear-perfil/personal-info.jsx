@@ -22,6 +22,9 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ChevronRight } from 'lucide-react'
+import { useState } from "react"
+
+const isClient = typeof window !== "undefined";
 
 const inquilinoSchema = z.object({
   nombre: z.string().min(2, "El nombre es requerido"),
@@ -31,6 +34,12 @@ const inquilinoSchema = z.object({
   genero: z.enum(["Masculino", "Femenino", "Otro"]),
   estadoCivil: z.enum(["soltero", "casado", "divorciado", "viudo"]),
   tipoCliente: z.enum(["soltero", "familia", "estudiante"]),
+  avatar: isClient
+    ? z.instanceof(File).refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "El archivo debe ser menor a 5MB"
+      ).optional()
+    : z.any().optional(),
 })
 
 const arrendatarioSchema = z.object({
@@ -39,11 +48,18 @@ const arrendatarioSchema = z.object({
   cedula: z.string().min(6, "La cédula debe tener al menos 6 caracteres"),
   telefono: z.string().min(10, "El teléfono debe tener al menos 10 dígitos"),
   genero: z.enum(["Masculino", "Femenino", "Otro"]),
+  avatar: isClient
+    ? z.instanceof(File).refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "El archivo debe ser menor a 5MB"
+      ).optional()
+    : z.any().optional(),
 })
 
 
 export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
   const schema = userRole === 'Inquilino' ? inquilinoSchema : arrendatarioSchema
+  const [preview, setPreview] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -66,6 +82,29 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
 
         {userRole === 'Inquilino' ? (
           <>
+            <FormField
+            control={form.control}
+            name="avatar"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Avatar</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      field.onChange(file);
+                      setPreview(URL.createObjectURL(file));
+                    }}
+                    className="font-inter hover:cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </FormControl>
+                <FormMessage />
+                {preview && <img src={preview} alt="Previsualización" className="mt-2 h-20 w-20 rounded-full" />}
+              </FormItem>
+            )}
+/>
             <div className="grid md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -218,6 +257,30 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
           </>
         ) : (
           <>
+
+            <FormField
+              control={form.control}
+              name="avatar"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Avatar</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        field.onChange(file);
+                        setPreview(URL.createObjectURL(file));
+                      }}
+                      className="font-inter hover:cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {preview && <img src={preview} alt="Previsualización" className="mt-2 h-20 w-20 rounded-full transition-transform duration-200 hover:scale-110 hover:shadow-lg" />}
+                </FormItem>
+              )}
+            />
             <div className="grid md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

@@ -89,13 +89,19 @@ export default function CreateProfile() {
 
   const ArrendatarioPerfil = useMutation({
     mutationFn: async (data) => {
-      console.log('Data', JSON.stringify(data));
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
+      
       const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -160,6 +166,7 @@ export default function CreateProfile() {
         phone: updatedFormData.personal.telefono,
         email: user.email,
         gender: updatedFormData.personal.genero,
+        files: updatedFormData.personal.avatar,
       }
 
       ArrendatarioPerfil.mutate({ ...profileData }, {

@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
+import { getAuth0Id } from '../utils/getAuth0id';
 
 const ValidateRole = () => {
   const { user, isAuthenticated, isLoading, error } = useAuth0();
@@ -13,7 +14,7 @@ const ValidateRole = () => {
 
   const checkProfile = async (role) => {
     try {
-      const userId = user.sub;
+      const userId = getAuth0Id(user.sub);
       let response; 
 
       response = await fetch('https://backend-khaki-three-90.vercel.app/api/auth/verifyProfile', {
@@ -24,7 +25,6 @@ const ValidateRole = () => {
 
       response  = await response.json();
       const hasProfile = response.hasProfile;
-
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
