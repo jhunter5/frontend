@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import Link from "next/link";
 
 export default function CTASection() {
   return (
@@ -16,7 +17,7 @@ export default function CTASection() {
           size="lg"
           className="bg-white text-[#27317E] hover:bg-gray-100"
         >
-          Solicita una consulta
+          <Link href="/contact-us" className="hover:text-gray-200">Solicita una consulta</Link>
         </Button>
       </div>
     </section>
