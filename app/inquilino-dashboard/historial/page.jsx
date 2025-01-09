@@ -79,7 +79,7 @@ export default function ExperienciasAlojamiento() {
         <Button variant="outline" asChild className="mb-4 md:mb-0">
           <Link href="/inquilino-dashboard/buscador-propiedades">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver al Dashboard
+            Volver al Buscador
           </Link>
         </Button>
         <h1 className="text-4xl font-bold text-primary">
