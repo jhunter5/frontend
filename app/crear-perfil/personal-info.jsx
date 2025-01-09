@@ -32,7 +32,8 @@ const inquilinoSchema = z.object({
   cedula: z.string().min(6, "La cédula debe tener al menos 6 caracteres"),
   telefono: z.string().min(10, "El teléfono debe tener al menos 10 dígitos"),
   genero: z.enum(["Masculino", "Femenino", "Otro"]),
-  estadoCivil: z.enum(["soltero", "casado", "divorciado", "viudo"]),
+  estadoCivil: z.enum(["Soltero", "Casado", "Divorciado", "Viudo"]),
+  edad: z.number().int().min(18, "Debes ser mayor de edad"),
   tipoCliente: z.enum(["soltero", "familia", "estudiante"]),
   avatar: isClient
     ? z.instanceof(File).refine(
@@ -64,6 +65,7 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: initialData,
+    mode: "onChange"
   })
 
   function onSubmit(values) {
@@ -157,7 +159,7 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
                   <FormItem>
                     <FormLabel className="font-inter">Teléfono</FormLabel>
                     <FormControl>
-                      <Input placeholder="+34 612 345 678" {...field} />
+                      <Input placeholder="320 4562379" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -208,30 +210,48 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="estadoCivil"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado Civil</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormField
+                control={form.control}
+                name="edad"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-inter">Edad</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona tu estado civil" />
-                      </SelectTrigger>
+                    <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))} // Convertir a número
+                        className="font-inter"
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="soltero">Soltero/a</SelectItem>
-                      <SelectItem value="casado">Casado/a</SelectItem>
-                      <SelectItem value="divorciado">Divorciado/a</SelectItem>
-                      <SelectItem value="viudo">Viudo/a</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+        <FormField
+          control={form.control}
+          name="estadoCivil"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Estado Civil</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona tu estado civil" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Soltero">Soltero/a</SelectItem>
+                  <SelectItem value="Casado">Casado/a</SelectItem>
+                  <SelectItem value="Divorciado">Divorciado/a</SelectItem>
+                  <SelectItem value="Viudo">Viudo/a</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
             <FormField
               control={form.control}
               name="tipoCliente"
@@ -333,7 +353,7 @@ export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
                   <FormItem>
                     <FormLabel className="font-inter">Teléfono</FormLabel>
                     <FormControl>
-                      <Input placeholder="+34 612 345 678" {...field}  className="font-inter"/>
+                      <Input placeholder="320 4562379" {...field}  className="font-inter"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

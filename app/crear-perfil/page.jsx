@@ -35,7 +35,7 @@ const Inquilinosteps = [
   },
 ]
 
-const Arrendatariosteps = [
+const ArrendadorSteps = [
   {
     id: 'personal',
     name: 'Información Personal',
@@ -59,7 +59,7 @@ export default function CreateProfile() {
   const { user } = useAuth0();
   const { toast } = useToast();
   const router = useRouter()
-  const steps = userRole === 'Inquilino' ? Inquilinosteps : Arrendatariosteps;
+  const steps = userRole === 'Inquilino' ? Inquilinosteps : ArrendadorSteps;
 
   useEffect(() => {
     const roleFromCookie = Cookies.get('role');
@@ -68,14 +68,21 @@ export default function CreateProfile() {
     }
   }, []);
 
-  const Inquilinomutation = useMutation({
+  const TenantProfile = useMutation({
     mutationFn: async (data) => {
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       const response = await fetch('https://backend-khaki-three-90.vercel.app/api/tenant', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -87,18 +94,14 @@ export default function CreateProfile() {
     },
   })
 
-  const ArrendatarioPerfil = useMutation({
+  const LandlordProfile = useMutation({
     mutationFn: async (data) => {
       const formData = new FormData();
+
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
 
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
-
-      
       const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord', {
         method: 'POST',
         body: formData,
@@ -113,7 +116,7 @@ export default function CreateProfile() {
     },
   })
 
-  const ArrendatarioPreferences = useMutation({
+  const LandlordPreferences = useMutation({
     mutationFn: async ({ landlordAuthId, preferenceType, preferenceValue }) => {
       const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord-preferences', {
         method: 'POST',
@@ -135,6 +138,29 @@ export default function CreateProfile() {
       return response.json();
     },
   });
+
+  const TenantPreferences = useMutation({
+    mutationFn: async ({ tenantAuthId, preferenceType, preferenceValue }) => {
+      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/tenant-preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tenantAuthID: tenantAuthId,
+          preferenceType,
+          preferenceValue,
+        }),
+      });
+
+      if (!response.created) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error guardando la preferencia: ${preferenceType}`);
+      }
+
+      return response.json();
+    },
+  }); 
   
   const handleNext = (data) => {
     setFormData(prev => ({
@@ -169,19 +195,17 @@ export default function CreateProfile() {
         files: updatedFormData.personal.avatar,
       }
 
-      ArrendatarioPerfil.mutate({ ...profileData }, {
+      LandlordProfile.mutate({ ...profileData }, {
         onSuccess: async () => {
           // const arrendatarioId = response._id;
-          const arrendatarioId = getAuth0Id(user.sub);
+          const landlordId = getAuth0Id(user.sub);
           const preferences = formData.preferences;
-          console.log("Arrendatario ID", arrendatarioId);
 
             try {
             await Promise.all(
               Object.entries(preferences).map(([preferenceType, preferenceValue]) => {
-              console.log('Preference', preferenceType, preferenceValue);
-              return ArrendatarioPreferences.mutate({
-                landlordAuthId: arrendatarioId,
+              return LandlordPreferences.mutate({
+                landlordAuthId: landlordId,
                 preferenceType,
                 preferenceValue,
               });
@@ -198,6 +222,63 @@ export default function CreateProfile() {
             catch (error) {
               throw new Error(error.message);
             }
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: "Ocurrió un error al crear el perfil. Intenta de nuevo",
+            duration: 4000,
+            variant: 'destructive',
+          });
+        }
+      });
+    }
+    else if(userRole === 'Inquilino') {
+      const tenantData = {
+        id: updatedFormData.personal.cedula,
+        authID: getAuth0Id(user.sub),
+        idType: "C.C",
+        firstName: updatedFormData.personal.nombre,
+        lastName: updatedFormData.personal.apellido,
+        gender: updatedFormData.personal.genero,
+        phone: updatedFormData.personal.telefono,
+        email: user.email,
+        files: updatedFormData.personal.avatar,
+        age: updatedFormData.personal.edad,
+        maritalStatus: updatedFormData.personal.estadoCivil,
+        salary: updatedFormData.economic.salario,
+        contractType: updatedFormData.economic.tipoContrato,
+        industry: updatedFormData.economic.industria,
+        paymentFrequency: updatedFormData.economic.frecuenciaPago,
+        isFamily: updatedFormData.preferences.tipoCliente === "familia" ? true : false,
+      }
+
+      TenantProfile.mutate({ ...tenantData }, {
+        onSuccess: async () => {
+          const tenantId = getAuth0Id(user.sub);
+          const preferences = formData.preferences;
+
+          try {
+            await Promise.all(
+              Object.entries(preferences).map(([preferenceType, preferenceValue]) => {
+              return TenantPreferences.mutate({
+                tenantAuthId: tenantId,
+                preferenceType,
+                preferenceValue,
+              });
+              })
+            );
+            toast({
+              title: "Perfil creado",
+              description: "Tu perfil ha sido creado exitosamente.",
+              status: "success",
+              duration: 2000,
+            });
+            router.push('/inquilino-dashboard');
+          } 
+          catch (error) {
+            throw new Error(error.message);
+          }
         },
         onError: (error) => {
           toast({

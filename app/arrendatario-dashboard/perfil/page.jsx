@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Star, Home, CheckCircle2 } from 'lucide-react'
 import { useAuth0 } from '@auth0/auth0-react'
 import Link from "next/link"
-
+import { useQuery } from '@tanstack/react-query'
 // En un caso real, esto vendría de tu API
 const getPerfil = (id) => {
   // Simulamos que solo existen inquilinos con IDs numéricos;
@@ -30,6 +30,23 @@ export default function ArrendatarioProfile() {
   const router = useRouter()
   const [arrendatario, setArrendatario] = useState(null)
   const { user } = useAuth0()
+
+  const fecthUser = async () => {
+      const userId = getAuth0Id(user.sub);
+      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/landlord/${userId}`)
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    
+    }
+  
+  const { isPending, isError, data, error } = useQuery( {
+    queryKey: 'user',
+    queryFn: fecthUser
+  } ) 
+
+  console.log(data)
 
   useEffect(() => {
     const fetchedArrendatario = getPerfil(user.sub)
@@ -58,13 +75,28 @@ export default function ArrendatarioProfile() {
       {/* Header con Avatar */}
       <div className="mb-8 flex items-center gap-4">
         <Avatar className="h-24 w-24">
-          <AvatarImage src={arrendatario.avatar} alt={`${arrendatario.nombre} ${arrendatario.apellido}`} />
-          <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback>
+          {isPending ? 
+          (
+            <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback> 
+          ) : 
+          (
+          <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
+          )
+        }
         </Avatar>
+        {isPending ? 
+        (
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+            </div>
+        ) : (
         <div>
-          <h1 className="text-2xl font-bold">{arrendatario.nombre} {arrendatario.apellido}</h1>
+          <h1 className="text-2xl font-bold">{data.firstName} {data.lastName}</h1>
           <p className="text-muted-foreground">Arrendatario</p>
         </div>
+        )
+        }
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

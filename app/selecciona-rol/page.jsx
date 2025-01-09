@@ -21,7 +21,7 @@ const roles = [
   },
   {
     id: 'Arrendatario',
-    title: 'Arrendatario',
+    title: 'Arrendador',
     description: 'Tengo propiedades para alquilar y quiero gestionarlas eficientemente.',
     icon: <Building2 className="w-12 h-12" />
   }
