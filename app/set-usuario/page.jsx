@@ -18,7 +18,7 @@ const ValidateRole = () => {
           resolve({ hasProfile: true }); 
           if (userId === 'auth0|67705cfb16e8d188ded222c6') resolve({ hasProfile: true });
         } else if (role === 'Inquilino') {
-          if (userId === 'auth0|67706763e1de66b887c34e75') resolve({ hasProfile: false });
+          if (userId === 'auth0|677759d78987d373042dd4ff') resolve({ hasProfile: true });
         } else {
           resolve({ hasProfile: false });
         }
@@ -55,7 +55,7 @@ const ValidateRole = () => {
           router.push('/arrendatario-dashboard/propiedades');
         }
         else if (role === 'Inquilino') {
-          router.push('/Inquilino-dashboard');
+          router.push('/inquilino-dashboard/buscador-propiedades');
         }
       } else {
         router.push('/crear-perfil');

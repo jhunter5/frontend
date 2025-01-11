@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Link from "next/link";
 import Image from "next/image"
 import { Star } from 'lucide-react'
 import ServicesCarousel from "./homeComponents/servicesCarrousel"
@@ -35,7 +36,7 @@ export default function HomePage() {
               <Input type="text" placeholder="Nombre" className="w-full" />
               <Input type="email" placeholder="Email" className="w-full" />
               <Button className="w-full bg-primary-500 hover:bg-primary-600">
-                Contacta con nosotros
+                <Link href="/contact-us" className="hover:text-gray-200">Contacta con nosotros</Link>
               </Button>
               <p className="text-xs text-center text-gray-500">
                 Nunca compartiremos tu información con nadie.
