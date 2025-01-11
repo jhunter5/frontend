@@ -31,7 +31,7 @@ const ValidateRole = () => {
           router.push('/arrendador-dashboard/propiedades');
         }
         else if (role === 'Inquilino') {
-          router.push('/Inquilino-dashboard');
+          router.push('/inquilino-dashboard/buscador-propiedades');
         }
       } else {
         router.push('/crear-perfil');

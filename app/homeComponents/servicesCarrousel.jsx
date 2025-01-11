@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Settings2, Wrench, Brain, ShieldCheck, FileChartColumnIncreasing} from 'lucide-react'
@@ -61,7 +62,7 @@ export default function ServicesCarousel() {
                   </CardContent>
                   <CardFooter>
                     <Button className="bg-[#27317E] hover:bg-[#1f2666] w-full">
-                      Agenda tu cita
+                    <Link href="/contact-us" className="hover:text-gray-200">Agenda tu cita</Link>
                     </Button>
                   </CardFooter>
                 </Card>
