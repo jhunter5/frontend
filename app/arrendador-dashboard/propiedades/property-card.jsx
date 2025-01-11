@@ -4,11 +4,11 @@ import { Bed, LandPlot, MapPin } from 'lucide-react'
 
 export function PropertyCard({ property }) {
   return (
-    <Link href={`/arrendatario-dashboard/propiedades/${property.id}`}>
+    <Link href={`/arrendador-dashboard/propiedades/${property._id}`}>
       <Card className="overflow-hidden transition-shadow hover:shadow-lg">
         <div className="aspect-video relative overflow-hidden">
           <img
-            src={property.image}
+            src={property.media[0].mediaUrl}
             alt={`Imagen de ${property.address}`}
             className="object-cover w-full h-full"
           />
@@ -20,8 +20,8 @@ export function PropertyCard({ property }) {
           </div>
           <div className="space-y-1">
             <h3 className="font-semibold font-spaceGrotesk">{property.city}</h3>
-            <p className={`text-xl font-bold font-inter ${property.ocuped ? 'text-green-500' : 'text-red-500'}`}>
-              {property.ocuped ? 'Arrendada' : 'No Arrendada'}
+            <p className={`text-xl font-bold font-inter ${property.contract !== null ? 'text-green-500' : 'text-red-500'}`}>
+              {property.contract !== null ? 'Arrendada' : 'No Arrendada'}
             </p>
           </div>
         </CardHeader>
@@ -29,11 +29,11 @@ export function PropertyCard({ property }) {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
               <Bed className="h-4 w-4 text-muted-foreground" />
-              <span className="font-inter">{property.bedrooms} Dormitorio{property.bedrooms !== 1 ? 's' : ''}</span>
+              <span className="font-inter">{property.rooms} Dormitorio{property.rooms !== 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-center gap-1">
               <LandPlot className="h-4 w-4 text-muted-foreground" />
-              <span className="font-inter">{property.area} Mts^2</span>
+              <span className="font-inter">{property.squareMeters} Mts^2</span>
             </div>
           </div>
         </CardContent>

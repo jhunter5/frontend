@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { PersonalInfoForm } from './personal-info'
 import EconomicInfoForm from './economic-info'
 import { PreferencesForm } from './preferences'
@@ -14,7 +13,6 @@ import { useRouter } from 'next/navigation'
 import Navbar from '@/components/ui/navbar'
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAuth0Id } from "@/app/utils/getAuth0id"
-import { get } from 'react-hook-form'
 import { useToast } from "@/hooks/use-toast"
 
 const Inquilinosteps = [
@@ -217,7 +215,7 @@ export default function CreateProfile() {
               status: "success",
               duration: 2000,
             });
-            router.push('/arrendatario-dashboard/propiedades');
+            router.push('/arrendador-dashboard/propiedades');
             } 
             catch (error) {
               throw new Error(error.message);

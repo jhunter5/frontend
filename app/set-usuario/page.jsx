@@ -28,7 +28,7 @@ const ValidateRole = () => {
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
-          router.push('/arrendatario-dashboard/propiedades');
+          router.push('/arrendador-dashboard/propiedades');
         }
         else if (role === 'Inquilino') {
           router.push('/Inquilino-dashboard');

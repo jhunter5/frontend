@@ -1,7 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,26 +7,21 @@ import { ArrowLeft, Star, Home, CheckCircle2 } from 'lucide-react'
 import { useAuth0 } from '@auth0/auth0-react'
 import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
-// En un caso real, esto vendría de tu API
-const getPerfil = (id) => {
-  // Simulamos que solo existen inquilinos con IDs numéricos;
-  return {
-    id,
-    nombre: "Juan",
-    apellido: "Pérez",
-    correo: "juan.perez@email.com",
-    telefono: "+57 300 123 4567",
-    edad: 35,
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    numeroPropiedades: 2,
-    calificacionPromedio: 4.5,
-    porcentajeCumplimiento: 98,
-  }
+import { getAuth0Id } from "@/app/utils/getAuth0id"
+
+const arrendatario = {
+  nombre: "Juan",
+  apellido: "Pérez",
+  correo: "juan.perez@email.com",
+  telefono: "+57 300 123 4567",
+  edad: 35,
+  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  numeroPropiedades: 2,
+  calificacionPromedio: 4.5,
+  porcentajeCumplimiento: 98,
 }
 
 export default function ArrendatarioProfile() {
-  const router = useRouter()
-  const [arrendatario, setArrendatario] = useState(null)
   const { user } = useAuth0()
 
   const fecthUser = async () => {
@@ -38,7 +31,6 @@ export default function ArrendatarioProfile() {
         throw new Error('Network response was not ok')
       }
       return response.json()
-    
     }
   
   const { isPending, isError, data, error } = useQuery( {
@@ -46,18 +38,11 @@ export default function ArrendatarioProfile() {
     queryFn: fecthUser
   } ) 
 
-  console.log(data)
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
 
-  useEffect(() => {
-    const fetchedArrendatario = getPerfil(user.sub)
-    if (fetchedArrendatario) {
-      setArrendatario(fetchedArrendatario)
-    } else {
-      router.push('/error')
-    }
-  }, [user, router])
-
-  if (!arrendatario) {
+  if (isPending) {
     return <div>Cargando...</div>
   }
 
@@ -65,7 +50,7 @@ export default function ArrendatarioProfile() {
     <div className="container mx-auto py-8">
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/arrendatario-dashboard/propiedades">
+          <Link href="/arrendadador-dashboard/propiedades">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a propiedaes
           </Link>
@@ -109,24 +94,24 @@ export default function ArrendatarioProfile() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Nombre</p>
-                <p className="font-medium">{arrendatario.nombre}</p>
+                <p className="font-medium">{data.firstName}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Apellido</p>
-                <p className="font-medium">{arrendatario.apellido}</p>
+                <p className="font-medium">{data.lastName}</p>
               </div>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Correo electrónico</p>
-              <p className="font-medium">{arrendatario.correo}</p>
+              <p className="font-medium">{data.email}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Teléfono</p>
-              <p className="font-medium">{arrendatario.telefono}</p>
+              <p className="font-medium">{data.phone}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Edad</p>
-              <p className="font-medium">{arrendatario.edad} años</p>
+              <p className="font-medium">{data.age} años</p>
             </div>
           </CardContent>
         </Card>
@@ -154,7 +139,7 @@ export default function ArrendatarioProfile() {
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{arrendatario.calificacionPromedio}</p>
+                  <p className="text-2xl font-bold">{data.avgRating}</p>
                   <div className="flex items-center">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { TenantCard } from "@/app/arrendatario-dashboard/inquilinos/components/inquilino-card"
+import { TenantCard } from "@/app/arrendador-dashboard/inquilinos/components/inquilino-card"
 import { Search, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 

@@ -60,7 +60,7 @@ export default function TenantProfile({ params }) {
     <div className="container mx-auto py-8">
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/arrendatario-dashboard/inquilinos">
+          <Link href="/arrendador-dashboard/inquilinos">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a inquilinos
           </Link>

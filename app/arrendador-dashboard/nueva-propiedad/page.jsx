@@ -10,26 +10,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Upload, X } from 'lucide-react'
 import Link from "next/link"
+import { useMutation } from '@tanstack/react-query'
+import { useToast } from "@/hooks/use-toast"
+import { getAuth0Id } from '@/app/utils/getAuth0id'
+import { useAuth0 } from '@auth0/auth0-react'
 
 export default function NewProperty() {
   const router = useRouter()
   const fileInputRef = useRef(null)
   const [formData, setFormData] = useState({
-    direccion: '',
-    municipio: '',
-    departamento: '',
-    tipo: '',
-    habitaciones: '',
-    parqueadero: '',
-    metrosCuadrados: '',
-    estrato: '',
-    banos: '',
-    antiguedad: '',
-    descripcion: '',
-    numeroPiso: '',
-    precio: '',
+    address: '',
+    city: '',
+    state: '',
+    type: '',
+    rooms: '',
+    parking: '',
+    squareMeters: '',
+    tier: '',
+    bathrooms: '',
+    age: '',
+    description: '',
+    floors: '',
+    // precio: '',
   })
   const [images, setImages] = useState([])
+  const { toast } = useToast();
+  const { user } = useAuth0()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -59,20 +65,72 @@ export default function NewProperty() {
     setImages(prevImages => prevImages.filter((_, i) => i !== index))
   }
 
+  const propertyCreation = useMutation({
+    mutationFn: async (data) => {
+      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/property', {
+        method: 'POST',
+        body: data,
+      })
+
+      if (!response.ok) {
+        throw new Error('Error creating property')
+      }
+
+      return response.json()
+  }
+  })
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Aquí iría la lógica para enviar los datos y las imágenes a tu API
-    console.log(formData)
-    console.log(images)
-    // Redirigir a la lista de propiedades después de guardar
-    router.push('/arrendatario-dashboard/propiedades')
+
+    const formDataToSend = new FormData()
+    
+    formDataToSend.append('landlordAuthID', getAuth0Id(user.sub))
+
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value)
+    })
+
+    images.forEach(image => {
+      formDataToSend.append('files', image.file); 
+    });
+    
+    for (let [key, value] of formDataToSend.entries()) {
+      if (key === 'files') {
+        console.log(`Clave: ${key}, Archivo: ${value.name}`); // Imprime el nombre del archivo
+      } else {
+        console.log(`Clave: ${key}, Valor: ${value}`); // Imprime los otros campos
+      }
+    }
+
+    propertyCreation.mutate(formDataToSend,
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Propiedad creada',
+            description: 'La propiedad ha sido creada exitosamente',
+            status: 'success',
+          })
+
+          router.push('/arrendador-dashboard/propiedades')
+        },
+        onError: () => {
+          toast({
+            title: 'Error',
+            description: 'Ha ocurrido un error al crear la propiedad',
+            status: 'error',
+            variant: 'destructive',
+          })
+        }
+      }
+    )
   }
 
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/arrendatario-dashboard/propiedades">
+          <Link href="/arrendador-dashboard/propiedades">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a propiedades
           </Link>
@@ -124,19 +182,19 @@ export default function NewProperty() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="direccion">Dirección</Label>
-                <Input id="direccion" name="direccion" value={formData.direccion} onChange={handleChange} required />
+                <Input id="address" name="address" value={formData.address} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="municipio">Municipio</Label>
-                <Input id="municipio" name="municipio" value={formData.municipio} onChange={handleChange} required />
+                <Label htmlFor="city">Municipio</Label>
+                <Input id="city" name="city" value={formData.city} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="departamento">Departamento</Label>
-                <Input id="departamento" name="departamento" value={formData.departamento} onChange={handleChange} required />
+                <Label htmlFor="state">Departamento</Label>
+                <Input id="state" name="state" value={formData.state} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tipo">Tipo de Propiedad</Label>
-                <Select name="tipo" onValueChange={(value) => handleSelectChange('tipo', value)} required>
+                <Label htmlFor="type">Tipo de Propiedad</Label>
+                <Select name="type" onValueChange={(value) => handleSelectChange('type', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
@@ -148,16 +206,17 @@ export default function NewProperty() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="habitaciones">Habitaciones</Label>
-                <Input id="habitaciones" name="habitaciones" type="number" value={formData.habitaciones} onChange={handleChange} required />
+                <Label htmlFor="rooms">Habitaciones</Label>
+                <Input id="rooms" name="rooms" type="number" value={formData.rooms} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="banos">Baños</Label>
-                <Input id="banos" name="banos" type="number" value={formData.banos} onChange={handleChange} required />
+                <Label htmlFor="bathrooms">Baños</Label>
+                <Input id="bathrooms" name="bathrooms" type="number" value={formData.bathrooms} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="parqueadero">Parqueadero</Label>
-                <Select name="parqueadero" onValueChange={(value) => handleSelectChange('parqueadero', value)} required>
+                <Label htmlFor="parking">Parqueadero</Label>
+                <Input id="parking" name="parking" type="number" value={formData.parking} onChange={handleChange} required />
+                {/* <Select name="parking" onValueChange={(value) => handleSelectChange('parking', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="¿Tiene parqueadero?" />
                   </SelectTrigger>
@@ -165,23 +224,23 @@ export default function NewProperty() {
                     <SelectItem value="si">Sí</SelectItem>
                     <SelectItem value="no">No</SelectItem>
                   </SelectContent>
-                </Select>
+                </Select> */}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="metrosCuadrados">Metros Cuadrados</Label>
-                <Input id="metrosCuadrados" name="metrosCuadrados" type="number" value={formData.metrosCuadrados} onChange={handleChange} required />
+                <Label htmlFor="squareMeters">Metros Cuadrados</Label>
+                <Input id="squareMeters" name="squareMeters" type="number" value={formData.squareMeters} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="estrato">Estrato</Label>
-                <Input id="estrato" name="estrato" type="number" value={formData.estrato} onChange={handleChange} required />
+                <Label htmlFor="tier">Estrato</Label>
+                <Input id="tier" name="tier" type="number" value={formData.tier} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="antiguedad">Antigüedad (años)</Label>
-                <Input id="antiguedad" name="antiguedad" type="number" value={formData.antiguedad} onChange={handleChange} required />
+                <Label htmlFor="age">Antigüedad (años)</Label>
+                <Input id="age" name="age" type="number" value={formData.age} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="numeroPiso">Número de Piso</Label>
-                <Input id="numeroPiso" name="numeroPiso" type="number" value={formData.numeroPiso} onChange={handleChange} required />
+                <Label htmlFor="floors">Número de Piso</Label>
+                <Input id="floors" name="floors" type="number" value={formData.floors} onChange={handleChange} required />
               </div>
               {/* <div className="space-y-2">
                 <Label htmlFor="precio">Precio</Label>
@@ -189,8 +248,8 @@ export default function NewProperty() {
               </div> */}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="descripcion">Descripción</Label>
-              <Textarea id="descripcion" name="descripcion" value={formData.descripcion} onChange={handleChange} required />
+              <Label htmlFor="description">Descripción</Label>
+              <Textarea id="description" name="description" value={formData.description} onChange={handleChange} required />
             </div>
             <div className="flex justify-end">
               <Button type="submit" className="bg-[#1C2671] text-neutral-50 font-inter font-bold">Guardar Propiedad</Button>

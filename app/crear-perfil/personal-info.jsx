@@ -43,7 +43,7 @@ const inquilinoSchema = z.object({
     : z.any().optional(),
 })
 
-const arrendatarioSchema = z.object({
+const arrendadorSchema = z.object({
   nombre: z.string().min(2, "El nombre es requerido"),
   apellido: z.string().min(2, "El apellido es requerido"),
   cedula: z.string().min(6, "La cédula debe tener al menos 6 caracteres"),
@@ -59,7 +59,7 @@ const arrendatarioSchema = z.object({
 
 
 export function PersonalInfoForm({ onNext, initialData = {}, userRole }) {
-  const schema = userRole === 'Inquilino' ? inquilinoSchema : arrendatarioSchema
+  const schema = userRole === 'Inquilino' ? inquilinoSchema : arrendadorSchema
   const [preview, setPreview] = useState(null);
 
   const form = useForm({
