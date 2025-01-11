@@ -6,53 +6,29 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
+import { getAuth0Id } from '../utils/getAuth0id';
 
 const ValidateRole = () => {
   const { user, isAuthenticated, isLoading, error } = useAuth0();
   const router = useRouter();
 
-  const mockCheckProfile = async (role, userId) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (role === 'Arrendatario') {
-          resolve({ hasProfile: true }); 
-          if (userId === 'auth0|67705cfb16e8d188ded222c6') resolve({ hasProfile: true });
-        } else if (role === 'Inquilino') {
-          if (userId === 'auth0|677759d78987d373042dd4ff') resolve({ hasProfile: true });
-        } else {
-          resolve({ hasProfile: false });
-        }
-      }, 1000); 
-    });
-  }; // Mock function for testing purposes
-
   const checkProfile = async (role) => {
     try {
-      const userId = user.sub;
+      const userId = getAuth0Id(user.sub);
       let response; 
 
-      /*if (role === 'Arrendatario') {
-        response = await fetch('/api/landlord-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-      } else if (role === 'Inquilino') {
-        response = await fetch('/api/tenant-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-      } */ // Commented out for testing purposes
+      response = await fetch('https://backend-khaki-three-90.vercel.app/api/auth/verifyProfile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId })
+      });
 
-      response = await mockCheckProfile(role, userId);
-
-      //const hasProfile = await response.json();
+      response  = await response.json();
       const hasProfile = response.hasProfile;
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
-          router.push('/arrendatario-dashboard/propiedades');
+          router.push('/arrendador-dashboard/propiedades');
         }
         else if (role === 'Inquilino') {
           router.push('/inquilino-dashboard/buscador-propiedades');
@@ -94,7 +70,7 @@ const ValidateRole = () => {
     if (isAuthenticated && user) {
 
       const rol = checkRole(user);
-
+      
       if (rol) {
         if (rol === 'Arrendatario') {
           checkProfile('Arrendatario');
@@ -110,7 +86,7 @@ const ValidateRole = () => {
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4">
       <Image
-        src="/placeholder.svg?height=1080&width=1920"
+        src="/set_usuario_bg.jpg"
         alt="Background"
         fill
         className="object-cover"

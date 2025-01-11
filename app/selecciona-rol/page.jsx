@@ -21,28 +21,11 @@ const roles = [
   },
   {
     id: 'Arrendatario',
-    title: 'Arrendatario',
+    title: 'Arrendador',
     description: 'Tengo propiedades para alquilar y quiero gestionarlas eficientemente.',
     icon: <Building2 className="w-12 h-12" />
   }
 ]
-
-async function assignRoleToUser(userId, roleId) {
-  console.log("Empezando a asignar el rol");
-  console.log(roleId);
-  const response = await fetch('/api/assign-role', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ userId, roleId })
-  });
-  
-  if (!response.ok) {
-    throw new Error('Error al asignar el rol');
-  }
-  return response.json();
-}
 
 export default function SelectRole() {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -52,33 +35,54 @@ export default function SelectRole() {
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: ({ userId, roleId }) => assignRoleToUser(userId, roleId),
+    mutationFn: async ({ userId, roleName }) => {
+      try {
+        const response = await fetch('https://backend-khaki-three-90.vercel.app/api/auth/assignRole', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, roleName }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al asignar el rol');
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error al asignar el rol:', error.message || error);
+        throw error; 
+      }
+    },
     onSuccess: () => {
       toast({
-        title: "Rol asignado con éxito",
-        description: `Has sido registrado como ${selectedRole === 'tenant' ? 'Inquilino' : 'Arrendatario'}.`,
+        title: 'Rol asignado con éxito',
+        description: `Has sido registrado como ${selectedRole === 'Inquilino' ? 'Inquilino' : 'Arrendatario'}.`,
       });
-      document.cookie = `role=${roleId}; path=/; `;
+      document.cookie = `role=${selectedRole}; path=/;`;
       router.push('/crear-perfil');
     },
     onError: () => {
-      console.log("Error al asignar el rol");
       setIsLoading(false);
       setSelectedRole(null);
       toast({
-        title: "Error al asignar el rol",
-        description: "Por favor, inténtalo de nuevo más tarde.",
-        variant: "destructive",
+        title: 'Error al asignar el rol',
+        description: 'Por favor, inténtalo de nuevo más tarde.',
+        variant: 'destructive',
       });
     },
   });
+  
 
-  const handleSelectRole = (roleId) => {
-    setSelectedRole(roleId);
+  const handleSelectRole = (roleName) => {
+    setSelectedRole(roleName);
     setIsLoading(true);
     if (user) {
       const userId = user.sub;
-      mutation.mutate({ userId, roleId });
+      mutation.mutate({ userId, roleName });
     }
   };
 
