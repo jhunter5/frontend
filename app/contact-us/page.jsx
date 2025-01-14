@@ -129,7 +129,7 @@ export default function ContactForm() {
           <div className="absolute bottom-12 left-12 right-12 z-20">
             <blockquote className="space-y-4">
               <p className="text-2xl font-medium leading-relaxed text-white">
-                "Limitless me ha permitido gestionar mis propiedades de forma eficiente y ahorrar tiempo en procesos administrativos."
+                &quot;Limitless me ha permitido gestionar mis propiedades de forma eficiente y ahorrar tiempo en procesos administrativos.&quot;
               </p>
               <footer className="text-white">
                 <p className="font-medium">Juan Pérez</p>
