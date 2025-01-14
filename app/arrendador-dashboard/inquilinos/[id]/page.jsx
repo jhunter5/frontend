@@ -34,7 +34,7 @@ const getTenant = (id) => {
     calificacionPromedio: 4.5,
     clasificacion: "A+",
     contratosPrevios: 3,
-    puntualidadPagos: 20,
+    puntualidadPagos: 96,
     duracionPromedioContratos: 24, // meses
   }
 }
@@ -59,7 +59,7 @@ export default function TenantProfile({ params }) {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
+        <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors font-inter">
           <Link href="/arrendador-dashboard/inquilinos">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a inquilinos

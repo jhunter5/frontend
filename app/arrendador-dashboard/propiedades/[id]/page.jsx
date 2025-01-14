@@ -83,24 +83,23 @@ export default function PropertyDetails({ params }) {
   }
 
   return (
-    <div className="container mx-auto py-8">
-    <div className="mb-6">
-      <Button variant="ghost" asChild>
-        <Link href="/arrendador-dashboard/propiedades">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver a propiedades
-        </Link>
-      </Button>
-    </div>
+    <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
+      <div className="mb-6">
+        <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors font-inter">
+          <Link href="/arrendador-dashboard/propiedades">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver a propiedades
+          </Link>
+        </Button>
+      </div>
 
-    <Card>
+    <Card className="overflow-hidden shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Detalles de la Propiedad</CardTitle>
+        <CardTitle className="text-5xl font-bold font-spaceGrotesk">Detalles de la Propiedad</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <div className="grid gap-6">
           {/* Galería de imágenes */}
-          {/* Comentado hasta su reparacion */}
           <div className="grid grid-cols-3 gap-4">
             {data.media.map((image, index) => (
               <img
@@ -113,93 +112,79 @@ export default function PropertyDetails({ params }) {
           </div>
 
           {/* Información principal */}
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    Ubicación
-                  </h2>
-                  <p>{data.property.address.charAt(0).toUpperCase() + data.property.address.slice(1)}</p>
-                  <p>{data.property.city.charAt(0).toUpperCase() + data.property.city.slice(1)}, {data.property.state.charAt(0).toUpperCase() + data.property.state.slice(1)}</p>
-                  </div>
-                  <div className="space-y-2">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <Home className="h-5 w-5 text-muted-foreground" />
-                    Tipo de Propiedad
-                  </h2>
-                  <p>{data.property.type.charAt(0).toUpperCase() + data.property.type.slice(1)}</p>
-                  <p>Piso {data.property.floors}</p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Características */}
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            <div className="flex items-center gap-2">
-              <Bed className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Habitaciones</p>
-                <p className="font-medium">{data.property.rooms}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Bath className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Baños</p>
-                <p className="font-medium">{data.property.bathrooms}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Car className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Parqueadero</p>
-                <p className="font-medium">{data.property.parking !== 0 ? `Sí, ${data.property.parking}` : 'No'}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Ruler className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Metros Cuadrados</p>
-                <p className="font-medium">{data.property.squareMeters} m²</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Building className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Estrato</p>
-                <p className="font-medium">{data.property.tier}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Antigüedad</p>
-                <p className="font-medium">{data.property.age} años</p>
-              </div>
-            </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="bg-white shadow-md">
+              <CardContent className="p-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600 font-spaceGrotesk">
+                  <MapPin className="h-5 w-5" />
+                  Ubicación
+                </h2>
+                <p className='text-gray-700 font-inter'>{data.property.address.charAt(0).toUpperCase() + data.property.address.slice(1)}</p>
+                <p className='text-gray-700 font-inter'>{data.property.city.charAt(0).toUpperCase() + data.property.city.slice(1)}, {data.property.state.charAt(0).toUpperCase() + data.property.state.slice(1)}</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-md">
+              <CardContent className="p-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600 font-spaceGrotesk">
+                <Home className="h-5 w-5" />
+                Tipo de Propiedad
+              </h2>
+              <p className='text-gray-700 font-inter'>{data.property.type.charAt(0).toUpperCase() + data.property.type.slice(1)}</p>
+              <p className='text-gray-700 font-inter'>Piso {data.property.floors}</p>
+              </CardContent>
+            </Card>
           </div>
 
-          <Separator />
+          <Separator className="my-6" />
+
+          {/* Características */}
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+          {[
+                { icon: Bed, label: "Habitaciones", value: data.property.rooms },
+                { icon: Bath, label: "Baños", value: data.property.bathrooms },
+                { icon: Car, label: "Parqueadero", value: data.property.parking !== 0 ? `Sí, ${data.property.parking}` : 'No' },
+                { icon: Ruler, label: "Metros Cuadrados", value: `${data.property.squareMeters} m²` },
+                { icon: Building, label: "Estrato", value: data.property.tier },
+                { icon: Calendar, label: "Antigüedad", value: `${data.property.age} años` },
+              ].map((item, index) => (
+                <Card key={index} className="bg-white shadow-md">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <item.icon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-m text-gray-500 font-spaceGrotesk">{item.label}</p>
+                      <p className="font-medium text-gray-800 font-inter">{item.value}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+
+          <Separator className="my-6"/>
 
           {/* Descripción */}
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Info className="h-5 w-5 text-muted-foreground" />
-              Descripción
-            </h2>
-            <p className="text-muted-foreground">{data.property.description}</p>
-          </div>
+          <Card className="bg-white shadow-md">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600 font-spaceGrotesk">
+                <Info className="h-5 w-5"/>
+                Descripción
+              </h2>
+              <p className="text-muted-foreground leading-relaxed font-inter">{data.property.description}</p>
+            </CardContent>
+          </Card>
 
           {/* Precio */}
-          <div className="mt-6">
-            <h2 className="text-2xl font-bold">Canon de Arrendamiento</h2>
+          <Card className="bg-white shadow-md">
+            <CardContent className="p-6">
+            <h2 className="text-3xl font-bold font-spaceGrotesk">Canon de Arrendamiento</h2>
           {data.contract !== null ? (
-            <p className="text-3xl font-bold text-green-600">${data.contract.monthlyRent.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-green-600 font-inter">${data.contract.monthlyRent.toLocaleString()}</p>
           ) : (
-            <p className="text-3xl font-bold text-red-600">Aún no arrendada</p>
+            <p className="text-2xl font-bold text-red-600 font-inter">Aún no arrendada</p>
           )}
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Botones de acción */}
           <div className="mt-6 flex justify-end space-x-4">
@@ -262,7 +247,7 @@ export default function PropertyDetails({ params }) {
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancelar</Button>
-          <Button onClick={handleDelete} className="bg-danger-400">Eliminar</Button>
+          <Button onClick={handleDelete} className="bg-danger-300">Eliminar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
