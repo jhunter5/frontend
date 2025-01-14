@@ -151,7 +151,13 @@ export default function DashboardLayout({ children }) {
                     <Button
                       variant="ghost"
                       className="mt-2 flex w-full items-center justify-start gap-2 px-2 text-white hover:text-white hover:bg-white/10 font-inter"
-                      onClick={logout}
+                      onClick={
+                        logout({
+                          returnTo: process.env.NODE_ENV === 'development'
+                          ? 'http://localhost:3000/'
+                          : 'https://frontend-mocha-seven-79.vercel.app/',
+                        })
+                      }
                     >
                       <LogOut className="h-4 w-4" />
                       Cerrar sesión
