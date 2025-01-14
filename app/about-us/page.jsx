@@ -11,7 +11,7 @@ const creators = [
     { 
       name: "Gabriela Guzman", 
       role: "Co-fundadora",
-      image: "/placeholder.svg?height=400&width=400",
+      image: "https://cdn.pixabay.com/photo/2023/07/30/00/12/cat-8157889_640.png",
       bio: "Ingeniera de software con experiencia en startups de proptech",
       linkedin: "#",
       twitter: "#",
