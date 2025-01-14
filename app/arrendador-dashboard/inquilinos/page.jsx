@@ -155,7 +155,6 @@ const tenants = [
   }
 ];
 
-
 const ITEMS_PER_PAGE = 6
 
 export default function TenantsPage() {
@@ -190,11 +189,7 @@ export default function TenantsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-3xl font-bold">Inquilinos</h1>
-        <Button className="w-full md:w-auto bg-[#1C2671] text-neutral-50">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Agregar Inquilino
-        </Button>
+        <h1 className="text-5xl font-spaceGrotesk font-bold">Inquilinos</h1>
       </div>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

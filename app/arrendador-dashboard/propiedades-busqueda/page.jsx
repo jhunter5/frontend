@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { PropertyCard } from "../propiedades/property-card"
+import { OpenPropertyCard } from "./openPropertyCard"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PropertyDetails } from "./property-details"
@@ -83,7 +83,7 @@ export default function PropertiesForRentPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paginatedProperties.map((property) => (
-          <PropertyCard 
+          <OpenPropertyCard 
             key={property.id} 
             property={property} 
             onClick={() => setSelectedProperty(property)}
@@ -116,7 +116,7 @@ export default function PropertiesForRentPage() {
 
       {/* Diálogo para mostrar detalles de la propiedad y candidatos */}
       <Dialog open={!!selectedProperty} onOpenChange={(open) => !open && setSelectedProperty(null)}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto sm:max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Detalles de la Propiedad</DialogTitle>
           </DialogHeader>
