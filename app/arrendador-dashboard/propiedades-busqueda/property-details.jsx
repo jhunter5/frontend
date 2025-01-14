@@ -5,43 +5,47 @@ import { Button } from "@/components/ui/button"
 import { Bed, Bath, Square, MapPin, DollarSign, Star, ExternalLink, User } from 'lucide-react'
 import Link from "next/link"
 
-export function PropertyDetails({ property }) {
+export function PropertyDetails({ property, className }) {
   // Limitar a un máximo de 3 candidatos
   const displayedCandidates = property.candidates.slice(0, 3)
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+    <div className={`space-y-6 ${className}`}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="sm:col-span-2">
           <CardHeader>
             <CardTitle>Resumen de la Propiedad</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span>{property.address}</span>
-            </div>
-            <div className="flex items-center space-x-4">
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Bed className="h-4 w-4 text-muted-foreground" />
-                <span>{property.bedrooms} Habitaciones</span>
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">{property.address}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Bath className="h-4 w-4 text-muted-foreground" />
-                <span>{property.bathrooms} Baños</span>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-semibold">${property.price}/mes</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Square className="h-4 w-4 text-muted-foreground" />
-              <span>{property.area} m²</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="text-lg font-semibold">${property.price}/mes</span>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                  <Bed className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{property.bedrooms}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Bath className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{property.bathrooms}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Square className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{property.area} m²</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="sm:col-span-2">
           <CardHeader>
             <CardTitle>Imagen de la Propiedad</CardTitle>
           </CardHeader>
@@ -55,16 +59,16 @@ export function PropertyDetails({ property }) {
         </Card>
       </div>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <CardTitle>Candidatos</CardTitle>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mt-2 sm:mt-0">
             Mostrando {displayedCandidates.length} de {property.candidates.length} candidatos
           </span>
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
             {displayedCandidates.map((candidate) => (
-              <li key={candidate.id} className="flex items-center justify-between">
+              <li key={candidate.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
                 <div className="flex items-center space-x-4">
                   <Avatar>
                     <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={candidate.name} />
@@ -91,9 +95,9 @@ export function PropertyDetails({ property }) {
       </Card>
       <div className="flex justify-end">
         <Button asChild>
-          <Link href={`/dashboard/properties/${property.id}/full-details`}>
+          <Link href={`/arrendador-dashboard/propiedades-busqueda/${property.id}`}>
             <ExternalLink className="h-4 w-4 mr-2" />
-            Ver Detalles Completos
+            Ver Lista Completa de Candidatos
           </Link>
         </Button>
       </div>

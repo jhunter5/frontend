@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Star, Home, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Star, Home, CheckCircle2, Mail, Phone, Calendar} from 'lucide-react'
 import { useAuth0 } from '@auth0/auth0-react'
 import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
@@ -47,50 +47,53 @@ export default function ArrendatarioProfile() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
-          <Link href="/arrendadador-dashboard/propiedades">
+        <Button variant="outline" asChild className="hover:bg-neutral-50 transition-colors">
+          <Link href="/arrendador-dashboard/propiedades">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a propiedaes
+            Volver a propiedades
           </Link>
         </Button>
       </div>
 
       {/* Header con Avatar */}
-      <div className="mb-8 flex items-center gap-4">
-        <Avatar className="h-24 w-24">
+      <Card className="mb-8  overflow-hidden">
+        <div className="bg-primary-400 p-6 text-white">
+          <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+            {isPending ? 
+            (
+              <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback> 
+            ) : 
+            (
+            <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
+            )
+          }
+          </Avatar>
           {isPending ? 
           (
-            <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback> 
-          ) : 
-          (
-          <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+              </div>
+          ) : (
+          <div>
+            <h1 className="text-3xl font-bold">{data.firstName} {data.lastName}</h1>
+            <p className="text-blue-100 text-lg">Arrendatario</p>
+          </div>
           )
-        }
-        </Avatar>
-        {isPending ? 
-        (
-            <div className="animate-pulse">
-              <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-            </div>
-        ) : (
-        <div>
-          <h1 className="text-2xl font-bold">{data.firstName} {data.lastName}</h1>
-          <p className="text-muted-foreground">Arrendatario</p>
+          }
         </div>
-        )
-        }
-      </div>
+      </Card>
+      
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Información Personal */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Información Personal</CardTitle>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="text-blue-700" >Información Personal</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-4 p-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Nombre</p>
@@ -101,29 +104,38 @@ export default function ArrendatarioProfile() {
                 <p className="font-medium">{data.lastName}</p>
               </div>
             </div>
-            <div>
+            <div className="flex items-center gap-4">
+              <Mail className="h-5 w-5 text-blue-500" />
+              <div>
               <p className="text-sm text-muted-foreground">Correo electrónico</p>
               <p className="font-medium">{data.email}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Teléfono</p>
-              <p className="font-medium">{data.phone}</p>
+            <div className="flex items-center gap-4">
+              <Phone className="h-5 w-5 text-blue-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Teléfono</p>
+                <p className="font-medium">{data.phone}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Edad</p>
-              <p className="font-medium">{data.age} años</p>
+            <div className="flex items-center gap-4">
+              <Calendar className="h-5 w-5 text-blue-500"/>
+              <div>
+                <p className="text-sm text-muted-foreground">Edad</p>
+                <p className="font-medium">{data.age} años</p>
+              </div> 
             </div>
           </CardContent>
         </Card>
 
         {/* Información de Arrendamientos */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Información de Arrendamientos</CardTitle>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-yellow-50">
+            <CardTitle className="text-yellow-700">Información de Arrendamientos</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-6">
+          <CardContent className="grid gap-6 p-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Home className="h-6 w-6 text-primary" />
               </div>
               <div>
@@ -133,8 +145,8 @@ export default function ArrendatarioProfile() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10">
-                <Star className="h-6 w-6 text-yellow-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                <Star className="h-6 w-6 text-yellow-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
@@ -157,8 +169,8 @@ export default function ArrendatarioProfile() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                <CheckCircle2 className="h-6 w-6 text-green-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Porcentaje de Cumplimiento</p>
@@ -166,7 +178,7 @@ export default function ArrendatarioProfile() {
                   <p className="text-2xl font-bold">{arrendatario.porcentajeCumplimiento}%</p>
                   <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full bg-green-500 transition-all"
+                      className="h-full bg-green-500 transition-all duration-500 ease-out"
                       style={{ width: `${arrendatario.porcentajeCumplimiento}%` }}
                     />
                   </div>
