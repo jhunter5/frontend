@@ -6,12 +6,12 @@ import Link from "next/link"
 
 export function TenantCard({ tenant }) {
   return (
-    <Link href={`/dashboard/tenants/${tenant.id}`}>
+    <Link href={`/arrendador-dashboard/inquilinos/${tenant.id}`}>
       <Card className="overflow-hidden transition-shadow hover:shadow-lg">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={tenant.image} alt={`${tenant.name} ${tenant.lastName}`} />
+              <AvatarImage src={tenant.image} alt={`${tenant.name} ${tenant.lastName}`} className="object-cover"/>
               <AvatarFallback>{tenant.name[0]}{tenant.lastName[0]}</AvatarFallback>
             </Avatar>
             <div className="space-y-2">

@@ -89,8 +89,8 @@ export default function PropertyFullDetails({ params }) {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
-          <Link href={`/dashboard/properties/${params.id}`}>
+        <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors font-inter">
+          <Link href={`/arrendador-dashboard/propiedades-busqueda`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a detalles de la propiedad
           </Link>

@@ -14,7 +14,7 @@ const propertiesForRent = [
     id: 1,
     media: [
       {
-        "mediaUrl": "/placeholder.svg?height=400&width=600",
+        "mediaUrl": "https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       }
     ],
     address: "123 Main St, Cityville",
@@ -33,7 +33,7 @@ const propertiesForRent = [
     id: 2,
     media: [
       {
-        "mediaUrl": "/placeholder.svg?height=400&width=600",
+        "mediaUrl": "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       }
     ],
     address: "456 Oak Ave, Townsburg",
@@ -69,7 +69,7 @@ export default function PropertiesForRentPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-3xl font-bold">Propiedades en Búsqueda de Arriendo</h1>
+        <h1 className="text-5xl font-bold font-spaceGrotesk">Propiedades en Búsqueda de Arriendo</h1>
         <div className="relative w-full md:w-72">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -118,7 +118,7 @@ export default function PropertiesForRentPage() {
       <Dialog open={!!selectedProperty} onOpenChange={(open) => !open && setSelectedProperty(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto sm:max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle>Detalles de la Propiedad</DialogTitle>
+            <DialogTitle className='font-spaceGrotesk'>Detalles de la Propiedad</DialogTitle>
           </DialogHeader>
           {selectedProperty && <PropertyDetails property={selectedProperty} />}
         </DialogContent>

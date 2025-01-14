@@ -198,7 +198,7 @@ export default function PropertyDetails({ params }) {
             </Button>
             {data.contract === null && (
               <Button asChild onClick={() => setShowDeleteDialog(true)}>
-                <Link href={''} className='bg-danger-300'>
+                <Link href={''} className='bg-danger-400'>
                   Eliminar Propiedad
                 </Link>
               </Button>
