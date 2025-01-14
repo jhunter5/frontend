@@ -272,7 +272,7 @@ export default function CreateProfile() {
               status: "success",
               duration: 2000,
             });
-            router.push('/inquilino-dashboard');
+            router.push('/inquilino-dashboard/buscador-propiedades');
           } 
           catch (error) {
             throw new Error(error.message);
