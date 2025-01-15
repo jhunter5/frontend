@@ -10,8 +10,8 @@ import { RocketIcon, EyeIcon, Lightbulb, Shield, Target, Leaf, Users, Shuffle, L
 const creators = [
     { 
       name: "Gabriela Guzman", 
-      role: "CEO & Co-fundadora",
-      image: "/placeholder.svg?height=400&width=400",
+      role: "Co-fundadora",
+      image: "https://cdn.pixabay.com/photo/2023/07/30/00/12/cat-8157889_640.png",
       bio: "Ingeniera de software con experiencia en startups de proptech",
       linkedin: "#",
       twitter: "#",
@@ -19,10 +19,10 @@ const creators = [
     },
     { 
       name: "Carlos Muricia", 
-      role: "CEO & Co-fundador",
-      image: "/placeholder.svg?height=400&width=400",
+      role: "Co-fundador",
+      image: "/carlos_murcia.jpg",
       bio: "Ingeniero de software con experiencia en startups de proptech",
-      linkedin: "#",
+      linkedin: "https://www.linkedin.com/in/carlosmurcia72/",
       twitter: "#",
       email: "carlos@limitless.com"
     },
@@ -37,9 +37,10 @@ const creators = [
     },
     {
         name: "Eder Rodriguez",
-        role: "CEO & Co-fundador",
+        role: "CTO & Co-fundador",
+        image: "/eder.jpg",
         bio: "Ingeniero de software con experiencia en startups de proptech",
-        linkedin: "#",
+        linkedin: "https://www.linkedin.com/in/eder-hern%C3%A1ndez-buelvas-09147b211/",
         twitter: "#",
         email: "ehernadez@limitless.com"
     }
@@ -118,7 +119,7 @@ return (
             </div>
             <div className="relative h-[300px] rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=600&width=800"
+                src="/reunion.jpg"
                 alt="Equipo LIMITLESS"
                 fill
                 className="object-cover"
@@ -201,12 +202,9 @@ return (
           <h2 className="text-3xl font-semibold mb-8 text-center text-[#27317E]">Nuestros Valores</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Innovación", description: "Buscamos constantemente nuevas formas de mejorar y optimizar la gestión inmobiliaria.", icon: <Lightbulb /> },
-              { title: "Transparencia", description: "Creemos en la honestidad y la claridad en todas nuestras operaciones y comunicaciones.", icon: <Shield /> },
               { title: "Profesionalismo", description: "Somos un equipo que actúa pensando en la calidad del servicio que se ofrece y en el impacto del mismo en sus clientes.", icon: <Target /> },
               { title: "Independencia", description: "La autonomía de nuestros clientes es muy valiosa para nosotros, por eso ofrecemos una herramienta para liberar a los propietarios e inquilinos de los procesos dependientes.", icon: <Leaf /> },
               { title: "Colaboración", description: "Trabajamos en estrecha colaboración con nuestros clientes y socios para lograr objetivos comunes.", icon: <Users /> },
-              { title: "Adaptabilidad", description: "Nos adaptamos rápidamente a los cambios del mercado y las necesidades de nuestros clientes.", icon: <Shuffle /> },
             ].map((value) => (
               <Card key={value.title} className="group hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="pt-6">
@@ -227,8 +225,8 @@ return (
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Únete a nosotros en nuestra misión de transformar el sector inmobiliario con tecnología innovadora y servicios excepcionales.
           </p>
-          <Button className="bg-[#27317E] hover:bg-[#1f2666]">
-            Contáctanos
+          <Button className="bg-[#27317E] hover:bg-[#1f2666]" asChild>
+          <Link href="/contact-us">Contactanos</Link>
           </Button>
         </section>
 
