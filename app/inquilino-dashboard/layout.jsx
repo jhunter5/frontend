@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Settings, UserCheck, BarChart3, House, FolderClock, MapPinHouse, LogOut, Menu} from 'lucide-react'
+import { Settings, UserCheck, BarChart3, House, FolderClock, MapPinHouse, LogOut, Menu, FileText} from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
@@ -35,6 +35,11 @@ const sidebarNavItems = {
       title: "Estadísticas",
       href: "/inquilino-dashboard/estadisticas",
       icon: BarChart3,
+    },
+    {
+      title: "Postulaciones",
+      href: "/inquilino-dashboard/postulaciones",
+      icon: FileText,
     },
   ],
   personal: [

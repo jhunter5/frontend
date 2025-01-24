@@ -71,7 +71,7 @@ export default function InquilinoProfile() {
 
       {/* Header con Avatar */}
       <Card className="mb-8 overflow-hidden">
-        <div className="bg-blue-500 p-6 text-white">
+        <div className="bg-primary-400 p-6 text-white">
           <div className="flex items-center gap-6">
             <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
               <AvatarImage src={inquilino.avatar} alt={`${inquilino.nombre} ${inquilino.apellido}`} />

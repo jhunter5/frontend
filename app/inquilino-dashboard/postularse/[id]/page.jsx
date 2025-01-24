@@ -194,9 +194,10 @@ export default function PostulateForm({ params }) {
                 <div className="space-y-2">
                   <p className="text-sm text-gray-500">Por favor, sube los siguientes documentos:</p>
                   <ul className="list-disc pl-6 text-sm text-gray-600">
-                    <li>Hoja de vida (CV)</li>
+                    <li>Cerfificacion laboral</li>
                     <li>Documentos de identidad</li>
-                    <li>Comprobantes de ingresos</li>
+                    <li>Soporte de Pago de Nomina de los Últimos 3 Meses</li>
+                    <li>Extractos Bancarios de los Últimos 3 Meses</li>
                   </ul>
                   <p className="text-xs text-gray-500">Formatos aceptados: PDF, DOC, DOCX (máx. 10MB)</p>
                 </div>
