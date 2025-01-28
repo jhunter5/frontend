@@ -8,53 +8,37 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Star, Calendar, Mail, Phone, Users, User, Heart, Wallet, Building2, Clock, CheckCircle2, Trophy, BadgeCheck } from 'lucide-react'
 import Link from "next/link"
-
-// En un caso real, esto vendría de tu API
-const getTenant = (id) => {
-  // Simulamos que solo existen inquilinos con IDs numéricos
-  if (isNaN(parseInt(id))) return null;
-
-  return {
-    id,
-    nombre: "Sebastian",
-    apellido: "Ramirez",
-    correo: "Sebas.Ramirez@email.com",
-    telefono: "+57 300 123 4567",
-    fechaRegistro: "2023-01-15",
-    edad: 35,
-    esFamilia: true,
-    genero: "Masculino",
-    estadoCivil: "Casado",
-    avatar: "https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    // Información financiera
-    salario: 5000000,
-    tipoContrato: "Indefinido",
-    industria: "Tecnología",
-    // Información de arrendamientos
-    calificacionPromedio: 4.5,
-    clasificacion: "A+",
-    contratosPrevios: 3,
-    puntualidadPagos: 96,
-    duracionPromedioContratos: 24, // meses
-  }
-}
+import { useQuery } from '@tanstack/react-query'
 
 export default function TenantProfile({ params }) {
   const router = useRouter()
-  const [tenant, setTenant] = useState(null)
 
-  useEffect(() => {
-    const fetchedTenant = getTenant(params.id)
-    if (fetchedTenant) {
-      setTenant(fetchedTenant)
-    } else {
-      router.push('/dashboard/tenants')
+  const fetchTenant = async () => {
+    const { id } = params
+    // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/tenant/${id}`)
+    const response = await fetch(`http://localhost:3001/api/tenant/${id}`)
+
+    if (!response.ok) {
+      throw new Error('Error al obtener el inquilino')
     }
-  }, [params.id, router])
+    
+    return response.json()
+  }
 
-  if (!tenant) {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['tenant'],
+    queryFn: fetchTenant,
+  })
+
+  if (isPending) {
     return <div>Cargando...</div>
   }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>
+  }
+
+  const tenant = data || {}
 
   return (
     <div className="container mx-auto py-8">
@@ -70,14 +54,14 @@ export default function TenantProfile({ params }) {
       {/* Header con Avatar */}
       <div className="mb-8 flex items-center gap-4">
         <Avatar className="h-24 w-24">
-          <AvatarImage src={tenant.avatar} alt={`${tenant.nombre} ${tenant.apellido}`} />
-          <AvatarFallback>{tenant.nombre[0]}{tenant.apellido[0]}</AvatarFallback>
+          <AvatarImage src={tenant.avatar} alt={`${tenant.firstName} ${tenant.lastName}`} />
+          <AvatarFallback>{tenant.firstName[0]}{tenant.lastName[0]}</AvatarFallback>
         </Avatar>
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">{tenant.nombre} {tenant.apellido}</h1>
+          <h1 className="text-3xl font-bold">{tenant.firstName} {tenant.lastName}</h1>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{tenant.clasificacion}</Badge>
-            {tenant.esFamilia && (
+            <Badge variant="secondary">{tenant.rating}</Badge>
+            {tenant.isFamily && (
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 Familia
               </Badge>
@@ -99,47 +83,47 @@ export default function TenantProfile({ params }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Nombre</p>
-                <p className="font-medium">{tenant.nombre}</p>
+                <p className="font-medium">{tenant.firstName}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Apellido</p>
-                <p className="font-medium">{tenant.apellido}</p>
+                <p className="font-medium">{tenant.lastName}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Correo electrónico</p>
-                <p className="font-medium">{tenant.correo}</p>
+                <p className="font-medium">{tenant.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Teléfono</p>
-                <p className="font-medium">{tenant.telefono}</p>
+                <p className="font-medium">{tenant.phone}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Fecha de Registro</p>
-                <p className="font-medium">{new Date(tenant.fechaRegistro).toLocaleDateString()}</p>
+                <p className="font-medium">{new Date(tenant.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Edad</p>
-                <p className="font-medium">{tenant.edad} años</p>
+                <p className="font-medium">{tenant.age} años</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Género</p>
-                <p className="font-medium">{tenant.genero}</p>
+                <p className="font-medium">{tenant.gender}</p>
               </div>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Estado Civil</p>
-              <p className="font-medium">{tenant.estadoCivil}</p>
+              <p className="font-medium">{tenant.maritalStatus}</p>
             </div>
           </CardContent>
         </Card>
@@ -160,19 +144,19 @@ export default function TenantProfile({ params }) {
               <div>
                 <p className="text-sm text-muted-foreground">Salario Mensual</p>
                 <p className="text-2xl font-bold">
-                  ${tenant.salario.toLocaleString()}
+                  ${tenant.salary.toLocaleString()}
                 </p>
               </div>
             </div>
 
             <div>
               <p className="text-sm text-muted-foreground">Tipo de Contrato</p>
-              <p className="font-medium">{tenant.tipoContrato}</p>
+              <p className="font-medium">{tenant.contractType}</p>
             </div>
 
             <div>
               <p className="text-sm text-muted-foreground">Industria</p>
-              <p className="font-medium">{tenant.industria}</p>
+              <p className="font-medium">{tenant.industry}</p>
             </div>
           </CardContent>
         </Card>
@@ -193,13 +177,13 @@ export default function TenantProfile({ params }) {
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{tenant.calificacionPromedio}</p>
+                  <p className="text-2xl font-bold">{tenant.avgRating}</p>
                   <div className="flex items-center">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < Math.floor(tenant.calificacionPromedio)
+                          i < Math.floor(tenant.avgRating)
                             ? 'fill-yellow-500 text-yellow-500'
                             : 'fill-muted text-muted'
                         }`}
@@ -217,9 +201,9 @@ export default function TenantProfile({ params }) {
               <div>
                 <p className="text-sm text-muted-foreground">Clasificación</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{tenant.clasificacion}</p>
+                  <p className="text-2xl font-bold">{tenant.rating}</p>
                   <Badge variant="secondary" className="text-lg">
-                    {tenant.contratosPrevios} contratos previos
+                    {tenant.ConctractsPer} contratos previos
                   </Badge>
                 </div>
               </div>
@@ -230,7 +214,7 @@ export default function TenantProfile({ params }) {
                 <CheckCircle2 className="h-6 w-6 text-green-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Puntualidad en Pagos</p>
+                {/* <p className="text-sm text-muted-foreground">Puntualidad en Pagos</p>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold">{tenant.puntualidadPagos}%</p>
                   <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
@@ -239,7 +223,7 @@ export default function TenantProfile({ params }) {
                       style={{ width: `${tenant.puntualidadPagos}%` }}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -250,7 +234,7 @@ export default function TenantProfile({ params }) {
               <div>
                 <p className="text-sm text-muted-foreground">Duración Promedio</p>
                 <p className="text-2xl font-bold">
-                  {tenant.duracionPromedioContratos} meses
+                  {tenant.avgContractDuration} meses
                 </p>
               </div>
             </div>

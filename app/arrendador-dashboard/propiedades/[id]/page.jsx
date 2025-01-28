@@ -1,18 +1,20 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info } from 'lucide-react'
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 
 
 const fetchProperty = async (id) => {
-  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  const response = await fetch(`http://localhost:3001/api/property/${id}`)
+
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
   }
@@ -21,18 +23,15 @@ const fetchProperty = async (id) => {
 
 export default function PropertyDetails({ params }) {
   const [showRentDialog, setShowRentDialog] = useState(false)
+  const [showUnrentDialog, setShowUnrentDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['property', params.id],
     queryFn: () => fetchProperty(params.id),
-  })
-
-  const handleRent = () => {
-    setProperty(prev => ({ ...prev, enArriendo: true }))
-    setShowRentDialog(false)
-  }
+  }) 
 
   const router = useRouter()
 
@@ -66,6 +65,89 @@ export default function PropertyDetails({ params }) {
     }
   })
 
+  const setAvailable = useMutation({
+    mutationFn: async () => {
+      // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+      //   method: 'PATCH',
+      // })
+      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isAvailable: true })
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo poner la propiedad en busqueda de arriendo')
+      }
+
+      return response.json()
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Propiedad en busqueda de arriendo',
+        description: 'La propiedad ha sido puesta en busqueda de arriendo exitosamente.',
+        status: 'success',
+      })
+      router.push('/arrendador-dashboard/propiedades-busqueda')
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Ha ocurrido un error al poner la propiedad en busqueda de arriendo',
+        status: 'error',
+        variant: 'destructive',
+      })
+    }
+  })
+
+  const handleRent = () => {
+    setAvailable.mutate()
+    setShowRentDialog(false)
+  }
+
+  const setUnavailable = useMutation({
+    mutationFn: async () => {
+      // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+
+      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isAvailable: false })
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo quitar la propiedad de busqueda de arriendo')
+      }
+
+      return response.json()
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Propiedad fuera de busqueda de arriendo',
+        description: 'La propiedad ha sido quitada de busqueda de arriendo exitosamente.',
+        status: 'success',
+      })
+      queryClient.invalidateQueries(['property', params.id]);
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Ha ocurrido un error al quitar la propiedad de busqueda de arriendo',
+        status: 'error',
+        variant: 'destructive',
+      })
+    }
+  })
+
+  const handleUnrent = () => {
+    setUnavailable.mutate()
+    setShowUnrentDialog(false)
+  }
+  
   const deleteProperty = () => {
     deleteMutation.mutate()
   }
@@ -84,6 +166,7 @@ export default function PropertyDetails({ params }) {
 
   return (
     <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
+      {console.log(data)}
       <div className="mb-6">
         <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors font-inter">
           <Link href="/arrendador-dashboard/propiedades">
@@ -177,9 +260,9 @@ export default function PropertyDetails({ params }) {
           {/* Precio */}
           <Card className="bg-white shadow-md">
             <CardContent className="p-6">
-            <h2 className="text-3xl font-bold font-spaceGrotesk">Canon de Arrendamiento</h2>
+            <h2 className="text-4xl font-bold font-spaceGrotesk">Canon de Arrendamiento</h2>
           {data.contract !== null ? (
-            <p className="text-2xl font-bold text-green-600 font-inter">${data.contract.monthlyRent.toLocaleString()}</p>
+            <p className="text-4xl font-bold text-green-600 font-inter">${data.contract.monthlyRent.toLocaleString()}</p>
           ) : (
             <p className="text-2xl font-bold text-red-600 font-inter">Aún no arrendada</p>
           )}
@@ -193,25 +276,37 @@ export default function PropertyDetails({ params }) {
                 Editar propiedad
               </Link>
             </Button>
-            <Button onClick={() => setShowRentDialog(true)} disabled={data.contract !== null} className="bg-[#1C2671] text-white">
-              {data.contract !== null ? 'En arriendo' : 'Poner en arriendo'}
-            </Button>
             {data.contract === null && (
-              <Button asChild onClick={() => setShowDeleteDialog(true)}>
-                <Link href={''} className='bg-danger-400'>
+              data.property.isAvailable === true ? (
+                <Button asChild className='bg-warning-400' onClick={() => setShowUnrentDialog(true)}>
+                <Link href={''} >
+                  Dejar busqueda de arriendo
+                </Link>
+                </Button>
+              ) : (
+                <Button asChild onClick={() => setShowRentDialog(true)} className='bg-primary-500'>
+                  <Link href={''} >
+                    Poner en busqueda de arriendo
+                  </Link>
+                </Button>
+              )
+            )}
+            {data.contract === null && (
+              <Button asChild onClick={() => setShowDeleteDialog(true)} className='bg-danger-400'>
+                <Link href={''} >
                   Eliminar Propiedad
                 </Link>
               </Button>
             )}
             {data.contract !== null && (
-              <Button asChild>
-                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenant}`}>
+              <Button asChild className="bg-[#1C2671] text-white">
+                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenant.authID}`}>
                   Ver perfil del inquilino
                 </Link>
               </Button>
             )}
             {data.contract !== null && (
-              <Button asChild>
+              <Button asChild className="bg-[#1C2671] text-white">
                 <Link href={`/arrendador-dashboard/contratos/${data.contract._id}`}>
                   Ver contrato
                 </Link>
@@ -222,17 +317,32 @@ export default function PropertyDetails({ params }) {
       </CardContent>
     </Card>
 
+    <Dialog open={showUnrentDialog} onOpenChange={setShowUnrentDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirmar desistir busqueda arriendo</DialogTitle>
+          <DialogDescription>
+            ¿Estás seguro de que quieres que esta propiedad deje de buscar arriendo?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowUnrentDialog(false)}>Cancelar</Button>
+          <Button onClick={handleUnrent} className='bg-warning-400'>Confirmar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     <Dialog open={showRentDialog} onOpenChange={setShowRentDialog}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Confirmar arriendo</DialogTitle>
+          <DialogTitle>Confirmar busqueda de arriendo</DialogTitle>
           <DialogDescription>
-            ¿Estás seguro de que quieres poner esta propiedad en arriendo?
+            ¿Estás seguro de que quieres poner esta propiedad en  busqueda de arriendo?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowRentDialog(false)}>Cancelar</Button>
-          <Button onClick={handleRent}>Confirmar</Button>
+          <Button onClick={handleRent} className='bg-primary-500'>Confirmar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

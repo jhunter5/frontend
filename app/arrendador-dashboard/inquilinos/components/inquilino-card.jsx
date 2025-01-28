@@ -6,21 +6,21 @@ import Link from "next/link"
 
 export function TenantCard({ tenant }) {
   return (
-    <Link href={`/arrendador-dashboard/inquilinos/${tenant.id}`}>
+    <Link href={`/arrendador-dashboard/inquilinos/${tenant.authID}`}>
       <Card className="overflow-hidden transition-shadow hover:shadow-lg">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={tenant.image} alt={`${tenant.name} ${tenant.lastName}`} className="object-cover"/>
-              <AvatarFallback>{tenant.name[0]}{tenant.lastName[0]}</AvatarFallback>
+              <AvatarImage src={tenant.avatar} alt={`${tenant.firstName} ${tenant.lastName}`} className="object-cover"/>
+              <AvatarFallback>{tenant.firstName[0]}{tenant.lastName[0]}</AvatarFallback>
             </Avatar>
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold font-spaceGrotesk">{tenant.name} {tenant.lastName}</h3>
+              <h3 className="text-xl font-semibold font-spaceGrotesk">{tenant.firstName} {tenant.lastName}</h3>
               <div className="flex items-center space-x-2">
-                <Badge variant="secondary font-inter">{tenant.classification}</Badge>
+                <Badge variant="secondary font-inter">{tenant.rating}</Badge>
                 <div className="flex items-center">
                   <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                  <span className="text-sm font-medium font-inter">{tenant.rating}</span>
+                  <span className="text-sm font-medium font-inter">{tenant.avgRating}</span>
                 </div>
               </div>
             </div>
