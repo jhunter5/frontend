@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Building2, Users, UserCheck, BarChart3, User, Settings, LogOut, Menu } from 'lucide-react'
+import { Building2, Users, UserCheck, BarChart3, User, Settings, LogOut, Menu, CalendarDays} from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -36,6 +36,11 @@ const sidebarNavItems = {
       href: "/dashboard/statistics",
       icon: BarChart3,
     },
+    {
+      title: "Calendario",
+      href: "/arrendador-dashboard/calendario",
+      icon: CalendarDays,
+    }
   ],
   personal: [
     {

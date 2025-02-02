@@ -12,8 +12,8 @@ import { useToast } from '@/hooks/use-toast'
 
 
 const fetchProperty = async (id) => {
-  // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
-  const response = await fetch(`http://localhost:3001/api/property/${id}`)
+  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  // const response = await fetch(`http://localhost:3001/api/property/${id}`)
 
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
@@ -27,13 +27,12 @@ export default function PropertyDetails({ params }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const { toast } = useToast()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['property', params.id],
     queryFn: () => fetchProperty(params.id),
   }) 
-
-  const router = useRouter()
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -67,10 +66,7 @@ export default function PropertyDetails({ params }) {
 
   const setAvailable = useMutation({
     mutationFn: async () => {
-      // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
-      //   method: 'PATCH',
-      // })
-      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -109,9 +105,7 @@ export default function PropertyDetails({ params }) {
 
   const setUnavailable = useMutation({
     mutationFn: async () => {
-      // const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
-
-      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

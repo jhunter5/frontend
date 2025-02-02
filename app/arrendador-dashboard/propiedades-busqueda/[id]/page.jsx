@@ -161,6 +161,7 @@ export default function PropertyFullDetails({ params }) {
                   candidates={sortedCandidates} 
                   requestSort={requestSort}
                   sortConfig={sortConfig}
+                  property={property}
                 />
               </CardContent>
             </Card>

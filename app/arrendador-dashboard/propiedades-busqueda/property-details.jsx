@@ -82,7 +82,7 @@ export function PropertyDetails({ property, className }) {
                     <span>{candidate.rating}</span>
                   </Badge>
                   <Button variant="outline" size="sm" asChild className="text-primary-400 font-inter">
-                    <Link href={`/dashboard/tenants/${candidate.id}`}>
+                    <Link href={`candidatos/${candidate.id}?property=${property.id}`}>
                       <User className="h-4 w-4 mr-2" />
                       Ver Perfil
                     </Link>

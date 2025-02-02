@@ -11,7 +11,7 @@ import { PropertyDetails } from "./property-details"
 // Ejemplo de datos de propiedades en búsqueda de arriendo
 const propertiesForRent = [
   {
-    id: 1,
+    id: '6782b357e02d45b448eb06a8',
     media: [
       {
         "mediaUrl": "https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -23,7 +23,7 @@ const propertiesForRent = [
     bathrooms: 2,
     area: 80,
     candidates: [
-      { id: 1, name: "John Doe", rating: 4.5 },
+      { id: '677f4017846ec182dd884119', name: "Camilo Cuello", rating: 4.5 },
       { id: 2, name: "Jane Smith", rating: 4.2 },
       { id: 3, name: "Alice Johnson", rating: 4.8 },
       { id: 4, name: "Bob Williams", rating: 4.0 },
