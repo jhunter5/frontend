@@ -181,76 +181,62 @@ export default function PostulateForm({ params }) {
               </Button>
             </div>
 
-            <Separator />
+            <Separator className="my-8" />
 
-            {/* Documentos */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold flex items-center">
-                <Upload className="mr-2 h-5 w-5 text-blue-500" />
-                Documentos Adjuntos
-              </h3>
-              <div className="space-y-2">
-                <Label htmlFor="documents">Sube tus documentos</Label>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-500">Por favor, sube los siguientes documentos:</p>
-                  <ul className="list-disc pl-6 text-sm text-gray-600">
-                    <li>Cerfificacion laboral</li>
-                    <li>Documentos de identidad</li>
-                    <li>Soporte de Pago de Nomina de los Últimos 3 Meses</li>
-                    <li>Extractos Bancarios de los Últimos 3 Meses</li>
-                  </ul>
-                  <p className="text-xs text-gray-500">Formatos aceptados: PDF, DOC, DOCX (máx. 10MB)</p>
-                </div>
-                <div className="flex items-center justify-center w-full">
-                  <label
-                    htmlFor="documents"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-300 ease-in-out"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Haz clic para subir</span> o arrastra y suelta
-                      </p>
-                    </div>
-                    <input
-                      id="documents"
-                      type="file"
-                      className="hidden"
-                      multiple
-                      onChange={handleFileUpload}
-                    />
-                  </label>
-                </div>
-              </div>
-              {formData.documents.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="font-medium mb-2">Documentos cargados:</h4>
-                  <ul className="list-disc list-inside">
-                    {formData.documents.map((file, index) => (
-                      <li key={index} className="text-sm text-gray-600">
-                        {file.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+<div className="space-y-6">
+  <h3 className="text-2xl font-semibold flex items-center text-gray-800">
+    <Upload className="mr-3 h-6 w-6 text-blue-500" />
+    Documentos Adjuntos
+  </h3>
+  <p className="text-sm text-gray-600">Sube los documentos requeridos:</p>
+  <div className="grid gap-6 md:grid-cols-2">
+    {[
+      "Certificación laboral",
+      "Documento de identidad",
+      "Soporte de pago de nómina (últimos 3 meses)",
+      "Extractos bancarios (últimos 3 meses)",
+    ].map((doc, index) => (
+      <div
+        key={index}
+        className="border p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+      >
+        <Label className="block mb-2 text-sm font-medium text-gray-700">{doc}</Label>
+        <Input
+          type="file"
+          onChange={handleFileUpload}
+          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        />
+      </div>
+    ))}
+  </div>
+  {formData.documents.length > 0 && (
+    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+      <h4 className="font-medium mb-2 text-blue-700">Documentos cargados:</h4>
+      <ul className="list-disc list-inside">
+        {formData.documents.map((file, index) => (
+          <li key={index} className="text-sm text-gray-600">
+            {file.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
 
-            <Separator />
+<Separator className="my-8" />
 
-            {/* Botón de envío */}
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                className="bg-primary-500 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 ease-in-out"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Enviar Postulación
-              </Button>
-            </div>
-          </form>
-        </CardContent>
+<div className="flex justify-end">
+  <Button
+    type="button"
+    onClick={handleSubmit}
+    className="bg-primary-500"
+  >
+    <Send className="mr-2 h-5 w-5" />
+    Enviar Postulación
+    </Button>
+    </div>
+      </form>
+      </CardContent>
       </Card>
     </div>
   )

@@ -1,167 +1,143 @@
 "use client"
-import { useState } from 'react'
-import { useRouter } from 'next/navigation' // Importa useRouter
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info } from 'lucide-react'
-import Link from "next/link"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
-// En un caso real, esto vendría de tu base de datos
-const getProperty = (id) => ({
-  id,
-  images: [
-    "https://pics.nuroa.com/vivienda_exclusiva_en_venta_bogota_bogota_d_c_6420003734784958600.jpg",
-    "https://pics.nuroa.com/vivienda_exclusiva_en_venta_bogota_bogota_d_c_6420003734784958600.jpg",
-    "https://pics.nuroa.com/vivienda_exclusiva_en_venta_bogota_bogota_d_c_6420003734784958600.jpg",
-  ],
-  direccion: "Calle Principal 123",
-  municipio: "Ciudad Ejemplo",
-  departamento: "Departamento Ejemplo",
-  tipo: "Apartamento",
-  habitaciones: 3,
-  parqueadero: true,
-  metrosCuadrados: 120,
-  estrato: 4,
-  banos: 2,
-  antiguedad: 5,
-  descripcion: "Hermoso apartamento con vista panorámica a la ciudad. Ubicado en una zona tranquila y segura, cerca de parques y centros comerciales. Ideal para familias jóvenes o profesionales.",
-  numeroPiso: 8,
-  precio: 450000,
-  enArriendo: false,
-})
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info, DollarSign } from "lucide-react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchProperty = async (id) => {
+  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+
+  if (!response.ok) {
+    throw new Error('No se pudo cargar la propiedad')
+  }
+  return response.json()
+}
 
 export default function PropertyDetails({ params }) {
-  const [property, setProperty] = useState(getProperty(params.id))
-  const [showDialog, setShowDialog] = useState(false)
-  const router = useRouter() // Instancia de useRouter
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogAction, setDialogAction] = useState("");
 
-  const handleRent = () => {
-    setProperty(prev => ({ ...prev, enArriendo: true }))
-    setShowDialog(false)
-    // Redirige al usuario
-    router.push(`/inquilino-dashboard/postularse/${property.id}`)
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['property', params.id],
+    queryFn: () => fetchProperty(params.id),
+  }) 
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
   }
 
+  if (isPending) {
+    return <p>Cargando...</p>
+  }
+
+  const property = data || {};
+  console.log(property);
+  
+
+  const imageUrl = property.media?.length > 0 ? property.media[0].mediaUrl : "https://via.placeholder.com/300";
+
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
+        <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors">
           <Link href="/inquilino-dashboard/buscador-propiedades">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a propiedades
+            Volver al Buscador
           </Link>
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Detalles de la Propiedad</CardTitle>
+      <Card className="overflow-hidden shadow-lg">
+        <CardHeader className="bg-primary-500 text-white">
+          <CardTitle className="text-3xl font-bold">Detalles de la Propiedad</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
-            {/* Galería de imágenes */}
-            <div className="grid grid-cols-3 gap-4">
-              {property.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`Vista ${index + 1} de la propiedad`}
-                  className="rounded-lg object-cover w-full h-48"
-                />
+        <CardContent className="p-6">
+          <div className="grid gap-8">
+            <div className="relative h-64 rounded-lg overflow-hidden shadow-md">
+              <img src={imageUrl} alt="Vista de la propiedad" className="w-full h-full object-cover" />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
+                    <MapPin className="h-5 w-5" />
+                    Ubicación
+                  </h2>
+                  <p className="text-gray-700">
+                    {property.property.address.charAt(0).toUpperCase() + property.property.address.slice(1)}
+                  </p>
+                  <p className="text-gray-700">{property.property.city}, {property.property.state}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
+                    <Home className="h-5 w-5" />
+                    Tipo de Propiedad
+                  </h2>
+                  <p className="text-gray-700">
+                    {property.property.type.charAt(0).toUpperCase() + property.property.type.slice(1)}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-6" />
+
+            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {[ 
+                { icon: Bed, label: "Habitaciones", value: property.property.rooms },
+                { icon: Bath, label: "Baños", value: property.property.bathrooms },
+                { icon: Car, label: "Parqueadero", value: property.property.parking ? 'Sí' : 'No' },
+                { icon: Ruler, label: "Metros Cuadrados", value: `${property.property.squareMeters} m²` },
+                { icon: Building, label: "Estrato", value: property.property.tier },
+                { icon: Calendar, label: "Antigüedad", value: `${property.property.age} años` },
+              ].map((item, index) => (
+                <Card key={index} className="bg-white shadow-md">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <item.icon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{item.label}</p>
+                      <p className="font-medium text-gray-800">{item.value}</p>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
-            {/* Información principal */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-muted-foreground" />
-                  Ubicación
+            <Separator className="my-6" />
+
+            <Card className="bg-white shadow-md">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
+                  <Info className="h-5 w-5" />
+                  Descripción
                 </h2>
-                <p>{property.direccion}</p>
-                <p>{property.municipio}, {property.departamento}</p>
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <Home className="h-5 w-5 text-muted-foreground" />
-                  Tipo de Propiedad
-                </h2>
-                <p>{property.tipo}</p>
-                <p>Piso {property.numeroPiso}</p>
-              </div>
-            </div>
+                <p className="text-gray-700 leading-relaxed">{property.property.description}</p>
+              </CardContent>
+            </Card>
 
-            <Separator />
+            <Card className="bg-green-600 text-white shadow-md">
+              <CardContent className="p-6 flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Canon Arrendamiento</h2>
+                <p className="text-3xl font-bold flex items-center">
+                  <DollarSign className="h-8 w-8 mr-2" />
+                  {property.property.rentPrice || "No disponible"}
+                </p>
+              </CardContent>
+            </Card>
 
-            {/* Características */}
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              <div className="flex items-center gap-2">
-                <Bed className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Habitaciones</p>
-                  <p className="font-medium">{property.habitaciones}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Bath className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Baños</p>
-                  <p className="font-medium">{property.banos}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Car className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Parqueadero</p>
-                  <p className="font-medium">{property.parqueadero ? 'Sí' : 'No'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Ruler className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Metros Cuadrados</p>
-                  <p className="font-medium">{property.metrosCuadrados} m²</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Building className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Estrato</p>
-                  <p className="font-medium">{property.estrato}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Antigüedad</p>
-                  <p className="font-medium">{property.antiguedad} años</p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Descripción */}
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Info className="h-5 w-5 text-muted-foreground" />
-                Descripción
-              </h2>
-              <p className="text-muted-foreground">{property.descripcion}</p>
-            </div>
-
-            {/* Precio */}
-            <div className="mt-6">
-              <h2 className="text-2xl font-bold">Canon de Arrendamiento</h2>
-              <p className="text-3xl font-bold text-green-600">${property.precio.toLocaleString()}</p>
-            </div>
-
-            {/* Botones de acción */}
-            <div className="mt-6 flex justify-end space-x-4">
-              <Button onClick={() => setShowDialog(true)} disabled={property.enArriendo}>
-                {property.enArriendo ? 'En arriendo' : 'Postularse a esta Propiedad'}
+            <div className="flex justify-end mt-6">
+              <Button onClick={() => setShowDialog(true)} className="bg-blue-600 text-white hover:bg-blue-700">
+                Postularse a la Propiedad
               </Button>
             </div>
           </div>
@@ -171,17 +147,17 @@ export default function PropertyDetails({ params }) {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Postularse a esta Propiedad</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres postularte a esta propiedad?
-            </DialogDescription>
+            <DialogTitle>Postularse a la Propiedad</DialogTitle>
+            <DialogDescription>¿Estás seguro de que deseas postularte a esta propiedad?</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
-            <Button onClick={handleRent}>Confirmar</Button>
+            <Button>
+              <Link href={`/inquilino-dashboard/postularse/${property._id}`}>Confirmar</Link>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
