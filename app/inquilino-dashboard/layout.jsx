@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Settings, UserCheck, BarChart3, House, FolderClock, MapPinHouse, LogOut, Menu, CalendarDays} from 'lucide-react'
+import { Settings, UserCheck, BarChart3, House, FolderClock, MapPinHouse, LogOut, Menu, CalendarDays, FileText} from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
@@ -41,6 +41,7 @@ const sidebarNavItems = {
       href: "/inquilino-dashboard/calendario",
       icon: CalendarDays,
     },
+    {
       title: "Postulaciones",
       href: "/inquilino-dashboard/postulaciones",
       icon: FileText,
@@ -157,7 +158,7 @@ export default function DashboardLayout({ children }) {
             </div>
 
           ) : (
-          <AvatarImage src={data.avatar} alt="Usuario" />
+          <AvatarImage src={data?.avatar} alt="Usuario" />
           )}
         </Avatar>
         <div className="flex flex-col min-w-0 max-w-20">
