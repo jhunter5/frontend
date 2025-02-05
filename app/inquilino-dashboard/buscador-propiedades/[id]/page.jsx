@@ -153,7 +153,7 @@ export default function PropertyDetails({ params }) {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
             <Button>
-              <Link href={`/inquilino-dashboard/postularse/${property._id}`}>Confirmar</Link>
+              <Link href={`/inquilino-dashboard/postularse/${property.property._id}`}>Confirmar</Link>
             </Button>
           </DialogFooter>
         </DialogContent>
