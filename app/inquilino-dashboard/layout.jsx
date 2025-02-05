@@ -41,6 +41,7 @@ const sidebarNavItems = {
       href: "/inquilino-dashboard/calendario",
       icon: CalendarDays,
     },
+    {
       title: "Postulaciones",
       href: "/inquilino-dashboard/postulaciones",
       icon: FileText,
