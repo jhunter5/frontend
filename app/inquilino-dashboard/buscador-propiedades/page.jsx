@@ -17,7 +17,7 @@ const MOCK_PROPERTIES = [
       image: "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       address: "Calle Los Olivos 34, Edificio Sol",
       agency: "Soluciones Inmobiliarias",
-      price: 1400000,
+      price: 1500000,
       bedrooms: 2,
       bathrooms: 1,
       city: "Bucaramanga",
