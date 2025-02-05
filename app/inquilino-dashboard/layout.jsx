@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }) {
             </div>
 
           ) : (
-          <AvatarImage src={data.avatar} alt="Usuario" />
+          <AvatarImage src={data?.avatar} alt="Usuario" />
           )}
         </Avatar>
         <div className="flex flex-col min-w-0 max-w-20">

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, UserPlus, FileText, Send } from 'lucide-react'
+import { ArrowLeft, Upload, UserPlus, FileText, Send,Trash2 } from 'lucide-react'
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
@@ -16,103 +16,115 @@ export default function PostulateForm({ params }) {
   const router = useRouter()
   const [formData, setFormData] = useState({
     applicationData: {
-      "property": "", 
-      "tenantAuthID": "", 
-      "status": 0, 
-      "score": 0,
-      "personalDescription": ""
+      property: "", 
+      tenantAuthID: "", 
+      status: 0, 
+      score: 0,
+      personalDescription: ""
     },
     applicationMedias: [],
     applicationReferences: []
   })
-  const {user} = useAuth0()
+  const { user } = useAuth0()
   const tenant_id = getAuth0Id(user?.sub)
   const property_id = params.id
 
+  const convertFileToBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = (error) => reject(error)
+    })
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      applicationData: {
+        ...prev.applicationData,
+        [name]: value
+      }
+    }))
+  }
+
+  const handleFileUpload = async (e, docType) => {
+    const { files } = e.target
+    const filesArray = Array.from(files)
+    const media = await Promise.all(
+      filesArray.map(async (file) => {
+        const base64Data = await convertFileToBase64(file)
+        return {
+          mediaType: docType,
+          file: {
+            data: base64Data,
+            name: file.name,
+            mimetype: file.type
+          }
+        }
+      })
+    )
+
+    setFormData((prev) => ({
+      ...prev,
+      applicationMedias: [...prev.applicationMedias, ...media]
+    }))
+  }
+
+  const handleReferenceChange = (index, e) => {
+    const { name, value } = e.target
+    const newReferences = [...formData.applicationReferences]
+    newReferences[index][name] = value
+    setFormData((prev) => ({
+      ...prev,
+      applicationReferences: newReferences
+    }))
+  }
+
+  const addReference = () => {
+    setFormData((prev) => ({
+      ...prev,
+      applicationReferences: [
+        ...prev.applicationReferences,
+        { name: '', lastname: '', cellphone: '', relationship: '' }
+      ]
+    }))
+  }
+
+  const removeReference = (index) => {
+    const newReferences = formData.applicationReferences.filter((_, i) => i !== index)
+    setFormData((prev) => ({
+      ...prev,
+      applicationReferences: newReferences
+    }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const finalData = {
       ...formData,
       applicationData: {
         ...formData.applicationData,
-        [name]: value
+        property: property_id,
+        tenantAuthID: tenant_id
       }
-    });
-  };
-
-  const handleFileUpload = (e, docType) => {
-    const { files } = e.target;
-    const media = Array.from(files).map(file => ({
-      mediaType: docType, // El tipo de documento (como 'Documento de identidad', etc.)
-      file: {
-        data: file, // El archivo como un objeto File
-        name: file.name,
-        mimetype: file.type
-      }
-    }));
-
-    setFormData({
-      ...formData,
-      applicationMedias: [...formData.applicationMedias, ...media]
-    });
-  };
-
-  const handleReferenceChange = (index, e) => {
-    const { name, value } = e.target;
-    const newReferences = [...formData.applicationReferences];
-    newReferences[index][name] = value;
-    setFormData({
-      ...formData,
-      applicationReferences: newReferences
-    });
-  };
-
-  const addReference = () => {
-    setFormData({
-      ...formData,
-      applicationReferences: [
-        ...formData.applicationReferences,
-        { name: '', lastname: '', cellphone: '', relationship: '' }
-      ]
-    });
-  };
-
-  const removeReference = (index) => {
-    const newReferences = formData.applicationReferences.filter((_, i) => i !== index);
-    setFormData({
-      ...formData,
-      applicationReferences: newReferences
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setFormData(prevState => ({
-      ...prevState, // Mantén el resto del estado sin cambios
-      applicationData: {
-        ...prevState.applicationData, // Mantén los valores anteriores de applicationData
-        property: property_id, // Actualiza el valor de property
-        tenantAuthID: tenant_id // Actualiza el valor de tenantAuthID
-      }
-    }));
-    
-    // Crear una instancia de FormData
-    console.log(formData)
-    // Enviar el formulario con FormData
-    const response = await fetch('http://localhost:3001/api/application', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (response.ok) {
-      alert('Postulación enviada exitosamente');
-    } else {
-      alert('Error al enviar la postulación');
     }
 
-};
+    console.log(finalData)
 
+    const response = await fetch('https://backend-khaki-three-90.vercel.app/api/application', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalData)
+    })
+
+    if (response.ok) {
+      alert('Postulación enviada exitosamente')
+    } else {
+      alert('Error al enviar la postulación')
+    }
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -132,7 +144,6 @@ export default function PostulateForm({ params }) {
         </CardHeader>
         <CardContent className="p-6">
           <form className="space-y-8">
-
             <Separator />
 
             {/* Biografía */}
@@ -142,7 +153,7 @@ export default function PostulateForm({ params }) {
                 Descripción Personal
               </h3>
               <div className="space-y-2">
-                <Label htmlFor="bio">Cuéntanos sobre ti</Label>
+                <Label htmlFor="personalDescription">Cuéntanos sobre ti</Label>
                 <Textarea
                   id="personalDescription"
                   name="personalDescription"
@@ -162,14 +173,14 @@ export default function PostulateForm({ params }) {
                 <UserPlus className="mr-2 h-5 w-5 text-blue-500" />
                 Referencias
               </h3>
-              {formData?.applicationReferences?.map((ref, index) => (
+              {formData.applicationReferences.map((ref, index) => (
                 <div key={index} className="grid gap-4 md:grid-cols-3 mb-4">
                   <div className="space-y-2">
                     <Label htmlFor={`ref-firstname-${index}`}>Nombre</Label>
                     <Input
                       id={`ref-firstname-${index}`}
-                      type = "text"
-                      name = "name"
+                      type="text"
+                      name="name"
                       placeholder="Nombre de la referencia"
                       value={ref.name}
                       onChange={(e) => handleReferenceChange(index, e)}
@@ -178,9 +189,9 @@ export default function PostulateForm({ params }) {
                   <div className="space-y-2">
                     <Label htmlFor={`ref-lastname-${index}`}>Apellido</Label>
                     <Input
-                      type = "text"
-                      name = "lastname"
                       id={`ref-lastname-${index}`}
+                      type="text"
+                      name="lastname"
                       placeholder="Apellido de la referencia"
                       value={ref.lastname}
                       onChange={(e) => handleReferenceChange(index, e)}
@@ -189,9 +200,9 @@ export default function PostulateForm({ params }) {
                   <div className="space-y-2">
                     <Label htmlFor={`ref-relationship-${index}`}>Relación</Label>
                     <Input
-                      type = "text"
-                      name = "relationship"
                       id={`ref-relationship-${index}`}
+                      type="text"
+                      name="relationship"
                       placeholder="Tipo de relación"
                       value={ref.relationship}
                       onChange={(e) => handleReferenceChange(index, e)}
@@ -200,13 +211,19 @@ export default function PostulateForm({ params }) {
                   <div className="space-y-2">
                     <Label htmlFor={`ref-contact-${index}`}>Contacto</Label>
                     <Input
-                      type = "text"
-                      name = "cellphone"
                       id={`ref-contact-${index}`}
+                      type="text"
+                      name="cellphone"
                       placeholder="Información de contacto"
-                      value={ref.contact}
+                      value={ref.cellphone}
                       onChange={(e) => handleReferenceChange(index, e)}
                     />
+                  </div>
+                  <div className="flex items-end">
+                    <Button type="button" variant="destructive" onClick={() => removeReference(index)}>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Remover Referencia
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -234,7 +251,7 @@ export default function PostulateForm({ params }) {
                   "Certificación laboral",
                   "Documento de identidad",
                   "Soporte de pago de nómina (últimos 3 meses)",
-                  "Extractos bancarios (últimos 3 meses)",
+                  "Extractos bancarios (últimos 3 meses)"
                 ].map((doc, index) => (
                   <div
                     key={index}
@@ -249,13 +266,13 @@ export default function PostulateForm({ params }) {
                   </div>
                 ))}
               </div>
-              {formData?.applicationMedia?.length > 0 && (
+              {formData.applicationMedias.length > 0 && (
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <h4 className="font-medium mb-2 text-blue-700">Documentos cargados:</h4>
                   <ul className="list-disc list-inside">
-                    {formData.applicationMedia.map((file, index) => (
+                    {formData.applicationMedias.map((media, index) => (
                       <li key={index} className="text-sm text-gray-600">
-                        {file.name}
+                        {media.file.name}
                       </li>
                     ))}
                   </ul>
@@ -266,11 +283,7 @@ export default function PostulateForm({ params }) {
             <Separator className="my-8" />
 
             <div className="flex justify-end">
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                className="bg-primary-500"
-              >
+              <Button type="button" onClick={handleSubmit} className="bg-primary-500">
                 <Send className="mr-2 h-5 w-5" />
                 Enviar Postulación
               </Button>
