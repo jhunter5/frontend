@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown, User } from 'lucide-react'
 
-export function CandidateList({ candidates, requestSort, sortConfig }) {
+export function CandidateList({ candidates, requestSort, sortConfig, property }) {
   const getSortDirection = (key) => {
     if (!sortConfig) {
       return undefined
@@ -62,7 +62,7 @@ export function CandidateList({ candidates, requestSort, sortConfig }) {
             <TableCell>{candidate.rating.toFixed(1)}</TableCell>
             <TableCell>
               <Button variant="outline" size="sm" asChild>
-                <Link href={"/dashboard/properties"}>
+                <Link href={`/arrendador-dashboard/candidatos/${candidate.application_id}?tenant=${candidate.tenant_id}property=${property.id}`}>
                   <User className="mr-2 h-4 w-4" />
                   Ver perfil
                 </Link>

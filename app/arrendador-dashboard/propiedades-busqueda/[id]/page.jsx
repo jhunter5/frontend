@@ -14,7 +14,7 @@ import { PropertyStatistics } from '@/app/arrendador-dashboard/propiedades-busqu
 
 // Datos de ejemplo actualizados para la propiedad
 const getProperty = (id) => ({
-  id,
+  id: "6782b357e02d45b448eb06a8",
   address: "123 Main St, Cityville",
   price: 1500,
   bedrooms: 2,
@@ -23,7 +23,7 @@ const getProperty = (id) => ({
   image: "/placeholder.svg?height=400&width=600",
   totalApplications: 50,
   candidates: [
-    { id: 1, name: "John Doe", age: 28, industry: "Tecnología", status: "Postulado", rating: 4.5 },
+    { application_id: "1", tenant_id: "677f3353f9e2265929c7489a", name: "John Doe", age: 28, industry: "Tecnología", status: "Postulado", rating: 4.5 },
     { id: 2, name: "Jane Smith", age: 35, industry: "Educación", status: "Preseleccionado", rating: 4.2 },
     { id: 3, name: "Alice Johnson", age: 42, industry: "Finanzas", status: "Postulado", rating: 4.8 },
     { id: 4, name: "Bob Williams", age: 31, industry: "Salud", status: "Preseleccionado", rating: 4.0 },
@@ -161,6 +161,7 @@ export default function PropertyFullDetails({ params }) {
                   candidates={sortedCandidates} 
                   requestSort={requestSort}
                   sortConfig={sortConfig}
+                  property={property}
                 />
               </CardContent>
             </Card>
