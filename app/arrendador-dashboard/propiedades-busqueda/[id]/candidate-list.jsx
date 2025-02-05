@@ -62,7 +62,7 @@ export function CandidateList({ candidates, requestSort, sortConfig, property })
             <TableCell>{candidate.rating.toFixed(1)}</TableCell>
             <TableCell>
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/arrendador-dashboard/candidatos/${candidate.id}?property=${property.id}`}>
+                <Link href={`/arrendador-dashboard/candidatos/${candidate.application_id}?tenant=${candidate.tenant_id}property=${property.id}`}>
                   <User className="mr-2 h-4 w-4" />
                   Ver perfil
                 </Link>

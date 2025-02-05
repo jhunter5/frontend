@@ -9,11 +9,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
+import { Input } from '@/components/ui/input'
 
 
 const fetchProperty = async (id) => {
   const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
-  // const response = await fetch(`http://localhost:3001/api/property/${id}`)
 
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
@@ -25,6 +25,7 @@ export default function PropertyDetails({ params }) {
   const [showRentDialog, setShowRentDialog] = useState(false)
   const [showUnrentDialog, setShowUnrentDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [rentPrice, setRentPrice] = useState('')
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -65,13 +66,13 @@ export default function PropertyDetails({ params }) {
   })
 
   const setAvailable = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({rentPrice}) => {
       const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ isAvailable: true })
+        body: JSON.stringify({ isAvailable: true, rentPrice })
       })
 
       if (!response.ok) {
@@ -99,7 +100,16 @@ export default function PropertyDetails({ params }) {
   })
 
   const handleRent = () => {
-    setAvailable.mutate()
+    if (!rentPrice || rentPrice === '') {
+      toast({
+        title: "Error",
+        description: "Por favor ingresa el precio de arrendamiento",
+        status: "error",
+        variant: "destructive",
+      });
+      return;
+    }
+    setAvailable.mutate({rentPrice})
     setShowRentDialog(false)
   }
 
@@ -160,7 +170,6 @@ export default function PropertyDetails({ params }) {
 
   return (
     <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
-      {console.log(data)}
       <div className="mb-6">
         <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors font-inter">
           <Link href="/arrendador-dashboard/propiedades">
@@ -328,16 +337,29 @@ export default function PropertyDetails({ params }) {
 
     <Dialog open={showRentDialog} onOpenChange={setShowRentDialog}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Confirmar busqueda de arriendo</DialogTitle>
-          <DialogDescription>
-            ¿Estás seguro de que quieres poner esta propiedad en  busqueda de arriendo?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowRentDialog(false)}>Cancelar</Button>
-          <Button onClick={handleRent} className='bg-primary-500'>Confirmar</Button>
-        </DialogFooter>
+      <DialogHeader>
+        <DialogTitle>Confirmar busqueda de arriendo</DialogTitle>
+        <DialogDescription>
+        ¿Estás seguro de que quieres poner esta propiedad en busqueda de arriendo?
+        </DialogDescription>
+      </DialogHeader>
+      <div className="mt-4">
+        <label htmlFor="rentPrice" className="block text-sm font-medium text-gray-950">
+        Precio de Arrendamiento
+        </label>
+        <Input
+        type="number"
+        id="rentPrice"
+        name="rentPrice"
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+        placeholder="Ingrese el precio de arrendamiento"
+        onChange={(e) => setRentPrice(e.target.value)}
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={() => setShowRentDialog(false)}>Cancelar</Button>
+        <Button onClick={handleRent} className='bg-primary-500'>Confirmar</Button>
+      </DialogFooter>
       </DialogContent>
     </Dialog>
 

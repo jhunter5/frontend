@@ -7,47 +7,9 @@ import { OpenPropertyCard } from "./openPropertyCard"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PropertyDetails } from "./property-details"
-
-// Ejemplo de datos de propiedades en búsqueda de arriendo
-const propertiesForRent = [
-  {
-    id: '6782b357e02d45b448eb06a8',
-    media: [
-      {
-        "mediaUrl": "https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      }
-    ],
-    address: "123 Main St, Cityville",
-    price: 1500,
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 80,
-    candidates: [
-      { id: '677f4017846ec182dd884119', name: "Camilo Cuello", rating: 4.5 },
-      { id: 2, name: "Jane Smith", rating: 4.2 },
-      { id: 3, name: "Alice Johnson", rating: 4.8 },
-      { id: 4, name: "Bob Williams", rating: 4.0 },
-    ]
-  },
-  {
-    id: 2,
-    media: [
-      {
-        "mediaUrl": "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      }
-    ],
-    address: "456 Oak Ave, Townsburg",
-    price: 2000,
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 100,
-    candidates: [
-      { id: 5, name: "Charlie Brown", rating: 4.3 },
-      { id: 6, name: "Diana Prince", rating: 4.7 },
-    ]
-  },
-  // Añade más propiedades según sea necesario
-]
+import { useAuth0 } from "@auth0/auth0-react"
+import { getAuth0Id } from "@/app/utils/getAuth0id"
+import { useQuery } from "@tanstack/react-query"
 
 const ITEMS_PER_PAGE = 6
 
@@ -55,10 +17,33 @@ export default function PropertiesForRentPage() {
   const [searchAddress, setSearchAddress] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedProperty, setSelectedProperty] = useState(null)
+  const { user } = useAuth0()
+
+  const fetchPropertiesOnDemand = async () => {
+    const userId = getAuth0Id(user.sub)
+    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/landlord/${userId}`)
+
+    if (!response.ok) {
+      throw new Error('Ocurrio un error consultando la base de datos')
+    }
+
+    return response.json()
+  }
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['properties'],
+    queryFn: fetchPropertiesOnDemand
+  })
+
+  if (isPending) return <p>Cargando propiedades...</p>
+  if (isError) return <p>Ocurrió un error: {error.message}</p>
+
+  const propertiesForRent = data || []
+  console.log(propertiesForRent)
 
   // Filtrar propiedades por dirección
   const filteredProperties = propertiesForRent.filter(property =>
-    property.address.toLowerCase().includes(searchAddress.toLowerCase())
+    property?.direccion?.toLowerCase().includes(searchAddress.toLowerCase())
   )
 
   // Calcular páginas
@@ -84,7 +69,7 @@ export default function PropertiesForRentPage() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paginatedProperties.map((property) => (
           <OpenPropertyCard 
-            key={property.id} 
+            key={property._id} 
             property={property} 
             onClick={() => setSelectedProperty(property)}
           />

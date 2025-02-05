@@ -19,10 +19,12 @@ import {
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
-import { useToast } from "@/hooks/use-toast"
+import { toast, useToast } from "@/hooks/use-toast"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 import { useAuth0 } from '@auth0/auth0-react'
 import { ro } from "date-fns/locale"
+import { useRouter } from "next/navigation"
+
 
 // Simulación de datos del candidato
 const getCandidate = (id) => ({
@@ -56,30 +58,89 @@ const getCandidate = (id) => ({
 export default function CandidateProfile({ params }) {
   const [candidate, setCandidate] = useState(null)
   const [showAddEvent, setShowAddEvent] = useState(false)
-  const id = params.id
   const searchParams = useSearchParams()
-  const property = searchParams.get('property')
+  const application_id = params.id
+  const tenant_id = searchParams.get('tenant')
+  const property_id = searchParams.get('property')
+  const router = useRouter()
   
   useEffect(() => {
     const fetchedCandidate = getCandidate(params.id)
     setCandidate(fetchedCandidate)
   }, [params.id])
 
+  const changeApplicationStatus = useMutation({
+    mutationFn: async (status) => {
+      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/status/${application_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: status }),
+      })
+
+      if (!response.ok) {
+        throw new Error("No se pudo cambiar el estado de la aplicación")
+      }
+
+      return response.json()
+    }
+  })
+
+  const handlePreselect = () => {
+    changeApplicationStatus.mutate(1,
+    {
+      onSuccess: () => {
+        toast ({
+          title: "Éxito",
+          description: "El candidato ha sido preseleccionado exitosamente.",
+          status: "success",
+        })
+        router.push(`/arrendador-dashboard/propiedades-busqueda/${property_id}`);
+
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Hubo un error al preseleccionar al candidato.",
+          status: "error",
+          variant: "destructive",
+        })
+      }
+    })
+  }
+
+  const handleDiscard = () => {
+    changeApplicationStatus.mutate(2,
+    {
+      onSuccess: () => {
+      toast({
+        title: "Éxito",
+        description: "El candidato ha sido descartado exitosamente.",
+        status: "success",
+      })
+      router.push(`/arrendador-dashboard/propiedades-busqueda/${property_id}`);
+
+      },
+      onError: () => {
+      toast({
+        title: "Error",
+        description: "Hubo un error al descartar al candidato.",
+        status: "error",
+        variant: "destructive",
+      })
+      }
+    })
+  }
+
+
   if (!candidate) {
     return <div>Cargando...</div>
   }
 
-  const handlePreselect = () => {
-    console.log("Candidato preseleccionado")
-    // Aquí iría la lógica para preseleccionar al candidato
-  }
 
-  const handleDiscard = () => {
-    console.log("Candidato descartado")
-    // Aquí iría la lógica para descartar al candidato
-  }
 
-  function AddEventDialog({ isOpen, onClose, tenantAuthID, propertyID }) {
+  function AddEventDialog({ isOpen, onClose, tenantAuthID, propertyID, onSuccess, onError }) {
     const [title, setTitle] = useState("")
     const [date, setDate] = useState("")
     const [time, setTime] = useState("")
@@ -91,7 +152,7 @@ export default function CandidateProfile({ params }) {
     
     const saveAppointment = useMutation({
       mutationFn : async (data) => {
-        const response = await fetch("http://localhost:3001/api/appointment", {
+        const response = await fetch("https://backend-khaki-three-90.vercel.app/api/appointment", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,20 +182,13 @@ export default function CandidateProfile({ params }) {
       saveAppointment.mutate(newAppointment, 
       {
         onSuccess: () => {
-          toast({
-            title: 'Cita Creada',
-            description: 'La propiedad ha sido creada exitosamente',
-            status: 'success',
-          }); 
           onClose();
+          onSuccess();
         },
         onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Ha ocurrido un error al crear la cita',
-            status: 'error',
-            variant: 'destructive',
-          });
+          onClose();
+          onError();
+          
         }
       })
     }
@@ -142,45 +196,44 @@ export default function CandidateProfile({ params }) {
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Agregar cita</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Input
-               placeholder="Titulo de la cita" 
-               value={title}
-               onChange={(e) => setTitle(e.target.value)}
-               />
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <Input type="date" 
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Input type="time" 
-                className="w-24" 
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                />
-              </div>
-            </div>
-            <Input placeholder="Add description" 
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            />
+      <DialogContent>
+        <DialogHeader>
+        <DialogTitle>Agregar cita</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Input
+           placeholder="Titulo de la cita" 
+           value={title}
+           onChange={(e) => setTitle(e.target.value)}
+           />
+        </div>
+        <div className="flex gap-4">
+          <div className="flex-1">
+          <Input type="date" 
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button onClick={handleAppointmentSave}>Guardar</Button>
-          </DialogFooter>
-        </DialogContent>
+          <div className="flex-1">
+          <Input type="time" 
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          />
+          </div>
+        </div>
+        <Input placeholder="Agregar descripción" 
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        />
+        </div>
+        <DialogFooter>
+        <Button variant="outline" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button onClick={handleAppointmentSave} className="bg-primary-400">Guardar</Button>
+        </DialogFooter>
+      </DialogContent>
       </Dialog>
     )
   }
@@ -348,18 +401,42 @@ export default function CandidateProfile({ params }) {
       </div>
 
       <div className="mt-8 flex justify-end space-x-4">
-        <Button variant="outline" onClick={handleDiscard}>
+        <Button variant="" onClick={handleDiscard} className="bg-danger-300">
           Descartar
         </Button>
-        <Button variant="outline" onClick={handlePreselect}>
+        <Button variant="" onClick={handlePreselect} className="bg-primary-400">
           Preseleccionar
         </Button>
-        <Button variant="outline" onClick={handleScheduleAppointment}>
+        <Button  onClick={handleScheduleAppointment} className="bg-primary-400">
           Agendar cita
         </Button>
-        <Button onClick={handleRent}>Arrendar</Button>
+        <Button onClick={handleRent} className="bg-success-400">Arrendar</Button>
       </div>
-      <AddEventDialog isOpen={showAddEvent} onClose={() => setShowAddEvent(false)}  tenantAuthID={id} propertyID={property}/>
+      <AddEventDialog isOpen={showAddEvent} onClose={() => setShowAddEvent(false)}  tenantAuthID={tenant_id} propertyID={property_id}
+       onSuccess = {
+        () =>
+          setTimeout(() => {
+            toast({
+              title: 'Cita Creada',
+              description: 'La Cita ha sido creada exitosamente',
+              status: 'success',
+            })
+          }, 500)
+
+        }
+        
+        onError = {
+        () =>
+          setTimeout(() => {
+            toast({
+              title: 'Error',
+              description: 'Ha ocurrido un error al crear la cita',
+              status: 'error',
+              variant: 'destructive',
+            })
+        }, 500)
+      }
+      />
     </div>
   )
 }

@@ -7,7 +7,7 @@ import Link from "next/link"
 
 export function PropertyDetails({ property, className }) {
   // Limitar a un máximo de 3 candidatos
-  const displayedCandidates = property.candidates.slice(0, 3)
+  const displayedCandidates = property.lista_candidatos.slice(0, 3)
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -20,18 +20,18 @@ export function PropertyDetails({ property, className }) {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{property.address}</span>
+                <span className="text-sm">{property.direccion}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-semibold">${property.price}/mes</span>
+                <span className="text-sm font-semibold">${property.precio} /mes</span>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
                   <Bed className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-inter">{property.bedrooms}</span>
+                  <span className="text-sm font-inter">{property.habitaciones}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Bath className="h-4 w-4 text-muted-foreground" />
@@ -39,7 +39,7 @@ export function PropertyDetails({ property, className }) {
                 </div>
                 <div className="flex items-center space-x-1">
                   <Square className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-inter">{property.area} m²</span>
+                  <span className="text-sm font-inter">{property.area_propiedad} m²</span>
                 </div>
               </div>
             </div>
@@ -51,8 +51,8 @@ export function PropertyDetails({ property, className }) {
           </CardHeader>
           <CardContent>
             <img
-              src={property.media[0].mediaUrl}  
-              alt={`Imagen de ${property.address}`}
+              src={property.media}  
+              alt={`Imagen de ${property.direccion}`}
               className="w-full h-48 object-cover rounded-md"
             />
           </CardContent>
@@ -62,27 +62,27 @@ export function PropertyDetails({ property, className }) {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <CardTitle className="font-spaceGrotesk font-bold">Candidatos</CardTitle>
           <span className="text-sm text-muted-foreground mt-2 sm:mt-0">
-            Mostrando {displayedCandidates.length} de {property.candidates.length} candidatos
+            Mostrando {displayedCandidates.length} de {property.lista_candidatos.length} candidatos
           </span>
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
             {displayedCandidates.map((candidate) => (
-              <li key={candidate.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+              <li key={candidate._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
                 <div className="flex items-center space-x-4">
                   <Avatar>
-                    <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={candidate.name} />
-                    <AvatarFallback>{candidate.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={candidate.tenantInfo.firstName} />
+                    <AvatarFallback>{candidate.tenantInfo.firstName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                   </Avatar>
-                  <span className="font-medium font-inter">{candidate.name}</span>
+                  <span className="font-medium font-inter">{candidate.tenantInfo.firstName}</span>
                 </div>
                 <div className="flex items-center space-x-4 font-inter">
                   <Badge variant="secondary" className="flex items-center space-x-1">
                     <Star className="h-4 w-4 text-yellow-500" />
-                    <span>{candidate.rating}</span>
+                    <span>{candidate.tenantInfo.avgRating}</span>
                   </Badge>
                   <Button variant="outline" size="sm" asChild className="text-primary-400 font-inter">
-                    <Link href={`candidatos/${candidate.id}?property=${property.id}`}>
+                    <Link href={`candidatos/${candidate._id}?tenant=${candidate.tenantInfo.id}&property=${property._id}`}>
                       <User className="h-4 w-4 mr-2" />
                       Ver Perfil
                     </Link>
@@ -95,7 +95,7 @@ export function PropertyDetails({ property, className }) {
       </Card>
       <div className="flex justify-end">
         <Button asChild className='bg-primary-400'>
-          <Link href={`/arrendador-dashboard/propiedades-busqueda/${property.id}`}>
+          <Link href={`/arrendador-dashboard/propiedades-busqueda/${property._id}`}>
             <ExternalLink className="h-4 w-4 mr-2" />
             Ver Lista Completa de Candidatos
           </Link>

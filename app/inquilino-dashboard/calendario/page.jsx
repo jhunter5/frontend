@@ -40,7 +40,7 @@ function CalendarHeader({ currentDate, onPrevious, onNext, currentView, onToday 
   return (
     <div className="flex items-center justify-between p-4 border-b">
       <div className="flex items-center gap-4">
-        <h1 className="text-2xl font-semibold">{format(currentDate, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentDate, "MMMM yyyy", { locale: es }).slice(1)}</h1>
+      <h1 className="text-2xl font-semibold">{format(currentDate, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentDate, "MMMM yyyy", { locale: es }).slice(1)}</h1>
         <Button variant="outline" size="sm" onClick={onToday}>
           Today
         </Button>
@@ -114,6 +114,7 @@ function MonthView({ currentDate, appointments }) {
 
       {/* Modal para detalles de la cita */}
       {selectedAppointment && (
+        console.log(selectedAppointment),
         <Dialog open={!!selectedAppointment} onOpenChange={() => setSelectedAppointment(null)}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -145,7 +146,7 @@ function MonthView({ currentDate, appointments }) {
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <User className="h-6 w-6 text-muted-foreground" />
-                    <p className="col-span-3 text-sm">Inquilino potencial: {selectedAppointment.tenant[0]?.firstName + ' ' + selectedAppointment.tenant[0]?.lastName}</p>
+                    <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord[0]?.firstName + ' ' + selectedAppointment.landlord[0]?.lastName}</p>
                   </div>
                 </>
             </div>
@@ -167,8 +168,9 @@ export default function CalendarPage() {
 
   const fetchAppointments = async () => {
     const userId = getAuth0Id(user.sub)
+    console.log(userId)
 
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/appointment/landlord/${userId}`)
+    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/appointment/tenant/${userId}`)
 
     if (!response.ok) {
       throw new Error('Ocurrio un error consultando la base de datos')
@@ -216,14 +218,6 @@ export default function CalendarPage() {
         />
 
         <MonthView currentDate={currentDate} appointments={appointments} />
-
-        {/* <Button
-          size="icon"
-          className="fixed bottom-8 right-8 h-12 w-12 rounded-full shadow-lg"
-          onClick={() => setShowAddEvent(true)}
-        >
-          <Plus className="h-6 w-6" />
-        </Button> */}
       </div>
       
     </div>
