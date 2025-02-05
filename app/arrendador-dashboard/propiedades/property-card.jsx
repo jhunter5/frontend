@@ -8,7 +8,7 @@ export function PropertyCard({ property }) {
       <Card className="overflow-hidden transition-shadow hover:shadow-lg">
         <div className="aspect-video relative overflow-hidden">
           <img
-            src={property.media[0].mediaUrl}
+            src={property.media[0]?.mediaUrl}
             alt={`Imagen de ${property.address}`}
             className="object-cover w-full h-full"
           />

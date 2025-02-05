@@ -77,7 +77,7 @@ export default function NewProperty() {
       }
 
       return response.json()
-  }
+    }
   })
 
   const handleSubmit = (e) => {

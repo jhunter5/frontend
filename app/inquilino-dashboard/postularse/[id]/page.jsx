@@ -47,7 +47,7 @@ export default function PostulateForm({ params }) {
   const handleSubmit = () => {
     alert("Tu postulación ha sido enviada con éxito.")
     console.log("Formulario enviado:", formData)
-    router.push(`/inquilino-dashboard/mi-vivienda`)
+    // router.push(`/inquilino-dashboard/mi-vivienda`)
   }
 
   return (
