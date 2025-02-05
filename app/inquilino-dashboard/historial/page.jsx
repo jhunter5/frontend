@@ -167,7 +167,6 @@ function ExperienciaCard({ propiedad }) {
           <Star className="h-5 w-5 text-yellow-400 mr-1" />
           <span className="font-bold">{propiedad.calificacion}</span>
         </div>
-        <Button variant="outline" size="sm">Ver detalles</Button>
       </CardFooter>
     </Card>
   )
