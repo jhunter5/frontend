@@ -3,54 +3,66 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, MapPin, Eye, FileText, CheckCircle, XCircle, Clock } from 'lucide-react'
 import Link from "next/link"
+import { getAuth0Id } from "@/app/utils/getAuth0id"
+import { useAuth0 } from "@auth0/auth0-react"
 
-// Datos simulados (en un caso real, vendrán de la API)
-const getPostulaciones = () => [
-  {
-    id: 1,
-    imagen: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    titulo: "Casa en el centro histórico",
-    ubicacion: "Ciudad Vieja, Zona 1",
-    estado: "En revisión",
-  },
-  {
-    id: 2,
-    imagen: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    titulo: "Apartamento moderno",
-    ubicacion: "Nueva Vista, Zona 3",
-    estado: "Aceptada",
-  },
-  {
-    id: 3,
-    imagen: "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    titulo: "Cabaña en el bosque",
-    ubicacion: "Los Pinos, Zona 7",
-    estado: "Rechazada",
-  },
-]
+const STATUS_MAP = {
+  0: { label: "En revisión", icon: <Clock className="h-6 w-6 text-yellow-500" /> },
+  1: { label: "Aceptada", icon: <CheckCircle className="h-6 w-6 text-green-500" /> },
+  2: { label: "Rechazada", icon: <XCircle className="h-6 w-6 text-red-500" /> }
+};
 
 export default function MisPostulaciones() {
   const router = useRouter()
   const [postulaciones, setPostulaciones] = useState([])
+  const { user } = useAuth0()
 
   useEffect(() => {
-    const fetchedPostulaciones = getPostulaciones()
-    setPostulaciones(fetchedPostulaciones)
-  }, [])
+    const fetchPostulaciones = async () => {
+      try {
+        const userId = getAuth0Id(user.sub)
+        const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/tenant/${userId}?year=2025`)
+        const data = await response.json()
 
-  const getStatusIcon = (estado) => {
-    switch (estado) {
-      case "Aceptada":
-        return <CheckCircle className="h-6 w-6 text-green-500" />
-      case "Rechazada":
-        return <XCircle className="h-6 w-6 text-red-500" />
-      default:
-        return <Clock className="h-6 w-6 text-yellow-500" />
+        const postulacionesConInfo = await Promise.all(
+          data.applications.map(async (app) => {
+            try {
+              const propertyResponse = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${app.application.property}`)
+              const propertyData = await propertyResponse.json()
+
+              return {
+                id: app.application._id,
+                titulo: propertyData.property.address || "Propiedad sin nombre",
+                ubicacion: `${propertyData.property.city}, ${propertyData.property.state}` || "Ubicación no disponible",
+                imagen: propertyData.media.length > 0 ? propertyData.media[0].mediaUrl : "https://via.placeholder.com/300",
+                estado: STATUS_MAP[app.application.status]?.label || "Desconocido",
+                estadoIcon: STATUS_MAP[app.application.status]?.icon
+              }
+            } catch (error) {
+              console.error(`Error al obtener datos de la propiedad ${app.application.property}`, error)
+              return {
+                id: app.application._id,
+                titulo: `Propiedad ${app.application.property}`,
+                ubicacion: "Ubicación no disponible",
+                imagen: "https://via.placeholder.com/300",
+                estado: STATUS_MAP[app.application.status]?.label || "Desconocido",
+                estadoIcon: STATUS_MAP[app.application.status]?.icon
+              }
+            }
+          })
+        )
+
+        setPostulaciones(postulacionesConInfo)
+      } catch (error) {
+        console.error("Error al obtener postulaciones", error)
+      }
     }
-  }
+
+    fetchPostulaciones()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,14 +129,8 @@ export default function MisPostulaciones() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      {getStatusIcon(postulacion.estado)}
-                      <span className={`font-medium ${
-                        postulacion.estado === "Aceptada"
-                          ? "text-green-600"
-                          : postulacion.estado === "Rechazada"
-                          ? "text-red-600"
-                          : "text-yellow-500"
-                      }`}>
+                      {postulacion.estadoIcon}
+                      <span className="font-medium">
                         {postulacion.estado}
                       </span>
                     </div>
@@ -144,15 +150,8 @@ export default function MisPostulaciones() {
             <Card className="max-w-md mx-auto bg-white/80 backdrop-blur-sm shadow-xl">
               <CardContent className="p-6">
                 <div className="text-6xl mb-4">🏠</div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">No hay postulaciones aún</h2>
-                <p className="text-gray-600 mb-6">
-                  Empieza a explorar propiedades y envía tu primera postulación.
-                </p>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Link href="/inquilino-dashboard/buscador-propiedades">
-                    Buscar Propiedades
-                  </Link>
-                </Button>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">No tienes postulaciones aún</h2>
+                <p className="text-gray-600">Explora propiedades y postúlate para comenzar tu proceso de arrendamiento.</p>
               </CardContent>
             </Card>
           </div>
