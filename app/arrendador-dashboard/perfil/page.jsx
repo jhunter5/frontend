@@ -9,18 +9,6 @@ import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
-const arrendatario = {
-  nombre: "Juan",
-  apellido: "Pérez",
-  correo: "juan.perez@email.com",
-  telefono: "+57 300 123 4567",
-  edad: 35,
-  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  numeroPropiedades: 2,
-  calificacionPromedio: 4.5,
-  porcentajeCumplimiento: 98,
-}
-
 export default function ArrendatarioProfile() {
   const { user } = useAuth0()
 
@@ -63,7 +51,7 @@ export default function ArrendatarioProfile() {
           <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
             {isPending ? 
             (
-              <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback> 
+              <AvatarFallback>{data.firstName[0]}{data.lastName[0]}</AvatarFallback> 
             ) : 
             (
             <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
@@ -138,10 +126,10 @@ export default function ArrendatarioProfile() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Home className="h-6 w-6 text-primary" />
               </div>
-              <div>
+              {/* <div>
                 <p className="text-sm text-muted-foreground">Número de Propiedades</p>
                 <p className="text-2xl font-bold">{arrendatario.numeroPropiedades}</p>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center gap-4">
@@ -157,7 +145,7 @@ export default function ArrendatarioProfile() {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < Math.floor(arrendatario.calificacionPromedio)
+                          i < Math.floor(data.avgRating)
                             ? 'fill-yellow-500 text-yellow-500'
                             : 'fill-muted text-muted'
                         }`}
@@ -168,7 +156,7 @@ export default function ArrendatarioProfile() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
@@ -184,7 +172,7 @@ export default function ArrendatarioProfile() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
