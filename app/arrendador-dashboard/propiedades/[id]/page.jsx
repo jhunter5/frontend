@@ -303,7 +303,7 @@ export default function PropertyDetails({ params }) {
             )}
             {data.contract !== null && (
               <Button asChild className="bg-[#1C2671] text-white">
-                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenant.authID}`}>
+                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenantAuthID.authID}`}>
                   Ver perfil del inquilino
                 </Link>
               </Button>
