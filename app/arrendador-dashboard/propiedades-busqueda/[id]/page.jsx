@@ -13,40 +13,6 @@ import { CandidateList } from './candidate-list'
 import { PropertyStatistics } from '@/app/arrendador-dashboard/propiedades-busqueda/[id]/property-statics'
 import { useQueries } from '@tanstack/react-query'
 
-// Datos de ejemplo actualizados para la propiedad
-const getProperty = (id) => ({
-  id: "6782b357e02d45b448eb06a8",
-  address: "123 Main St, Cityville",
-  price: 1500,
-  bedrooms: 2,
-  bathrooms: 2,
-  area: 80,
-  image: "/placeholder.svg?height=400&width=600",
-  totalApplications: 50,
-  candidates: [
-    { application_id: "1", tenant_id: "677f3353f9e2265929c7489a", name: "John Doe", age: 28, industry: "Tecnología", status: "Postulado", rating: 4.5 },
-    { id: 2, name: "Jane Smith", age: 35, industry: "Educación", status: "Preseleccionado", rating: 4.2 },
-    { id: 3, name: "Alice Johnson", age: 42, industry: "Finanzas", status: "Postulado", rating: 4.8 },
-    { id: 4, name: "Bob Williams", age: 31, industry: "Salud", status: "Preseleccionado", rating: 4.0 },
-    // ... más candidatos
-  ],
-  demographics: {
-    ageGroups: [
-      { group: "18-25", count: 10 },
-      { group: "26-35", count: 20 },
-      { group: "36-45", count: 15 },
-      { group: "46+", count: 5 },
-    ],
-    industries: [
-      { industry: "Tecnología", count: 15 },
-      { industry: "Educación", count: 10 },
-      { industry: "Finanzas", count: 8 },
-      { industry: "Salud", count: 7 },
-      { industry: "Otros", count: 10 },
-    ],
-  },
-})
-
 const fetchPropertyById = async (id) => {
   const property = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`) 
 
