@@ -51,10 +51,10 @@ export default function ArrendatarioProfile() {
           <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
             {isPending ? 
             (
-              <AvatarFallback>{data.firstName[0]}{data.lastName[0]}</AvatarFallback> 
+              <AvatarFallback>{data?.firstName[0]}{data?.lastName[0]}</AvatarFallback> 
             ) : 
             (
-            <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
+            <AvatarImage src={data?.avatar} alt={`${data?.firstName} ${data?.lastName}`} />
             )
           }
           </Avatar>
