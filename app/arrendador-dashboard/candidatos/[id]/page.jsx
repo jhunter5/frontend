@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { ArrowLeft, User, Briefcase, Calendar, Star, Home, CheckCircle, XCircle, Download } from "lucide-react"
+import { ArrowLeft, User, Briefcase, Star, Home, FileText, Download } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -24,39 +24,31 @@ import { getAuth0Id } from "@/app/utils/getAuth0id"
 import { useAuth0 } from '@auth0/auth0-react'
 import { ro } from "date-fns/locale"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 
+const getApplication = async (id) => {
+  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/${id}`)
+  if (!response.ok) {
+    throw new Error("No se pudo obtener la cita")
+  }
 
-// Simulación de datos del candidato
-const getCandidate = (id) => ({
-  id,
-  name: "Ana Martínez",
-  age: 32,
-  occupation: "Ingeniera de Software",
-  avatar: "/placeholder.svg?height=128&width=128",
-  email: "ana.martinez@example.com",
-  phone: "+34 612 345 678",
-  currentSalary: 45000,
-  desiredRent: 1200,
-  creditScore: 720,
-  employmentStatus: "Empleado tiempo completo",
-  yearsOfEmployment: 5,
-  rentalHistory: [
-    { address: "Calle Mayor 123, Madrid", duration: "3 años", endDate: "2023-01-31", onTimePayments: "95%" },
-    { address: "Avenida Central 45, Barcelona", duration: "2 años", endDate: "2020-01-31", onTimePayments: "100%" },
-  ],
-  references: [
-    { name: "Carlos Gómez", relationship: "Anterior arrendador", contact: "carlos@example.com" },
-    { name: "Laura Sánchez", relationship: "Jefe actual", contact: "laura@example.com" },
-  ],
-  documents: [
-    { name: "Contrato de trabajo", status: "Verificado", fileUrl: "/dummy-files/contrato-trabajo.pdf" },
-    { name: "Declaración de impuestos", status: "Pendiente", fileUrl: "/dummy-files/declaracion-impuestos.pdf" },
-    { name: "Historial crediticio", status: "Verificado", fileUrl: "/dummy-files/historial-crediticio.pdf" },
-  ],
-})
+  return response.json()
+}
+
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 0:
+      return "Postulado"
+    case 1:
+      return "Preseleccionado"
+    case 2:
+      return "Descartado"
+    default:
+      return "Desconocido"
+  }
+}
 
 export default function CandidateProfile({ params }) {
-  const [candidate, setCandidate] = useState(null)
   const [showAddEvent, setShowAddEvent] = useState(false)
   const searchParams = useSearchParams()
   const application_id = params.id
@@ -64,10 +56,6 @@ export default function CandidateProfile({ params }) {
   const property_id = searchParams.get('property')
   const router = useRouter()
   
-  useEffect(() => {
-    const fetchedCandidate = getCandidate(params.id)
-    setCandidate(fetchedCandidate)
-  }, [params.id])
 
   const changeApplicationStatus = useMutation({
     mutationFn: async (status) => {
@@ -133,12 +121,30 @@ export default function CandidateProfile({ params }) {
     })
   }
 
+  const handleScheduleAppointment = () => {
+    setShowAddEvent(true) 
+  }
 
-  if (!candidate) {
+  const handleRent = () => {
+    // router.push(`/arrendador-dashboard/contratos/crear?tenant=${tenant_id}&property=${property_id}`)
+    router.push(`/arrendador-dashboard/contratos/crear`)
+  }
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["appointment", application_id],
+    queryFn: () => getApplication(application_id),
+  })
+
+  if (isLoading) {
     return <div>Cargando...</div>
   }
 
+  if (isError) {
+    return <div>Ha ocurrido un error</div>
+  }
 
+  const { application, references, documents } = data
+  const { tenant } = application
 
   function AddEventDialog({ isOpen, onClose, tenantAuthID, propertyID, onSuccess, onError }) {
     const [title, setTitle] = useState("")
@@ -238,12 +244,7 @@ export default function CandidateProfile({ params }) {
     )
   }
 
-  const handleScheduleAppointment = () => {
-    setShowAddEvent(true) 
-  }
-
-  const handleRent = () => {
-  }
+  
 
   return (
     <div className="container mx-auto py-8">
@@ -267,28 +268,40 @@ export default function CandidateProfile({ params }) {
           <CardContent>
             <div className="flex items-center space-x-4 mb-6">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={candidate.avatar} alt={candidate.name} />
+                <AvatarImage src={tenant.avatar} alt={`${tenant.firstName} ${tenant.lastName}`} />
                 <AvatarFallback>
-                  {candidate.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {tenant.firstName[0]}
+                  {tenant.lastName[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-2xl font-bold">{candidate.name}</h2>
-                <p className="text-muted-foreground">{candidate.occupation}</p>
+              <h2 className="text-2xl font-bold">
+                  {tenant.firstName} {tenant.lastName}
+                </h2>
+                <p className="text-muted-foreground">{tenant.industry}</p>
               </div>
             </div>
             <div className="space-y-2">
-              <p>
-                <strong>Edad:</strong> {candidate.age} años
+            <p>
+                <strong>Edad:</strong> {tenant.age} años
               </p>
               <p>
-                <strong>Email:</strong> {candidate.email}
+                <strong>Género:</strong> {tenant.gender}
               </p>
               <p>
-                <strong>Teléfono:</strong> {candidate.phone}
+                <strong>Estado civil:</strong> {tenant.maritalStatus}
+              </p>
+              <p>
+                <strong>Email:</strong> {tenant.email}
+              </p>
+              <p>
+                <strong>Teléfono:</strong> {tenant.phone}
+              </p>
+              <p>
+                <strong>Tipo de ID:</strong> {tenant.idType}
+              </p>
+              <p>
+                <strong>Número de ID:</strong> {tenant.id}
               </p>
             </div>
           </CardContent>
@@ -303,27 +316,31 @@ export default function CandidateProfile({ params }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="font-semibold">Estado laboral</p>
-              <p>{candidate.employmentStatus}</p>
+              <p className="font-semibold">Tipo de contrato</p>
+              <p>{tenant.contractType}</p>
             </div>
             <div>
-              <p className="font-semibold">Años en empleo actual</p>
-              <p>{candidate.yearsOfEmployment} años</p>
+              <p className="font-semibold">Industria</p>
+              <p>{tenant.industry}</p>
             </div>
             <div>
-              <p className="font-semibold">Salario actual</p>
-              <p>${candidate.currentSalary.toLocaleString()}/año</p>
+              <p className="font-semibold">Salario</p>
+              <p>${tenant.salary.toLocaleString()}/mes</p>
             </div>
             <div>
-              <p className="font-semibold">Renta deseada</p>
-              <p>${candidate.desiredRent.toLocaleString()}/mes</p>
+              <p className="font-semibold">Calificación promedio</p>
+                <div className="flex items-center">
+                  <Progress value={tenant.avgRating * 20} className="mr-2" />
+                  <span>{tenant.avgRating.toFixed(1)}</span>
+                </div>
             </div>
             <div>
-              <p className="font-semibold">Puntuación crediticia</p>
-              <div className="flex items-center">
-                <Progress value={candidate.creditScore / 8.5} className="mr-2" />
-                <span>{candidate.creditScore}</span>
-              </div>
+              <p className="font-semibold">Contratos previos</p>
+              <p>{tenant.previousContracts}</p>
+            </div>  
+            <div>
+              <p className="font-semibold">Duración promedio de contratos</p>
+              <p>{tenant.avgContractDuration} Meses</p>
             </div>
           </CardContent>
         </Card>
@@ -332,18 +349,25 @@ export default function CandidateProfile({ params }) {
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
               <Home className="mr-2 h-5 w-5" />
-              Historial de Alquiler
+              Detalles de la Postulacion
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {candidate.rentalHistory.map((rental, index) => (
-              <div key={index} className="mb-4 last:mb-0">
-                <p className="font-semibold">{rental.address}</p>
-                <p className="text-sm text-muted-foreground">Duración: {rental.duration}</p>
-                <p className="text-sm text-muted-foreground">Finalización: {rental.endDate}</p>
-                <p className="text-sm">Pagos a tiempo: {rental.onTimePayments}</p>
-              </div>
-            ))}
+            <div className="space-y-2">
+                <div className="flex items-center">
+                  <span className="font-semibold mr-2">Estado:</span>
+                  <Badge>{getStatusLabel(application.status)}</Badge>
+                </div>
+                <p>
+                  <strong>Puntuación:</strong> {application.score}
+                </p>
+                <p>
+                  <strong>Descripción personal:</strong> {application.personalDescription}
+                </p>
+                <p>
+                  <strong>Fecha de aplicación:</strong> {new Date(application.createdAt).toLocaleDateString()}
+                </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -355,11 +379,13 @@ export default function CandidateProfile({ params }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {candidate.references.map((reference, index) => (
+          {references.map((reference, index) => (
               <div key={index} className="mb-4 last:mb-0">
-                <p className="font-semibold">{reference.name}</p>
+                <p className="font-semibold">
+                  {reference.name} {reference.lastname}
+                </p>
                 <p className="text-sm text-muted-foreground">{reference.relationship}</p>
-                <p className="text-sm">{reference.contact}</p>
+                <p className="text-sm">{reference.cellphone}</p>
               </div>
             ))}
           </CardContent>
@@ -368,31 +394,21 @@ export default function CandidateProfile({ params }) {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Calendar className="mr-2 h-5 w-5" />
+              <FileText className="mr-2 h-5 w-5" />
               Documentos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              {candidate.documents.map((doc, index) => (
+            <div className="grid gap-4 md:grid-cols-2">
+              {documents.map((doc, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                  <span>{doc.name}</span>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={doc.status === "Verificado" ? "success" : "warning"}>
-                      {doc.status === "Verificado" ? (
-                        <CheckCircle className="mr-1 h-4 w-4" />
-                      ) : (
-                        <XCircle className="mr-1 h-4 w-4" />
-                      )}
-                      {doc.status}
-                    </Badge>
-                    <Button variant="outline" size="icon" asChild>
-                      <a href={doc.fileUrl} download>
-                        <Download className="h-4 w-4" />
-                        <span className="sr-only">Descargar {doc.name}</span>
-                      </a>
-                    </Button>
-                  </div>
+                  <span>{doc.mediaType}</span>
+                  <Button variant="outline" size="icon" asChild>
+                    <a href={doc.mediaUrl} target="_blank" rel="noopener noreferrer">
+                      <Download className="h-4 w-4" />
+                      <span className="sr-only">Ver {doc.mediaType}</span>
+                    </a>
+                  </Button>
                 </div>
               ))}
             </div>

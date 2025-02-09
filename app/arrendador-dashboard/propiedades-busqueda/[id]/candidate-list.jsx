@@ -50,19 +50,19 @@ export function CandidateList({ candidates, requestSort, sortConfig, property })
       </TableHeader>
       <TableBody>
         {candidates.map((candidate) => (
-          <TableRow key={candidate.id}>
-            <TableCell>{candidate.name}</TableCell>
-            <TableCell>{candidate.age}</TableCell>
-            <TableCell>{candidate.industry}</TableCell>
+          <TableRow key={candidate?.tenant?._id}>
+            <TableCell>{candidate?.tenant?.firstName + " " + candidate?.tenant?.lastName}</TableCell>
+            <TableCell>{candidate?.tenant?.age}</TableCell>
+            <TableCell>{candidate?.tenant?.industry}</TableCell>
             <TableCell>
-              <Badge variant={candidate.status === "Preseleccionado" ? "default" : "secondary"}>
-                {candidate.status}
+              <Badge variant={candidate.status === 1 ? "default" : "secondary"}>
+                {candidate.status === 0 ? "Postulado" : "Preseleccionado"}
               </Badge>
             </TableCell>
-            <TableCell>{candidate.rating.toFixed(1)}</TableCell>
+            <TableCell>{candidate?.tenant?.avgRating?.toFixed(1)}</TableCell>
             <TableCell>
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/arrendador-dashboard/candidatos/${candidate.application_id}?tenant=${candidate.tenant_id}property=${property.id}`}>
+                <Link href={`/arrendador-dashboard/candidatos/${candidate._id}?tenant=${candidate.tenant.authID}&property=${property?.property?._id}`}>
                   <User className="mr-2 h-4 w-4" />
                   Ver perfil
                 </Link>

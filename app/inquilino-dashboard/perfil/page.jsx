@@ -8,39 +8,37 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Star, Home, CheckCircle2, Mail, Phone, Calendar } from 'lucide-react'
 import { useAuth0 } from '@auth0/auth0-react'
 import Link from "next/link"
-
-// En un caso real, esto vendría de tu API
-const getPerfil = (id) => {
-  // Simulamos que solo existen inquilinos con IDs numéricos;
-  return {
-    id,
-    nombre: "Juan",
-    apellido: "Pérez",
-    correo: "juan.perez@email.com",
-    telefono: "+57 300 123 4567",
-    edad: 35,
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    numeroArrendamientos: 3,
-    calificacionPromedio: 4.2,
-    porcentajeCumplimiento: 95,
-  }
-}
+import { getAuth0Id } from '@/app/utils/getAuth0id'
+import { useQuery } from '@tanstack/react-query'
 
 export default function InquilinoProfile() {
   const router = useRouter()
-  const [inquilino, setInquilino] = useState(null)
   const { user, isLoading } = useAuth0()
 
-  useEffect(() => {
-    if (!isLoading && user) {
-      const fetchedInquilino = getPerfil(user.sub)
-      if (fetchedInquilino) {
-        setInquilino(fetchedInquilino)
-      } else {
-        router.push('/error')
-      }
+  const fetchProfileTenant = async () => {
+    const userId = getAuth0Id(user?.sub)
+    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/tenant/${userId}`)
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
     }
-  }, [user, isLoading, router])
+
+    return response.json()
+  }
+
+  const {isPending, isError, data, error} = useQuery({
+    queryKey: ['tenant'],
+    queryFn: fetchProfileTenant
+  })
+
+  if (isError) {
+    return <div>Error: {error.message}</div>
+  }
+
+  if (isPending) {
+    return <div>Cargando...</div>
+  }
+
 
   if (isLoading) {
     return (
@@ -49,6 +47,9 @@ export default function InquilinoProfile() {
       </div>
     )
   }
+
+  const inquilino = data || null
+  console.log(inquilino)
 
   if (!inquilino) {
     return (
@@ -74,11 +75,11 @@ export default function InquilinoProfile() {
         <div className="bg-primary-400 p-6 text-white">
           <div className="flex items-center gap-6">
             <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-              <AvatarImage src={inquilino.avatar} alt={`${inquilino.nombre} ${inquilino.apellido}`} />
-              <AvatarFallback>{inquilino.nombre[0]}{inquilino.apellido[0]}</AvatarFallback>
+              <AvatarImage src={inquilino.avatar} alt={`${inquilino.firstName} ${inquilino.lastName}`} />
+              <AvatarFallback>{inquilino.firstName[0]}{inquilino.lastName[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-3xl font-bold">{inquilino.nombre} {inquilino.apellido}</h1>
+              <h1 className="text-3xl font-bold">{inquilino.firstName} {inquilino.lastName}</h1>
               <p className="text-blue-100 text-lg">Inquilino</p>
             </div>
           </div>
@@ -96,21 +97,24 @@ export default function InquilinoProfile() {
               <Mail className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-500">Correo electrónico</p>
-                <p className="font-medium">{inquilino.correo}</p>
+                <p className="font-medium">
+                  {inquilino.email.charAt(0).toUpperCase() + inquilino.email.slice(1)}
+                </p>
+
               </div>
             </div>
             <div className="flex items-center gap-4">
               <Phone className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-500">Teléfono</p>
-                <p className="font-medium">{inquilino.telefono}</p>
+                <p className="font-medium">{inquilino.phone}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <Calendar className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm text-gray-500">Edad</p>
-                <p className="font-medium">{inquilino.edad} años</p>
+                <p className="font-medium">{inquilino.age} años</p>
               </div>
             </div>
           </CardContent>
@@ -128,7 +132,7 @@ export default function InquilinoProfile() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Número de Arrendamientos</p>
-                <p className="text-2xl font-bold text-blue-600">{inquilino.numeroArrendamientos}</p>
+                <p className="text-2xl font-bold text-blue-600">{inquilino.previousContracts}</p>
               </div>
             </div>
 
@@ -139,12 +143,12 @@ export default function InquilinoProfile() {
               <div>
                 <p className="text-sm text-gray-500">Calificación Promedio</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-yellow-600">{inquilino.calificacionPromedio}</p>
+                  <p className="text-2xl font-bold text-yellow-600">{inquilino.avgRating}</p>
                   <div className="flex items-center">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
-                        className={`h-4 w-4 ${i < Math.floor(inquilino.calificacionPromedio) ? 'fill-yellow-500 text-yellow-500' : 'fill-gray-300 text-gray-300'}`}
+                        className={`h-4 w-4 ${i < Math.floor(inquilino.avgRating) ? 'fill-yellow-500 text-yellow-500' : 'fill-gray-300 text-gray-300'}`}
                       />
                     ))}
                   </div>
@@ -159,7 +163,7 @@ export default function InquilinoProfile() {
               <div>
                 <p className="text-sm text-gray-500">Porcentaje de Cumplimiento</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-green-600">{inquilino.porcentajeCumplimiento}%</p>
+                  <p className="text-2xl font-bold text-green-600">{inquilino.avgContractDuration}%</p>
                   <div className="h-2 w-24 rounded-full bg-gray-200 overflow-hidden">
                     <div 
                       className="h-full bg-green-500 transition-all duration-500 ease-out" 
