@@ -9,18 +9,6 @@ import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
-const arrendatario = {
-  nombre: "Juan",
-  apellido: "Pérez",
-  correo: "juan.perez@email.com",
-  telefono: "+57 300 123 4567",
-  edad: 35,
-  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  numeroPropiedades: 2,
-  calificacionPromedio: 4.5,
-  porcentajeCumplimiento: 98,
-}
-
 export default function ArrendatarioProfile() {
   const { user } = useAuth0()
 
@@ -63,10 +51,10 @@ export default function ArrendatarioProfile() {
           <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
             {isPending ? 
             (
-              <AvatarFallback>{arrendatario.nombre[0]}{arrendatario.apellido[0]}</AvatarFallback> 
+              <AvatarFallback>{data?.firstName[0]}{data?.lastName[0]}</AvatarFallback> 
             ) : 
             (
-            <AvatarImage src={data.avatar} alt={`${data.firstName} ${data.lastName}`} />
+            <AvatarImage src={data?.avatar} alt={`${data?.firstName} ${data?.lastName}`} />
             )
           }
           </Avatar>

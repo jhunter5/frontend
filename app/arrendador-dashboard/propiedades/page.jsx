@@ -38,7 +38,7 @@ export default function PropertiesPage() {
 
   // Filtrar propiedades por ciudad
   const filteredProperties = properties.filter(property =>
-    property.city.toLowerCase().includes(searchCity.toLowerCase())
+    property?.city?.toLowerCase().includes(searchCity.toLowerCase())
   )
 
   // Calcular páginas

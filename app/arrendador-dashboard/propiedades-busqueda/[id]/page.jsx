@@ -11,6 +11,7 @@ import { ArrowLeft, Bed, Bath, Square, MapPin, DollarSign } from 'lucide-react'
 import Link from "next/link"
 import { CandidateList } from './candidate-list'
 import { PropertyStatistics } from '@/app/arrendador-dashboard/propiedades-busqueda/[id]/property-statics'
+import { useQueries } from '@tanstack/react-query'
 
 // Datos de ejemplo actualizados para la propiedad
 const getProperty = (id) => ({
@@ -46,46 +47,92 @@ const getProperty = (id) => ({
   },
 })
 
+const fetchPropertyById = async (id) => {
+  const property = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`) 
+
+  if (!property.ok) {
+    throw new Error('Error fetching property')
+  }
+
+  return property.json()
+}
+
+const fetchApplications = async (id) => {
+  const applications = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/property/${id}`)
+
+  if (!applications.ok) {
+    throw new Error('Error fetching applications')
+  }
+
+  return applications.json()
+}
+
 export default function PropertyFullDetails({ params }) {
-  const router = useRouter()
-  const [property, setProperty] = useState(null)
+  // const [property, setProperty] = useState(null)
   const [nameFilter, setNameFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [sortConfig, setSortConfig] = useState(null)
 
-  useEffect(() => {
-    const fetchedProperty = getProperty(params.id)
-    setProperty(fetchedProperty)
-  }, [params.id])
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ['property', params.id],
+        queryFn: () => fetchPropertyById(params.id),
+      },
+      {
+        queryKey: ['applications', params.id],
+        queryFn: () => fetchApplications(params.id),
+      }
+    ]
+  })
+  
+  
+  const isLoading = results.some(result => result.isLoading)
+  const isError = results.some(result => result.isError)
+  
+  if (isLoading) return <div>Loading...</div>
+  if (isError) return <div>Error fetching data</div>
 
-  if (!property) {
-    return <div>Cargando...</div>
-  }
+  const propertyData = results[0].data
+  const applicationData = results[1].data
 
-  const filteredCandidates = property.candidates.filter((candidate) => {
-    const nameMatch = candidate.name.toLowerCase().includes(nameFilter.toLowerCase())
-    const statusMatch = statusFilter === "all" || candidate.status === statusFilter
+  const filteredCandidates = applicationData?.applications.filter((application) => {
+    const fullName = `${application.tenant.firstName} ${application.tenant.lastName}`.toLowerCase()
+    const nameMatch = fullName.includes(nameFilter.toLowerCase())
+    const statusMatch = statusFilter === "all" || application.status === parseInt(statusFilter)
+    
     return nameMatch && statusMatch
   })
-
+ 
   const sortedCandidates = [...filteredCandidates].sort((a, b) => {
     if (!sortConfig) return 0
+  
     const { key, direction } = sortConfig
-    const aValue = a[key]
-    const bValue = b[key]
-    if (aValue < bValue) return direction === 'ascending' ? -1 : 1
-    if (aValue > bValue) return direction === 'ascending' ? 1 : -1
-    return 0
+  
+    // Verifica si la clave existe en el objeto
+    if (!(key in a) && !(key in a.tenant)) return 0
+    if (!(key in b) && !(key in b.tenant)) return 0
+  
+    const aValue = a[key] ?? a.tenant?.[key] ?? "" // Usa el valor en `a` o `a.tenant`
+    const bValue = b[key] ?? b.tenant?.[key] ?? ""
+  
+    const comparison = String(aValue).localeCompare(String(bValue)) // Comparación segura
+  
+    return direction === "ascending" ? comparison : -comparison
   })
+  
 
-  const requestSort = (key) => {
-    let direction = 'ascending'
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending'
-    }
-    setSortConfig({ key, direction })
+const requestSort = (key) => {
+  let direction = "ascending"
+
+  if (sortConfig?.key === key && sortConfig.direction === "ascending") {
+    direction = "descending"
   }
 
+  setSortConfig({ key, direction })
+}
+
+  console.log(propertyData)
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
@@ -105,25 +152,25 @@ export default function PropertyFullDetails({ params }) {
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="flex items-center space-x-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span>{property.address}</span>
+              <span>{propertyData?.property?.address}</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Bed className="h-4 w-4 text-muted-foreground" />
-                <span>{property.bedrooms} Habitaciones</span>
+                <span>{propertyData?.property?.rooms} Habitaciones</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Bath className="h-4 w-4 text-muted-foreground" />
-                <span>{property.bathrooms} Baños</span>
+                <span>{propertyData?.property?.bathrooms} Baños</span>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Square className="h-4 w-4 text-muted-foreground" />
-              <span>{property.area} m²</span>
+              <span>{propertyData?.property?.squareMeters} m²</span>
             </div>
             <div className="flex items-center space-x-2">
               <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="text-lg font-semibold">${property.price}/mes</span>
+              <span className="text-lg font-semibold">${propertyData?.property?.rentPrice}/mes</span>
             </div>
           </CardContent>
         </Card>
@@ -152,8 +199,8 @@ export default function PropertyFullDetails({ params }) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="Postulado">Postulados</SelectItem>
-                      <SelectItem value="Preseleccionado">Preseleccionados</SelectItem>
+                      <SelectItem value="0">Postulados</SelectItem>
+                      <SelectItem value="1">Preseleccionados</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -161,13 +208,13 @@ export default function PropertyFullDetails({ params }) {
                   candidates={sortedCandidates} 
                   requestSort={requestSort}
                   sortConfig={sortConfig}
-                  property={property}
+                  property={propertyData}
                 />
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="statistics">
-            <PropertyStatistics property={property} />
+            <PropertyStatistics applications={applicationData} />
           </TabsContent>
         </Tabs>
       </div>
