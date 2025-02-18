@@ -21,7 +21,7 @@ export default function Footer() {
               <Link href="#" className="hover:text-gray-300">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="hover:text-gray-300">
+              <Link href="https://www.instagram.com/_limitless_holdings_/?igsh=YzBqN21ic3o0MnZx#" className="hover:text-gray-300">
                 <Instagram className="h-5 w-5" />
               </Link>
               <Link href="#" className="hover:text-gray-300">
@@ -48,11 +48,11 @@ export default function Footer() {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span className="text-sm">info@limitless.com</span>
+                <span className="text-sm">limitless.holdings0@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span className="text-sm">+34 900 123 456</span>
+                <span className="text-sm">+57 318 8387926</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />

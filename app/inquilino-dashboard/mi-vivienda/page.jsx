@@ -200,7 +200,7 @@ export default function PropertyDetails({ params }) {
 
         <CardContent className="p-6">
           <div className="grid gap-8">
-            {/* Galería de imágenes mejorada */}
+            {/* Galería de imágenes */}
             <div className="space-y-4">
               {images.length > 0 ? (
                 <>
