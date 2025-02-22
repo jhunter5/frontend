@@ -78,7 +78,7 @@ export default function CreateProfile() {
         console.log(`${key}: ${value}`);
       }
 
-      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/tenant', {
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant', {
         method: 'POST',
         body: formData,
       });
@@ -100,7 +100,7 @@ export default function CreateProfile() {
         formData.append(key, value);
       });
 
-      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord', {
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord', {
         method: 'POST',
         body: formData,
       });
@@ -116,7 +116,7 @@ export default function CreateProfile() {
 
   const LandlordPreferences = useMutation({
     mutationFn: async ({ landlordAuthId, preferenceType, preferenceValue }) => {
-      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/landlord-preferences', {
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord-preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export default function CreateProfile() {
 
   const TenantPreferences = useMutation({
     mutationFn: async ({ tenantAuthId, preferenceType, preferenceValue }) => {
-      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/tenant-preferences', {
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant-preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ export default function CreateProfile() {
               status: "success",
               duration: 2000,
             });
-            router.push('/arrendador-dashboard/propiedades');
+            router.push('/mercado-pago');
             } 
             catch (error) {
               throw new Error(error.message);

@@ -14,7 +14,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { useToast } from "@/hooks/use-toast"
 
 const fetchProperty = async (id) => {
-  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
   }
@@ -60,8 +60,15 @@ export default function EditProperty({ params }) {
 
   const propertyEdition = useMutation({
     mutationFn: async (data) => {
-      console.log('Data desde la peticion', data)
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
+      //   method: 'PATCH',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(data),
+      // })
+
+      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

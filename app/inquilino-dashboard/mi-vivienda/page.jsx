@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter} from "@/components/ui/dialog"
 import {
   ArrowLeft,
   MapPin,
@@ -31,13 +30,12 @@ import { getAuth0Id } from "@/app/utils/getAuth0id"
 import { useAuth0 } from "@auth0/auth0-react"
 import { cn } from "@/lib/utils"
 
-
 export default function PropertyDetails({ params }) {
   const [property, setProperty] = useState(null)
   const [images, setImages] = useState([])
-  const [showDialog, setShowDialog] = useState(false)
-  const [dialogAction, setDialogAction] = useState("")
   const [currentImage, setCurrentImage] = useState(0)
+  const [alreadyPaid, setAlreadyPaid] = useState(false)
+  const [contractId, setContractId] = useState(null)
   const { user } = useAuth0()
 
   const nextImage = () => {
@@ -48,17 +46,67 @@ export default function PropertyDetails({ params }) {
     setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
   }
 
+  const verifyPayment = async (contractId) => {
+    try {
+      const userId = getAuth0Id(user.sub)
+      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract/verify/${userId}/${contractId}`)
+      const response = await fetch(`http://localhost:3001/api/payment/alreadyThisMonthPayment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantAuthID: userId,
+          contractId: contractId
+        }),
+      })
+      const paymentVerification = await response.json()
+      return paymentVerification
+    } catch (error) {
+      console.error("Error al verificar el pago:", error)
+    }
+  }
+
+  const handlePayment = async () => {
+    try {
+      const userId = getAuth0Id(user.sub)
+      const response = await fetch(`http://localhost:3001/api/mercado-pago/create-preference`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contractId: contractId,
+          tenantId: userId
+        }),
+      })
+
+      const paymentData = await response.json()
+      if (response.ok) {
+        window.location.href = paymentData.init_point
+      } else {
+        console.error("No se pudo realizar el pago")
+      }
+    } catch (error) {
+      console.error("Error al realizar el pago:", error)
+    }
+  }
+
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         const userId = getAuth0Id(user.sub)
-        const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/contract/tenant/active/${userId}`)
-        const data = await response.json()
+        const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract/tenant/active/${userId}`)
+        const contractData = await response.json()
+        setContractId(contractData[0].id)
 
         if (response.ok) {
-          const propertyData = data[0].propertyId
-          const propertyId = propertyData._id
-          const imagesResponse = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${propertyId}`)
+          const alreadyPaid = await verifyPayment(contractData[0].id)
+          const existsPayment = alreadyPaid.exists;
+          setAlreadyPaid(existsPayment)
+          const propertyData = contractData[0].property
+          const propertyId = propertyData.id
+          const imagesResponse = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${propertyId}`)
           const imagesData = await imagesResponse.json()
 
           if (imagesResponse.ok) {
@@ -81,8 +129,8 @@ export default function PropertyDetails({ params }) {
             antiguedad: propertyData.age,
             descripcion: propertyData.description,
             numeroPiso: propertyData.floors,
-            precio: data[0].monthlyRent,
-            enArriendo: data[0].status === "1",
+            precio: contractData[0].monthlyRent,
+            enArriendo: contractData[0].status === "1",
           })
         } else {
           console.error("No se encontró propiedad")
@@ -94,15 +142,6 @@ export default function PropertyDetails({ params }) {
 
     fetchProperty()
   }, [user])
-
-  const handleAction = () => {
-    if (dialogAction === "cancel") {
-      setProperty((prev) => ({ ...prev, enArriendo: false }))
-    } else if (dialogAction === "pay") {
-      // Aquí iría la lógica para procesar el pago
-    }
-    setShowDialog(false)
-  }
 
   if (!property) {
     return (
@@ -362,23 +401,21 @@ export default function PropertyDetails({ params }) {
                   Solicitar Mantenimiento
                 </Link>
               </Button>
-              <Button
+              {/* <Button
                 onClick={() => {
                   setDialogAction("cancel")
-                  setShowDialog(true)
                 }}
                 disabled={!property.enArriendo}
                 className="bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 <X className="mr-2 h-4 w-4" />
                 {property.enArriendo ? "Cancelar arriendo" : "No disponible"}
-              </Button>
+              </Button> */}
               <Button
                 onClick={() => {
-                  setDialogAction("pay")
-                  setShowDialog(true)
+                  handlePayment()
                 }}
-                disabled={!property.enArriendo}
+                disabled={alreadyPaid}
                 className="bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
               >
                 <CreditCard className="mr-2 h-4 w-4" />
@@ -390,24 +427,6 @@ export default function PropertyDetails({ params }) {
       </Card>
 
       {/* Dialog */}
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="p-6">
-          <DialogHeader>
-            <DialogTitle>{dialogAction === "cancel" ? "Cancelar Arriendo" : "Pagar Arriendo"}</DialogTitle>
-            <DialogDescription>
-              {dialogAction === "cancel"
-                ? "¿Está seguro de que desea cancelar el arrendamiento de esta propiedad?"
-                : "¿Desea proceder con el pago del arrendamiento?"}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={handleAction}>{dialogAction === "cancel" ? "Cancelar" : "Confirmar pago"}</Button>
-            <Button onClick={() => setShowDialog(false)} variant="outline">
-              Cancelar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

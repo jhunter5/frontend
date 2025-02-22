@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Upload, UserPlus, FileText, Send,Trash2 } from 'lucide-react'
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
+import { useToast } from "@/hooks/use-toast"
 
 export default function PostulateForm({ params }) {
   const router = useRouter()
@@ -28,6 +29,8 @@ export default function PostulateForm({ params }) {
   const { user } = useAuth0()
   const tenant_id = getAuth0Id(user?.sub)
   const property_id = params.id
+  const { toast } = useToast();
+  const [errors, setErrors] = useState({})
 
   const convertFileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -99,8 +102,24 @@ export default function PostulateForm({ params }) {
     }))
   }
 
+  const validateForm = () => {
+    const newErrors = {}
+    if (!formData.applicationData.personalDescription.trim()) {
+      newErrors.personalDescription = "La descripción personal es obligatoria."
+    }
+    if (formData.applicationMedias.length === 0) {
+      newErrors.applicationMedias = "Debes adjuntar al menos un documento."
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
 
     const finalData = {
       ...formData,
@@ -111,18 +130,32 @@ export default function PostulateForm({ params }) {
       }
     }
 
-    console.log(finalData)
-
-    const response = await fetch('https://backend-khaki-three-90.vercel.app/api/application', {
+    // const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(finalData)
+    // })
+    
+    const response = await fetch('http://localhost:3001/api/application', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(finalData)
     })
 
     if (response.ok) {
-      alert('Postulación enviada exitosamente')
+      toast(() => ({
+        title: "Postulación Creada",
+        description: "La postulación ha sido creada exitosamente.",
+      }));
+
+      router.push('/inquilino-dashboard/postulaciones')
     } else {
-      alert('Error al enviar la postulación')
+      console.log('Postulacion no creada')
+      toast(() => ({
+        title: "Error",
+        description: "Ha ocurrido un error al crear la postulación, intente de nuevo.",
+        variant: "destructive",
+      }));
     }
   }
 
@@ -162,6 +195,7 @@ export default function PostulateForm({ params }) {
                   onChange={handleInputChange}
                   className="min-h-[100px]"
                 />
+                {errors.personalDescription && <p className="text-red-500">{errors.personalDescription}</p>}
               </div>
             </div>
 
@@ -263,6 +297,7 @@ export default function PostulateForm({ params }) {
                       onChange={(e) => handleFileUpload(e, doc)}
                       className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
+                    {errors.applicationMedias && <p className="text-red-500">{errors.applicationMedias}</p>}
                   </div>
                 ))}
               </div>

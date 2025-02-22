@@ -67,7 +67,12 @@ export default function NewProperty() {
 
   const propertyCreation = useMutation({
     mutationFn: async (data) => {
-      const response = await fetch('https://backend-khaki-three-90.vercel.app/api/property', {
+      // const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property', {
+      //   method: 'POST',
+      //   body: data,
+      // })
+
+      const response = await fetch('http://localhost:3001/api/property', {
         method: 'POST',
         body: data,
       })

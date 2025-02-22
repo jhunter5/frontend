@@ -6,8 +6,41 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Save, Send } from "lucide-react"
+import { ArrowLeft, Save, Send, User } from "lucide-react"
 import Link from "next/link"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useQuery } from "@tanstack/react-query"
+import { useSearchParams } from 'next/navigation'
+import { useMutation } from "@tanstack/react-query"
+
+const fetchCandidate = async (id) => {
+  const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant/${id}`)
+
+  if (!response.ok) {
+    throw new Error("Error fetching tenant")
+  }
+
+  return response.json()
+}
+
+const createContract = async (data) => {
+  // const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract", {
+  //   method: "POST",
+  //   body: data,
+  // })
+
+  const response = await fetch("http://localhost:3001/api/contract", {
+    method: "POST",
+    body: data,
+  })
+
+  if (!response.ok) {
+    throw new Error("Error creating contract")
+  }
+
+  return response.json()
+}
+
 
 export default function CreateContract() {
   const router = useRouter()
@@ -18,6 +51,18 @@ export default function CreateContract() {
     durationMonths: "",
     totalValue: 0,
     contractFile: null,
+  })
+  const searchParams = useSearchParams()
+  const tenant_id = searchParams.get('tenant')
+  const property_id = searchParams.get('property')
+
+  const { isPending, isError, data: tenant, error } = useQuery({
+    queryKey: ["tenant"],
+    queryFn: () => fetchCandidate(tenant_id),
+  })
+
+  const mutation = useMutation({
+    mutationFn: createContract,
   })
 
   const handleChange = (e) => {
@@ -40,24 +85,67 @@ export default function CreateContract() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Aquí iría la lógica para enviar los datos del contrato
-    console.log(formData)
-    // Redirigir a la lista de contratos o a la vista del contrato creado
-    router.push("/dashboard/contracts")
+    const contractData = new FormData()
+    contractData.append("startDate", formData.startDate)
+    contractData.append("endDate", formData.endDate)
+    contractData.append("monthlyAmount", formData.monthlyAmount)
+    contractData.append("durationMonths", formData.durationMonths)
+    contractData.append("totalValue", formData.totalValue)
+    contractData.append("contractFile", formData.contractFile)
+    contractData.append("tenant_id", tenant_id)
+    contractData.append("property_id", property_id)
+
+    contractData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    mutation.mutate(contractData)
+
+    // router.push("/dashboard/contracts")
   }
 
+  if (isPending) {
+    return <div>Cargando...</div>
+  }
 
+  if (isError) {
+    return <div>Error: {error.message}</div>
+  }
 
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
-          <Link href="/dashboard/contracts">
+        <Button variant="outline" asChild>
+          <Link href="/arrendador-dashboard/propiedades-busqueda">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a contratos
+            Volver a candidaturas
           </Link>
         </Button>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold flex items-center">
+            <User className="mr-2 h-5 w-5" />
+            Información del candidato
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={tenant.avatar} alt={tenant.firstName} />
+              <AvatarFallback>
+                {tenant.firstName[0]}{tenant.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-lg font-semibold">{tenant.name}</h3>
+              <p className="text-sm text-muted-foreground">{tenant.email}</p>
+              <p className="text-sm text-muted-foreground">{tenant.phone}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchProperty = async (id) => {
-  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
 
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
@@ -152,8 +152,8 @@ export default function PropertyDetails({ params }) {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
-            <Button>
-              <Link href={`/inquilino-dashboard/postularse/${property.property._id}`}>Confirmar</Link>
+            <Button className="bg-primary-400">
+              <Link href={`/inquilino-dashboard/postularse/${property?.property?.id}`} >Confirmar</Link>
             </Button>
           </DialogFooter>
         </DialogContent>

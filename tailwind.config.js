@@ -9,52 +9,41 @@ module.exports = {
   theme: {
   	extend: {
   		colors: {
-
-			// Primary color
-			'primary-600': '#000733',
-			'primary-500': '#1C2671',
-			'primary-400': '#28359F',
-			'primary-300': '#3748CD',
-			'primary-200': '#606ED7',
-			'primary-100': '#8E97E3',
-			'primary-50': '#EBEDFF',
-
-			// Succes color
-			'success-600': '#101B09',
-			'success-500': '#30521B',
-			'success-400': '#50892D',
-			'success-300': '#70BF3F',
-			'success-200': '#99D276',
-			'success-100': '#C2E4AD',
-			'success-50': '#EBF6E4',
-
-			// Warning color
-			'warning-600': '#1D1808',
-			'warning-500': '#564718',
-			'warning-400': '#8F7728',
-			'warning-300': '#CCAD47',
-			'warning-200': '#D7BF70',
-			'warning-100': '#E7D9A9',
-			'warning-50': '#F7F2E2',
-
-			// Danger color
-			'danger-600': '#1F0B06',
-			'danger-500': '#5C2011',
-			'danger-400': '#99361D',
-			'danger-300': '#A63A1F',
-			'danger-200': '#E27E66',
-			'danger-100': '#EEB2A3',
-			'danger-50': '#F9E5E0 ',
-
-			// Neutral color
-			'neutral-600': '#111114',
-			'neutral-500': '#32343B',
-			'neutral-400': '#545662',
-			'neutral-300': '#525460',
-			'neutral-200': '#9D9FAB',
-			'neutral-100': '#C4C5CD',
-			'neutral-50': '#EBECEE',
-
+  			'primary-600': '#000733',
+  			'primary-500': '#1C2671',
+  			'primary-400': '#28359F',
+  			'primary-300': '#3748CD',
+  			'primary-200': '#606ED7',
+  			'primary-100': '#8E97E3',
+  			'primary-50': '#EBEDFF',
+  			'success-600': '#101B09',
+  			'success-500': '#30521B',
+  			'success-400': '#50892D',
+  			'success-300': '#70BF3F',
+  			'success-200': '#99D276',
+  			'success-100': '#C2E4AD',
+  			'success-50': '#EBF6E4',
+  			'warning-600': '#1D1808',
+  			'warning-500': '#564718',
+  			'warning-400': '#8F7728',
+  			'warning-300': '#CCAD47',
+  			'warning-200': '#D7BF70',
+  			'warning-100': '#E7D9A9',
+  			'warning-50': '#F7F2E2',
+  			'danger-600': '#1F0B06',
+  			'danger-500': '#5C2011',
+  			'danger-400': '#99361D',
+  			'danger-300': '#A63A1F',
+  			'danger-200': '#E27E66',
+  			'danger-100': '#EEB2A3',
+  			'danger-50': '#F9E5E0 ',
+  			'neutral-600': '#111114',
+  			'neutral-500': '#32343B',
+  			'neutral-400': '#545662',
+  			'neutral-300': '#525460',
+  			'neutral-200': '#9D9FAB',
+  			'neutral-100': '#C4C5CD',
+  			'neutral-50': '#EBECEE',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -101,10 +90,38 @@ module.exports = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		fontFamily: {
-			spaceGrotesk: ['Space Grotesk', 'sans-serif'],
-			inter: ['Inter', 'sans-serif'],
-		}
+  		fontFamily: {
+  			spaceGrotesk: [
+  				'Space Grotesk',
+  				'sans-serif'
+  			],
+  			inter: [
+  				'Inter',
+  				'sans-serif'
+  			]
+  		},
+  		keyframes: {
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],

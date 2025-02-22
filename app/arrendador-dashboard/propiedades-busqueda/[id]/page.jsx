@@ -14,7 +14,7 @@ import { PropertyStatistics } from '@/app/arrendador-dashboard/propiedades-busqu
 import { useQueries } from '@tanstack/react-query'
 
 const fetchPropertyById = async (id) => {
-  const property = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`) 
+  const property = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`) 
 
   if (!property.ok) {
     throw new Error('Error fetching property')
@@ -24,7 +24,7 @@ const fetchPropertyById = async (id) => {
 }
 
 const fetchApplications = async (id) => {
-  const applications = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/property/${id}`)
+  const applications = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application/property/${id}`)
 
   if (!applications.ok) {
     throw new Error('Error fetching applications')

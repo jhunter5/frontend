@@ -4,7 +4,7 @@ import { Bed, LandPlot, MapPin } from 'lucide-react'
 
 export function PropertyCard({ property }) {
   return (
-    <Link href={`/arrendador-dashboard/propiedades/${property._id}`}>
+    <Link href={`/arrendador-dashboard/propiedades/${property.id}`}>
       <Card className="overflow-hidden transition-shadow hover:shadow-lg">
         <div className="aspect-video relative overflow-hidden">
           <img

@@ -14,7 +14,7 @@ export default function ArrendatarioProfile() {
 
   const fecthUser = async () => {
       const userId = getAuth0Id(user.sub);
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/landlord/${userId}`)
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord/${userId}`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -126,10 +126,10 @@ export default function ArrendatarioProfile() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Home className="h-6 w-6 text-primary" />
               </div>
-              <div>
+              {/* <div>
                 <p className="text-sm text-muted-foreground">Número de Propiedades</p>
                 <p className="text-2xl font-bold">{arrendatario.numeroPropiedades}</p>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center gap-4">
@@ -145,7 +145,7 @@ export default function ArrendatarioProfile() {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < Math.floor(arrendatario.calificacionPromedio)
+                          i < Math.floor(data.avgRating)
                             ? 'fill-yellow-500 text-yellow-500'
                             : 'fill-muted text-muted'
                         }`}
@@ -159,18 +159,6 @@ export default function ArrendatarioProfile() {
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Porcentaje de Cumplimiento</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{arrendatario.porcentajeCumplimiento}%</p>
-                  <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full bg-green-500 transition-all duration-500 ease-out"
-                      style={{ width: `${arrendatario.porcentajeCumplimiento}%` }}
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           </CardContent>

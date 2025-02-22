@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Download, Home, User, Calendar } from "lucide-react"
 import Link from "next/link"
@@ -10,7 +10,7 @@ import Image from "next/image"
 import { useQuery } from "@tanstack/react-query"
 
 const fetchContractById = async (id) => {
-  const contract = await fetch(`https://backend-khaki-three-90.vercel.app/api/contracts/${id}`)
+  const contract = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contracts/${id}`)
 
   if (!contract.ok) {
     throw new Error("Error fetching contract")
@@ -20,7 +20,7 @@ const fetchContractById = async (id) => {
 }
 
 const fetchPropertyById = async (id) => {
-  const property = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  const property = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
 
   if (!property.ok) {
     throw new Error("Error fetching property")
@@ -30,7 +30,7 @@ const fetchPropertyById = async (id) => {
 }
 
 const fetchTenantById = async (id) => {
-  const tenant = await fetch(`https://backend-khaki-three-90.vercel.app/api/tenant/${id}`)
+  const tenant = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant/${id}`)
 
   if (!tenant.ok) {
     throw new Error("Error fetching tenant")
@@ -49,7 +49,7 @@ export default function ContractDetails({ params }) {
 
   const { data: property, isLoading: propertyLoading } = useQuery({
     queryKey: ["property", contract?._id],
-    queryFn: () => fetchPropertyById(contract?.propertyId._id),
+    queryFn: () => fetchPropertyById(contract?.propertyId),
     enabled: !!contract, 
   });
 
@@ -75,44 +75,54 @@ export default function ContractDetails({ params }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold flex items-center">
-              <Calendar className="mr-2 h-6 w-6" />
-              Detalles del Contrato
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Estado:</span>
-                <Badge variant={contract?.status === "active" ? "success" : "secondary"}>{contract?.status}</Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Fecha de inicio</p>
-                  <p className="font-medium">{contract?.startDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Fecha de finalización</p>
-                  <p className="font-medium">{contract?.endDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Monto mensual</p>
-                  <p className="font-medium">${contract?.monthlyRent}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Duración</p>
-                  <p className="font-medium">{contract?.duration} meses</p>
-                </div>
-              </div>
-              <Button className="w-full" >
-                <Download className="mr-2 h-4 w-4" />
-                Descargar Contrato
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <Card className="flex flex-col h-full">
+  <CardHeader>
+    <CardTitle className="text-2xl font-bold flex items-center">
+      <Calendar className="mr-2 h-6 w-6" />
+      Detalles del Contrato
+    </CardTitle>
+  </CardHeader>
+  
+  {/* Asegura que el contenido ocupe todo el espacio disponible */}
+  <CardContent className="flex flex-col flex-grow">
+    <div className="flex-grow space-y-4">
+      <div className="flex justify-between items-center">
+        <span className="font-semibold">Estado:</span>
+        <Badge variant={contract?.status === "active" ? "success" : "secondary"}>
+          {contract?.status}
+        </Badge>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="text-sm text-muted-foreground">Fecha de inicio</p>
+          <p className="font-medium">{contract?.startDate}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Fecha de finalización</p>
+          <p className="font-medium">{contract?.endDate}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Monto mensual</p>
+          <p className="font-medium">${contract?.monthlyRent}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Duración</p>
+          <p className="font-medium">{contract?.duration} meses</p>
+        </div>
+      </div>
+    </div>
+  </CardContent>
+
+  {/* Botón siempre pegado abajo */}
+  <CardFooter className="mt-auto">
+    <Button className="w-full bg-primary-400">
+      <Download className="mr-2 h-4 w-4" />
+      Descargar Contrato
+    </Button>
+  </CardFooter>
+</Card>
+
+
 
         <Card>
           <CardHeader>
@@ -133,20 +143,20 @@ export default function ContractDetails({ params }) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Dirección</p>
-                <p className="font-medium">{property?.address}</p>
+                <p className="font-medium capitalize">{property?.property?.address}</p>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Tipo</p>
-                  <p className="font-medium">{property?.type}</p>
+                  <p className="font-medium capitalize">{property?.property?.type}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Habitaciones</p>
-                  <p className="font-medium">{property?.rooms}</p>
+                  <p className="font-medium capitalize">{property?.property?.rooms}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Baños</p>
-                  <p className="font-medium">{property?.bathrooms}</p>
+                  <p className="font-medium capitalize">{property?.property?.bathrooms}</p>
                 </div>
               </div>
             </div>
