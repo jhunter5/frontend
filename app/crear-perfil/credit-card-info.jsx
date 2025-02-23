@@ -1,126 +1,87 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ChevronLeft, ChevronRight, CreditCard, Info, CheckCircle2 } from "lucide-react"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 
-// Clave pública de Stripe (reemplazar con la tuya)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
 
-// Usamos sólo el campo del titular en el esquema, ya que los demás se gestionan con Stripe.
+// Sólo validamos el campo del titular; el resto se gestiona con Stripe
 const formSchema = z.object({
-  cardHolder: z.string().min(1, "El nombre del titular es requerido")
+  cardHolder: z.string().min(1, "El nombre del titular es requerido"),
 })
 
-// Componente para mostrar la tarjeta visual
-function CreditCardVisual({ cardHolder }) {
-  return (
-    <Card className="relative w-full aspect-[1.586/1] max-w-md mx-auto bg-gradient-to-br from-[#27317E] to-[#1f2666] text-white shadow-xl rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105">
-      <div className="absolute inset-0 opacity-30 mix-blend-overlay">
-        <div
-          className="absolute inset-0 bg-repeat opacity-10"
-          style={{
-            backgroundImage:
-              "url('data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E')"
-          }}
-        />
-      </div>
-      <CardContent className="relative h-full flex flex-col justify-between p-6">
-        <div className="flex justify-between items-start">
-          <div className="w-12 h-8 rounded bg-white/10 backdrop-blur-sm" />
-          {/* Aquí podrías mostrar logos según el tipo de tarjeta si lo deseas */}
-        </div>
-        <div className="space-y-6">
-          <p className="font-mono text-2xl tracking-wider">•••• •••• •••• ••••</p>
-        </div>
-        <div className="flex justify-between items-end">
-          <div className="space-y-1">
-            <p className="text-xs text-white/70">Titular de la Tarjeta</p>
-            <p className="font-medium tracking-wide">{cardHolder || "NOMBRE DEL TITULAR"}</p>
-          </div>
-          <div className="text-right space-y-1">
-            <p className="text-xs text-white/70">Expira</p>
-            <p className="font-medium">MM/AA</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-// Componente principal que integra Stripe y el formulario
-function PaymentForm({ onNext, onBack, initialData = {} }) {
+function CreditCardForm({ onNext, onBack, initialData = {} }) {
   const stripe = useStripe()
   const elements = useElements()
-  const [error, setError] = useState(null)
-  const [processing, setProcessing] = useState(false)
-  const [verificationResult, setVerificationResult] = useState(null)
-  const [cardHolder, setCardHolder] = useState("")
-
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData
+    defaultValues: initialData,
   })
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [serverError, setServerError] = useState("")
 
-  const submitHandler = async (data, e) => {
-    e.preventDefault()
+  async function onSubmit(values) {
     if (!stripe || !elements) return
 
-    const cardElement = elements.getElement(CardElement)
-    if (!cardElement) return
+    setIsProcessing(true)
+    setServerError("")
 
     // Crear PaymentMethod usando CardElement
-    const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
+    const cardElement = elements.getElement(CardElement)
+    if (!cardElement) {
+      setIsProcessing(false)
+      return
+    }
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
       type: "card",
       card: cardElement,
-      billing_details: { name: cardHolder }
+      billing_details: { name: values.cardHolder },
     })
 
-    if (pmError) {
-      setError(pmError.message || "Error desconocido")
-      setVerificationResult(null)
+    if (error) {
+      setServerError(error.message || "Error al crear el método de pago.")
+      setIsProcessing(false)
       return
     }
 
-    setError(null)
-    setProcessing(true)
-
+    // Llamada al endpoint de validación de tarjeta
     try {
-      // Aquí envías paymentMethod.id a tu backend para validar la tarjeta.
-      const response = await fetch("http://localhost:3001/api/validate-card", {
+      const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/validate-card", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentMethodId: paymentMethod.id })
+        body: JSON.stringify({ paymentMethodId: paymentMethod.id }),
       })
 
       const result = await response.json()
-      if (response.ok) {
-        setVerificationResult("Tarjeta verificada correctamente.")
-        // Puedes pasar junto al onNext tanto los datos del formulario como paymentMethod
-        onNext({ ...data, paymentMethod })
-      } else {
-        setVerificationResult("Verificación fallida: " + result.error)
+      if (!response.ok || !result.verified) {
+        setServerError(result.error || "La validación de la tarjeta falló.")
+        setIsProcessing(false)
+        return
       }
     } catch (err) {
-      setVerificationResult("Error en la comunicación con el servidor.")
-    } finally {
-      setProcessing(false)
+      setServerError("Error en la comunicación con el servidor.")
+      setIsProcessing(false)
+      return
     }
+
+    // Si la validación fue exitosa, se pasa la info del formulario junto con paymentMethod
+    onNext({ ...values, paymentMethod })
+    setIsProcessing(false)
   }
 
   return (
-    <Form>
-      <form onSubmit={handleSubmit(submitHandler)} className="space-y-8">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
             <CreditCard className="w-8 h-8 text-[#27317E]" />
@@ -135,30 +96,61 @@ function PaymentForm({ onNext, onBack, initialData = {} }) {
             </AlertDescription>
           </Alert>
 
-          {/* Tarjeta Visual */}
+          {/* Tarjeta visual */}
           <div className="relative perspective-1000">
-            <CreditCardVisual cardHolder={cardHolder} />
+            <Card className="relative w-full aspect-[1.586/1] max-w-md mx-auto bg-gradient-to-br from-[#27317E] to-[#1f2666] text-white shadow-xl rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105">
+              <div className="absolute inset-0 opacity-30 mix-blend-overlay">
+                <div
+                  className="absolute inset-0 bg-repeat opacity-10"
+                  style={{
+                    backgroundImage:
+                      "url('data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E')",
+                  }}
+                />
+              </div>
+              <CardContent className="relative h-full flex flex-col justify-between p-6">
+                <div className="flex justify-between items-start">
+                  <div className="w-12 h-8 rounded bg-white/10 backdrop-blur-sm" />
+                </div>
+                <div className="space-y-6">
+                  <p className="font-mono text-2xl tracking-wider">•••• •••• •••• ••••</p>
+                </div>
+                <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                    <p className="text-xs text-white/70">Titular de la Tarjeta</p>
+                    <p className="font-medium tracking-wide">
+                      {form.watch("cardHolder") || "NOMBRE DEL TITULAR"}
+                    </p>
+                  </div>
+                  <div className="text-right space-y-1">
+                    <p className="text-xs text-white/70">Expira</p>
+                    <p className="font-medium">MM/AA</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="mt-8 space-y-6">
-            <FormField>
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700">Titular de la Tarjeta</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="NOMBRE COMO APARECE EN LA TARJETA"
-                    className="h-11 border-gray-200 focus:ring-2 focus:ring-[#27317E]/20"
-                    {...register("cardHolder", { required: "El nombre es requerido" })}
-                    onChange={(e) => {
-                      setCardHolder(e.target.value.toUpperCase())
-                    }}
-                  />
-                </FormControl>
-                <FormMessage>{errors.cardHolder && errors.cardHolder.message}</FormMessage>
-              </FormItem>
-            </FormField>
+            <FormField
+              control={form.control}
+              name="cardHolder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">Titular de la Tarjeta</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="NOMBRE COMO APARECE EN LA TARJETA"
+                      className="h-11 border-gray-200 focus:ring-2 focus:ring-[#27317E]/20"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* Aquí se integra Stripe con CardElement */}
+            {/* Stripe CardElement: se encarga de número, expiración y CVV */}
             <div className="border border-gray-200 rounded p-3">
               <CardElement
                 options={{
@@ -168,15 +160,19 @@ function PaymentForm({ onNext, onBack, initialData = {} }) {
                       color: "#000",
                       "::placeholder": { color: "#a0aec0" },
                     },
-                    invalid: { color: "#e53e3e" }
-                  }
+                    invalid: { color: "#e53e3e" },
+                  },
                 }}
               />
             </div>
-
-            {error && <div className="text-red-500 text-sm">{error}</div>}
-            {verificationResult && <div className="text-green-500 text-sm">{verificationResult}</div>}
           </div>
+
+          {serverError && (
+            <Alert className="bg-red-50 border-red-200">
+              <AlertTitle className="text-red-700">Error</AlertTitle>
+              <AlertDescription className="text-red-600">{serverError}</AlertDescription>
+            </Alert>
+          )}
 
           <Alert className="bg-green-50 border-green-200 mt-6">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -191,8 +187,8 @@ function PaymentForm({ onNext, onBack, initialData = {} }) {
           <Button type="button" variant="outline" onClick={onBack} className="h-11">
             <ChevronLeft className="w-4 h-4 mr-2" /> Atrás
           </Button>
-          <Button type="submit" className="bg-[#27317E] hover:bg-[#1f2666] h-11 px-6" disabled={processing}>
-            {processing ? "Procesando..." : <>Continuar <ChevronRight className="w-4 h-4 ml-2" /></>}
+          <Button type="submit" className="bg-[#27317E] hover:bg-[#1f2666] h-11 px-6" disabled={isProcessing}>
+            {isProcessing ? "Procesando..." : <>Continuar <ChevronRight className="w-4 h-4 ml-2" /></>}
           </Button>
         </div>
       </form>
@@ -200,11 +196,10 @@ function PaymentForm({ onNext, onBack, initialData = {} }) {
   )
 }
 
-// Exportamos PaymentPage, envolviendo PaymentForm con el provider de Stripe
-export default function PaymentPage({ onNext, onBack, initialData = {} }) {
+export default function WrappedCreditCardForm(props) {
   return (
     <Elements stripe={stripePromise}>
-      <PaymentForm onNext={onNext} onBack={onBack} initialData={initialData} />
+      <CreditCardForm {...props} />
     </Elements>
   )
 }
