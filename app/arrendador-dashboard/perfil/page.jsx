@@ -115,7 +115,7 @@ export default function ArrendatarioProfile() {
               <Calendar className="h-5 w-5 text-blue-500"/>
               <div>
                 <p className="text-sm text-muted-foreground">Edad</p>
-                <p className="font-medium">{data.age} años</p>
+                <p className="font-medium">22 años</p>
               </div> 
             </div>
           </CardContent>
