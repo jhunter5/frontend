@@ -14,7 +14,7 @@ import Navbar from "@/components/ui/navbar"
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 import { useToast } from "@/hooks/use-toast"
-import CreditCardForm from "./credit-card-info"
+import PaymentPage from "./credit-card-info"
 
 const Inquilinosteps = [
   {
@@ -340,7 +340,7 @@ export default function CreateProfile() {
                 <PersonalInfoForm onNext={handleNext} initialData={formData.personal} userRole={userRole} />
               )}
               {currentStep === 1 && (
-                <CreditCardForm onNext={handleNext} onBack={handleBack} initialData={formData.creditCard} />
+                <PaymentPage onNext={handleNext} onBack={handleBack} initialData={formData.creditCard} />
               )}
               {currentStep === 2 &&
                 (userRole === "Inquilino" ? (
