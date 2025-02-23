@@ -19,11 +19,13 @@ export default function Navbar() {
                         </button>
                     )}
                     {isAuthenticated && (
-                        <button onClick={() => logout({ 
-                            returnTo: process.env.NODE_ENV === 'development'
-                            ? 'http://localhost:3000/'
-                            : 'https://frontend-mocha-seven-79.vercel.app/',
-                            })} className="hover:text-gray-200">
+                        <button onClick={() => logout({
+                            logoutParams: {
+                              returnTo: process.env.NODE_ENV === 'development'
+                              ? 'http://localhost:3000/'
+                              : 'https://frontend-mocha-seven-79.vercel.app/',
+                            }
+                          })} className="hover:text-gray-200">
                             Logout
                         </button>
                     )}
