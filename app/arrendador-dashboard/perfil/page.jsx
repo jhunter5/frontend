@@ -9,6 +9,11 @@ import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
+const arrendatario = {
+  numeroPropiedades: 5,
+  avgRating: 4.5
+}
+
 export default function ArrendatarioProfile() {
   const { user } = useAuth0()
 
@@ -117,6 +122,7 @@ export default function ArrendatarioProfile() {
         </Card>
 
         {/* Información de Arrendamientos */}
+
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="bg-yellow-50">
             <CardTitle className="text-yellow-700">Información de Arrendamientos</CardTitle>
@@ -126,10 +132,10 @@ export default function ArrendatarioProfile() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Home className="h-6 w-6 text-primary" />
               </div>
-              {/* <div>
+              <div>
                 <p className="text-sm text-muted-foreground">Número de Propiedades</p>
                 <p className="text-2xl font-bold">{arrendatario.numeroPropiedades}</p>
-              </div> */}
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -153,12 +159,6 @@ export default function ArrendatarioProfile() {
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
             </div>
           </CardContent>
