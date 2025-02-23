@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 
 const getApplication = async (id) => {
-  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/${id}`)
+  const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application/${id}`)
   if (!response.ok) {
     throw new Error("No se pudo obtener la cita")
   }
@@ -59,7 +59,7 @@ export default function CandidateProfile({ params }) {
 
   const changeApplicationStatus = useMutation({
     mutationFn: async (status) => {
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/status/${application_id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application/status/${application_id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -126,8 +126,7 @@ export default function CandidateProfile({ params }) {
   }
 
   const handleRent = () => {
-    // router.push(`/arrendador-dashboard/contratos/crear?tenant=${tenant_id}&property=${property_id}`)
-    router.push(`/arrendador-dashboard/contratos/crear`)
+    router.push(`/arrendador-dashboard/contratos/crear?tenant=${tenant_id}&property=${property_id}`)
   }
 
   const { data, isLoading, isError } = useQuery({
@@ -142,9 +141,13 @@ export default function CandidateProfile({ params }) {
   if (isError) {
     return <div>Ha ocurrido un error</div>
   }
+  
 
-  const { application, references, documents } = data
+  const { application } = data
   const { tenant } = application
+  const ApplicationMedia = application.ApplicationMedia
+  const ApplicationReference = application.ApplicationReference
+  const documents = application.documents
 
   function AddEventDialog({ isOpen, onClose, tenantAuthID, propertyID, onSuccess, onError }) {
     const [title, setTitle] = useState("")
@@ -158,7 +161,7 @@ export default function CandidateProfile({ params }) {
     
     const saveAppointment = useMutation({
       mutationFn : async (data) => {
-        const response = await fetch("https://backend-khaki-three-90.vercel.app/api/appointment", {
+        const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/appointment", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -243,8 +246,6 @@ export default function CandidateProfile({ params }) {
       </Dialog>
     )
   }
-
-  
 
   return (
     <div className="container mx-auto py-8">
@@ -379,7 +380,7 @@ export default function CandidateProfile({ params }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-          {references.map((reference, index) => (
+          {ApplicationReference?.map((reference, index) => (
               <div key={index} className="mb-4 last:mb-0">
                 <p className="font-semibold">
                   {reference.name} {reference.lastname}
@@ -400,7 +401,7 @@ export default function CandidateProfile({ params }) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
-              {documents.map((doc, index) => (
+              {ApplicationMedia?.map((doc, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                   <span>{doc.mediaType}</span>
                   <Button variant="outline" size="icon" asChild>
@@ -426,7 +427,9 @@ export default function CandidateProfile({ params }) {
         <Button  onClick={handleScheduleAppointment} className="bg-primary-400">
           Agendar cita
         </Button>
-        <Button onClick={handleRent} className="bg-success-400">Arrendar</Button>
+        <Button onClick={handleRent} className="bg-success-400">
+          Arrendar
+          </Button>
       </div>
       <AddEventDialog isOpen={showAddEvent} onClose={() => setShowAddEvent(false)}  tenantAuthID={tenant_id} propertyID={property_id}
        onSuccess = {

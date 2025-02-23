@@ -146,7 +146,7 @@ function MonthView({ currentDate, appointments }) {
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <User className="h-6 w-6 text-muted-foreground" />
-                    <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord[0]?.firstName + ' ' + selectedAppointment.landlord[0]?.lastName}</p>
+                    <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord?.firstName + ' ' + selectedAppointment.landlord?.lastName}</p>
                   </div>
                 </>
             </div>
@@ -170,7 +170,7 @@ export default function CalendarPage() {
     const userId = getAuth0Id(user.sub)
     console.log(userId)
 
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/appointment/tenant/${userId}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/appointment/tenant/${userId}`)
 
     if (!response.ok) {
       throw new Error('Ocurrio un error consultando la base de datos')

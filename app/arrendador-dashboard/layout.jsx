@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }) {
 
   const fecthUser = async () => {
     const userId = getAuth0Id(user.sub);
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/landlord/${userId}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord/${userId}`)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
