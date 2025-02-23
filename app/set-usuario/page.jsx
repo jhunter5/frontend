@@ -67,8 +67,7 @@ const ValidateRole = () => {
   const checkAccesToken = async () => {
     try {
       const userId = getAuth0Id(user.sub);
-      const response = await fetch(`http://localhost:3001/api/landlord/mercado-pago/validate-access-token/${userId}`)
-      console.log("ESTADO DE LA RESPUESTA: ", response.status);
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord/mercado-pago/validate-access-token/${userId}`)
       if (response.status === 200) {
         return true;
       } else if (response.status === 404) {

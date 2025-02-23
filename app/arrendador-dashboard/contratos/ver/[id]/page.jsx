@@ -65,11 +65,12 @@ export default function ContractDetails({ params }) {
 
   return (
     <div className="container mx-auto py-8">
+      {console.log(contract)}
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/dashboard/contracts">
+          <Link href={`/arrendador-dashboard/propiedades/${property?.property.id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a contratos
+            Volver a propiedad
           </Link>
         </Button>
       </div>
@@ -116,8 +117,10 @@ export default function ContractDetails({ params }) {
   {/* Botón siempre pegado abajo */}
   <CardFooter className="mt-auto">
     <Button className="w-full bg-primary-400">
-      <Download className="mr-2 h-4 w-4" />
-      Descargar Contrato
+      <a href={contract?.ContractDocument[0]?.documentUrl} target="_blank" rel="noopener noreferrer">
+        <Download className="mr-2 h-4 w-4" />
+        Descargar Contrato
+      </a>
     </Button>
   </CardFooter>
 </Card>

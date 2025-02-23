@@ -19,8 +19,7 @@ export default function PropertiesPage() {
 
   const fetchProperties = async () => {
     const userId = getAuth0Id(user.sub)
-    // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/user/${userId}`)
-    const response = await fetch(`http://localhost:3001/api/property/user/${userId}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/user/${userId}`)
 
     if (!response.ok) {
       throw new Error('Ocurrio un error consultando la base de datos')

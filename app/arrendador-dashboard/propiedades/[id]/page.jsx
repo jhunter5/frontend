@@ -38,11 +38,7 @@ export default function PropertyDetails({ params }) {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
-      //   method: 'DELETE',
-      // })
-
-      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
         method: 'DELETE',
       })
 
@@ -72,15 +68,7 @@ export default function PropertyDetails({ params }) {
 
   const setAvailable = useMutation({
     mutationFn: async ({rentPrice}) => {
-      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
-      //   method: 'PATCH',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({ isAvailable: true, rentPrice })
-      // })
-
-      const response = await fetch(`http://localhost:3001/api/property/onSearch/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/onSearch/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -128,7 +116,7 @@ export default function PropertyDetails({ params }) {
 
   const setUnavailable = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/onSearch/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

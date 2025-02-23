@@ -130,18 +130,12 @@ export default function PostulateForm({ params }) {
       }
     }
 
-    // const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(finalData)
-    // })
-    
-    const response = await fetch('http://localhost:3001/api/application', {
+    const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(finalData)
     })
-
+    
     if (response.ok) {
       toast(() => ({
         title: "Postulación Creada",

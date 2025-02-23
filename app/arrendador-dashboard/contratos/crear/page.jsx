@@ -24,12 +24,7 @@ const fetchCandidate = async (id) => {
 }
 
 const createContract = async (data) => {
-  // const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract", {
-  //   method: "POST",
-  //   body: data,
-  // })
-
-  const response = await fetch("http://localhost:3001/api/contract", {
+  const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract", {
     method: "POST",
     body: data,
   })
@@ -99,9 +94,29 @@ export default function CreateContract() {
       console.log(key, value);
     });
 
-    mutation.mutate(contractData)
+    mutation.mutate(contractData,
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Contrato Creado',
+            description: 'El contrato ha sido creado exitosamente',
+            status: 'success',
+          })
 
-    // router.push("/dashboard/contracts")
+          router.push('/arrendador-dashboard/inquilinos')
+        },
+        onError: () => {
+          toast({
+            title: 'Error',
+            description: 'Ha ocurrido un error al el contrato, intente de nuevo',
+            status: 'error',
+            variant: 'destructive',
+          })
+        }
+      }
+    )
+
+    
   }
 
   if (isPending) {

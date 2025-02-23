@@ -51,8 +51,7 @@ export default function PaymentSuccessPage() {
             try {
                 const contract = await fetchContract(contractId);
                 setContractAmount(contract.monthlyRent);
-                console.log(contract);
-                await createPayment(paymentId, contractId);
+                const payment = await createPayment(paymentId, contractId);
             } catch (error) {
                 console.error("Error en la carga del contrato o creación de pago:", error);
             }

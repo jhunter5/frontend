@@ -60,22 +60,14 @@ export default function EditProperty({ params }) {
 
   const propertyEdition = useMutation({
     mutationFn: async (data) => {
-      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
-      //   method: 'PATCH',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(data),
-      // })
-
-      const response = await fetch(`http://localhost:3001/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
       })
-    
+
       if (!response.ok) {
         throw new Error('Error editing property')
       }

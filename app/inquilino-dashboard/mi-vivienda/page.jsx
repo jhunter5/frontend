@@ -49,8 +49,7 @@ export default function PropertyDetails({ params }) {
   const verifyPayment = async (contractId) => {
     try {
       const userId = getAuth0Id(user.sub)
-      // const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract/verify/${userId}/${contractId}`)
-      const response = await fetch(`http://localhost:3001/api/payment/alreadyThisMonthPayment`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/payment/alreadyThisMonthPayment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +69,7 @@ export default function PropertyDetails({ params }) {
   const handlePayment = async () => {
     try {
       const userId = getAuth0Id(user.sub)
-      const response = await fetch(`http://localhost:3001/api/mercado-pago/create-preference`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/mercado-pago/create-preference`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
