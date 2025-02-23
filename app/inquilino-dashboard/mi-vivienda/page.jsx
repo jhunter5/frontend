@@ -396,7 +396,7 @@ export default function PropertyDetails({ params }) {
                 className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200 hover:border-blue-300"
                 asChild
               >
-                <Link href={`/inquilino-dashboard/mantenimiento`}>
+                <Link href={`/inquilino-dashboard/payment/success?payment_id=1233&contractId=${contractId}`}>
                   <Tool className="mr-2 h-4 w-4" />
                   Solicitar Mantenimiento
                 </Link>
