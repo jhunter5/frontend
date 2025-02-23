@@ -23,7 +23,7 @@ export default function Navbar() {
                             logoutParams: {
                               returnTo: process.env.NODE_ENV === 'development'
                               ? 'http://localhost:3000/'
-                              : 'https://frontend-mocha-seven-79.vercel.app/',
+                              : 'https://www.limitlessholdings.site/',
                             }
                           })} className="hover:text-gray-200">
                             Logout
