@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -113,6 +113,7 @@ export default function CreateContract() {
   }
 
   return (
+    <Suspense>
     <div className="container mx-auto py-8">
       <div className="mb-6">
         <Button variant="outline" asChild>
@@ -220,6 +221,7 @@ export default function CreateContract() {
         </CardContent>
       </Card>
     </div>
+    </Suspense>
   )
 }
 

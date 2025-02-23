@@ -2,7 +2,7 @@
 
 import { PaymentStatus } from "../payment-status"
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
@@ -63,14 +63,16 @@ export default function PaymentSuccessPage() {
     
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-            <PaymentStatus
-                status="success"
-                amount={contractAmount}
-                paymentId={paymentId}
-                date={new Date().toLocaleDateString()}
-            />
-        </div>
+        <Suspense>
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+                <PaymentStatus
+                    status="success"
+                    amount={contractAmount}
+                    paymentId={paymentId}
+                    date={new Date().toLocaleDateString()}
+                />
+            </div>
+        </Suspense>
     )
 }
 
