@@ -31,32 +31,31 @@ export default function FAQSection() {
           `}</style>
 
           {[
-            {
-              question: "¿Cómo funciona el sistema de gestión de propiedades?",
-              answer:
-                "Nuestro sistema permite gestionar todas sus propiedades desde una única plataforma. Podrá controlar contratos, pagos, mantenimientos y comunicaciones con inquilinos de manera centralizada y eficiente.",
-            },
-            {
-              question: "¿Qué métodos de pago aceptan?",
-              answer:
-                "Aceptamos múltiples métodos de pago incluyendo transferencias bancarias, tarjetas de crédito/débito y pagos digitales. Todos los pagos se procesan de manera segura y se registran automáticamente en el sistema.",
-            },
-            {
-              question: "¿Cómo manejan el mantenimiento de las propiedades?",
-              answer:
-                "Contamos con un sistema de tickets para solicitudes de mantenimiento que permite reportar, dar seguimiento y resolver incidencias de manera eficiente. Trabajamos con una red de profesionales verificados para garantizar un servicio de calidad.",
-            },
-            {
-              question: "¿Qué incluye el análisis de datos e IA?",
-              answer:
-                "Nuestra plataforma utiliza inteligencia artificial para analizar el mercado inmobiliario, optimizar precios de alquiler, predecir mantenimientos necesarios y proporcionar insights valiosos para la toma de decisiones.",
-            },
-            {
-              question: "¿Cómo garantizan la seguridad de la información?",
-              answer:
-                "Implementamos las últimas medidas de seguridad, incluyendo encriptación de datos, autenticación de dos factores y backups regulares. Cumplimos con todas las normativas de protección de datos aplicables.",
-            },
-          ].map((item, index) => (
+          {
+            "question": "¿Cómo funciona el sistema de gestión de propiedades?",
+            "answer": "Nuestro sistema permite gestionar todas sus propiedades desde una única plataforma. Podrá controlar contratos, pagos, mantenimientos y comunicaciones con inquilinos de manera centralizada y eficiente."
+          },
+          {
+            "question": "¿Cómo se realizan los pagos en la plataforma?",
+            "answer": "Utilizamos Mercado Pago como pasarela de pagos, lo que permite a propietarios e inquilinos realizar transacciones seguras con tarjetas de crédito/débito, transferencias bancarias y otros métodos digitales. Los pagos se registran automáticamente en la plataforma para un mejor control financiero."
+          },
+          {
+            "question": "¿Cómo se seleccionan los inquilinos?",
+            "answer": "Los propietarios pueden revisar los perfiles de los postulantes a sus propiedades, verificando su historial y referencias antes de aprobar una solicitud. Nuestro sistema facilita la evaluación de cada inquilino para garantizar relaciones de arrendamiento seguras."
+          },
+          {
+            "question": "¿Puedo gestionar varias propiedades a la vez?",
+            "answer": "Sí, nuestra plataforma está diseñada para administrar múltiples propiedades desde un solo lugar, permitiendo un control centralizado de pagos, contratos y mantenimiento."
+          },
+          {
+            "question": "¿La plataforma cobra alguna comisión por los pagos?",
+            "answer": "Sí, aplicamos una comisión del 5% sobre cada transacción procesada a través de la plataforma. Esta tarifa cubre los costos operativos y el uso de nuestra infraestructura digital."
+          },
+          {
+            "question": "¿Cómo puedo contactar soporte en caso de problemas?",
+            "answer": "Si necesita ayuda, puede comunicarse con nuestro equipo de soporte a través del apartado Contact Us en la plataforma o enviando un correo a limitless.holdings0@gmail.com. Estamos disponibles para resolver cualquier inquietud lo antes posible."
+          }
+        ].map((item, index) => (
             <div
               key={index}
               className="group rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300"

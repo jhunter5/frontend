@@ -1,148 +1,256 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info, DollarSign } from "lucide-react";
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import {
+  ArrowLeft,
+  MapPin,
+  Home,
+  Bed,
+  Car,
+  Bath,
+  Calendar,
+  Ruler,
+  Building,
+  Info,
+  DollarSign,
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+} from "lucide-react"
+import Link from "next/link"
+import { useQuery } from "@tanstack/react-query"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const fetchProperty = async (id) => {
   const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
 
   if (!response.ok) {
-    throw new Error('No se pudo cargar la propiedad')
+    throw new Error("No se pudo cargar la propiedad")
   }
   return response.json()
 }
 
+function PropertySkeleton() {
+  return (
+    <div className="space-y-8">
+      <Skeleton className="h-[400px] w-full rounded-lg" />
+      <div className="grid gap-6 md:grid-cols-2">
+        <Skeleton className="h-32" />
+        <Skeleton className="h-32" />
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+        {[...Array(6)].map((_, i) => (
+          <Skeleton key={i} className="h-24" />
+        ))}
+      </div>
+      <Skeleton className="h-48" />
+    </div>
+  )
+}
+
 export default function PropertyDetails({ params }) {
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogAction, setDialogAction] = useState("");
+  const [showDialog, setShowDialog] = useState(false)
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['property', params.id],
+    queryKey: ["property", params.id],
     queryFn: () => fetchProperty(params.id),
-  }) 
+  })
 
   if (isError) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      </div>
+    )
   }
 
   if (isPending) {
-    return <p>Cargando...</p>
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <PropertySkeleton />
+      </div>
+    )
   }
 
-  const property = data || {};
-  console.log(property);
-  
+  const property = data?.property || {}
+  const images = data?.media || []
 
-  const imageUrl = property.media?.length > 0 ? property.media[0].mediaUrl : "https://via.placeholder.com/300";
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+    }).format(price)
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
-      <div className="mb-6">
-        <Button variant="outline" asChild className="hover:bg-gray-200 transition-colors">
-          <Link href="/inquilino-dashboard/buscador-propiedades">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver al Buscador
-          </Link>
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8 px-4">
+        <div className="mb-6">
+          <Button variant="outline" asChild className="group hover:bg-white/50">
+            <Link href="/inquilino-dashboard/buscador-propiedades" className="text-muted-foreground">
+              <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Volver al Buscador
+            </Link>
+          </Button>
+        </div>
 
-      <Card className="overflow-hidden shadow-lg">
-        <CardHeader className="bg-primary-500 text-white">
-          <CardTitle className="text-3xl font-bold">Detalles de la Propiedad</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid gap-8">
-            <div className="relative h-64 rounded-lg overflow-hidden shadow-md">
-              <img src={imageUrl} alt="Vista de la propiedad" className="w-full h-full object-cover" />
+        <Card className="overflow-hidden border-none shadow-xl">
+          <CardHeader className="border-b bg-white p-6">
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-2xl md:text-3xl font-bold">
+                {property.address?.charAt(0).toUpperCase() + property.address?.slice(1)}
+              </CardTitle>
+              <p className="text-muted-foreground flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                {property.city}, {property.state}
+              </p>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="relative bg-black">
+              <Carousel className="w-full" onSelect={setCurrentImageIndex}>
+                <CarouselContent>
+                  {images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative h-[400px]">
+                        <img
+                          src={image.mediaUrl || "/placeholder.svg"}
+                          alt={`Vista ${index + 1} de la propiedad`}
+                          className="w-full h-full object-cover"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
+                          onClick={() => {
+                            setCurrentImageIndex(index)
+                            setShowFullscreenImage(true)
+                          }}
+                        >
+                          <Expand className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
+              </Carousel>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="bg-white shadow-md">
-                <CardContent className="p-4">
-                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
-                    <MapPin className="h-5 w-5" />
-                    Ubicación
-                  </h2>
-                  <p className="text-gray-700">
-                    {property.property.address.charAt(0).toUpperCase() + property.property.address.slice(1)}
-                  </p>
-                  <p className="text-gray-700">{property.property.city}, {property.property.state}</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white shadow-md">
-                <CardContent className="p-4">
-                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
-                    <Home className="h-5 w-5" />
-                    Tipo de Propiedad
-                  </h2>
-                  <p className="text-gray-700">
-                    {property.property.type.charAt(0).toUpperCase() + property.property.type.slice(1)}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            <div className="bg-white pt-8">
+              <div className="px-6 space-y-8">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-lg bg-blue-100">
+                          <Home className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <h2 className="text-xl font-semibold">Detalles de la Propiedad</h2>
+                      </div>
+                      <div className="grid gap-4">
+                        <div className="flex justify-between items-center py-2 border-b">
+                          <span className="text-muted-foreground">Tipo</span>
+                          <span className="font-medium">
+                            {property.type?.charAt(0).toUpperCase() + property.type?.slice(1)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b">
+                          <span className="text-muted-foreground">Estrato</span>
+                          <span className="font-medium">{property.tier}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b">
+                          <span className="text-muted-foreground">Antigüedad</span>
+                          <span className="font-medium">{property.age} años</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                          <span className="text-muted-foreground">Pisos</span>
+                          <span className="font-medium">{property.floors}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-            <Separator className="my-6" />
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-lg bg-green-100">
+                          <DollarSign className="h-5 w-5 text-green-600" />
+                        </div>
+                        <h2 className="text-xl font-semibold">Información de Arriendo</h2>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <p className="text-sm text-green-600 mb-1">Canon de Arrendamiento</p>
+                          <p className="text-3xl font-bold text-green-700">{formatPrice(property.rentPrice)}</p>
+                          <p className="text-sm text-green-600 mt-1">por mes</p>
+                        </div>
+                        <Button onClick={() => setShowDialog(true)} className="w-full bg-green-600 hover:bg-green-700">
+                          Postularse a esta propiedad
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-              {[ 
-                { icon: Bed, label: "Habitaciones", value: property.property.rooms },
-                { icon: Bath, label: "Baños", value: property.property.bathrooms },
-                { icon: Car, label: "Parqueadero", value: property.property.parking ? 'Sí' : 'No' },
-                { icon: Ruler, label: "Metros Cuadrados", value: `${property.property.squareMeters} m²` },
-                { icon: Building, label: "Estrato", value: property.property.tier },
-                { icon: Calendar, label: "Antigüedad", value: `${property.property.age} años` },
-              ].map((item, index) => (
-                <Card key={index} className="bg-white shadow-md">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="bg-blue-100 p-3 rounded-full">
-                      <item.icon className="h-6 w-6 text-blue-600" />
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                  {[
+                    { icon: Bed, label: "Habitaciones", value: property.rooms },
+                    { icon: Bath, label: "Baños", value: property.bathrooms },
+                    { icon: Car, label: "Parqueadero", value: property.parking ? "Sí" : "No" },
+                    { icon: Ruler, label: "Área", value: `${property.squareMeters} m²` },
+                    { icon: Building, label: "Estrato", value: property.tier },
+                    { icon: Calendar, label: "Antigüedad", value: `${property.age} años` },
+                  ].map((item, index) => (
+                    <Card key={index} className="bg-white">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        <div className="p-2 rounded-lg bg-blue-50">
+                          <item.icon className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">{item.label}</p>
+                          <p className="font-medium">{item.value}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <Card className="bg-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-lg bg-purple-100">
+                        <Info className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <h2 className="text-xl font-semibold">Descripción</h2>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{item.label}</p>
-                      <p className="font-medium text-gray-800">{item.value}</p>
-                    </div>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">{property.description}</p>
                   </CardContent>
                 </Card>
-              ))}
+              </div>
             </div>
-
-            <Separator className="my-6" />
-
-            <Card className="bg-white shadow-md">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4 text-blue-600">
-                  <Info className="h-5 w-5" />
-                  Descripción
-                </h2>
-                <p className="text-gray-700 leading-relaxed">{property.property.description}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-green-600 text-white shadow-md">
-              <CardContent className="p-6 flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Canon Arrendamiento</h2>
-                <p className="text-3xl font-bold flex items-center">
-                  <DollarSign className="h-8 w-8 mr-2" />
-                  {property.property.rentPrice || "No disponible"}
-                </p>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end mt-6">
-              <Button onClick={() => setShowDialog(true)} className="bg-blue-600 text-white hover:bg-blue-700">
-                Postularse a la Propiedad
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
@@ -151,13 +259,45 @@ export default function PropertyDetails({ params }) {
             <DialogDescription>¿Estás seguro de que deseas postularte a esta propiedad?</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
-            <Button className="bg-primary-400">
-              <Link href={`/inquilino-dashboard/postularse/${property?.property?.id}`} >Confirmar</Link>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Cancelar
+            </Button>
+            <Button className="bg-green-600 hover:bg-green-700">
+              <Link href={`/inquilino-dashboard/postularse/${property.id}`}>Confirmar</Link>
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={showFullscreenImage} onOpenChange={setShowFullscreenImage} className="max-w-none">
+        <DialogContent className="max-w-7xl w-full p-0 gap-0">
+          <div className="relative bg-black h-[80vh]">
+            <img
+              src={images[currentImageIndex]?.mediaUrl || "/placeholder.svg"}
+              alt={`Vista ${currentImageIndex + 1} de la propiedad`}
+              className="w-full h-full object-contain"
+            />
+            <Button
+              variant="ghost"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-black/50"
+              onClick={() => setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </Button>
+            <Button
+              variant="ghost"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-black/50"
+              onClick={() => setCurrentImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+            >
+              <ChevronRight className="h-8 w-8" />
+            </Button>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }
+

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, UserPlus, FileText, Send,Trash2 } from 'lucide-react'
+import { ArrowLeft, Upload, UserPlus, FileText, Send, Trash2, X } from "lucide-react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 import { useToast } from "@/hooks/use-toast"
@@ -17,20 +17,23 @@ export default function PostulateForm({ params }) {
   const router = useRouter()
   const [formData, setFormData] = useState({
     applicationData: {
-      property: "", 
-      tenantAuthID: "", 
-      status: 0, 
+      property: "",
+      tenantAuthID: "",
+      status: 0,
       score: 0,
-      personalDescription: ""
+      personalDescription: "",
     },
     applicationMedias: [],
-    applicationReferences: []
+    applicationReferences: [],
   })
   const { user } = useAuth0()
   const tenant_id = getAuth0Id(user?.sub)
   const property_id = params.id
-  const { toast } = useToast();
+  const { toast } = useToast()
   const [errors, setErrors] = useState({})
+
+  // Add a new state to track files by document type
+  const [filesByType, setFilesByType] = useState({})
 
   const convertFileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -46,13 +49,14 @@ export default function PostulateForm({ params }) {
       ...prev,
       applicationData: {
         ...prev.applicationData,
-        [name]: value
-      }
+        [name]: value,
+      },
     }))
   }
 
   const handleFileUpload = async (e, docType) => {
-    const { files } = e.target
+    const inputElement = e.target
+    const { files } = inputElement
     const filesArray = Array.from(files)
     const media = await Promise.all(
       filesArray.map(async (file) => {
@@ -62,15 +66,48 @@ export default function PostulateForm({ params }) {
           file: {
             data: base64Data,
             name: file.name,
-            mimetype: file.type
-          }
+            mimetype: file.type,
+          },
         }
-      })
+      }),
     )
+
+    // Guardar la referencia del input en un objeto separado
+    const mediaWithInputRefs = media.map((item) => ({
+      ...item,
+      inputElement,
+    }))
 
     setFormData((prev) => ({
       ...prev,
-      applicationMedias: [...prev.applicationMedias, ...media]
+      applicationMedias: [...prev.applicationMedias, ...media], // Sin la referencia al input
+    }))
+
+    setFilesByType((prev) => ({
+      ...prev,
+      [docType]: [...(prev[docType] || []), ...mediaWithInputRefs], // Con la referencia al input
+    }))
+  }
+
+  const handleDeleteFile = (docType, fileIndex) => {
+    // Get the file being deleted
+    const fileToDelete = filesByType[docType][fileIndex]
+
+    // Reset the input element value
+    if (fileToDelete.inputElement) {
+      fileToDelete.inputElement.value = ""
+    }
+
+    setFilesByType((prev) => ({
+      ...prev,
+      [docType]: prev[docType].filter((_, index) => index !== fileIndex),
+    }))
+
+    setFormData((prev) => ({
+      ...prev,
+      applicationMedias: prev.applicationMedias.filter(
+        (media) => !(media.mediaType === docType && prev[docType]?.[fileIndex]?.file.name === media.file.name),
+      ),
     }))
   }
 
@@ -80,7 +117,7 @@ export default function PostulateForm({ params }) {
     newReferences[index][name] = value
     setFormData((prev) => ({
       ...prev,
-      applicationReferences: newReferences
+      applicationReferences: newReferences,
     }))
   }
 
@@ -89,8 +126,8 @@ export default function PostulateForm({ params }) {
       ...prev,
       applicationReferences: [
         ...prev.applicationReferences,
-        { name: '', lastname: '', cellphone: '', relationship: '' }
-      ]
+        { name: "", lastname: "", cellphone: "", relationship: "" },
+      ],
     }))
   }
 
@@ -98,7 +135,7 @@ export default function PostulateForm({ params }) {
     const newReferences = formData.applicationReferences.filter((_, i) => i !== index)
     setFormData((prev) => ({
       ...prev,
-      applicationReferences: newReferences
+      applicationReferences: newReferences,
     }))
   }
 
@@ -121,42 +158,56 @@ export default function PostulateForm({ params }) {
       return
     }
 
+    // Crear una copia limpia de los datos sin referencias circulares
     const finalData = {
       ...formData,
       applicationData: {
         ...formData.applicationData,
         property: property_id,
-        tenantAuthID: tenant_id
-      }
+        tenantAuthID: tenant_id,
+      },
+      // Limpiar los medios de cualquier referencia al input
+      applicationMedias: formData.applicationMedias.map((media) => ({
+        mediaType: media.mediaType,
+        file: {
+          data: media.file.data,
+          name: media.file.name,
+          mimetype: media.file.mimetype,
+        },
+      })),
     }
 
-    const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(finalData)
+    const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(finalData),
     })
-    
+
     if (response.ok) {
-      toast(() => ({
+      toast({
         title: "Postulación Creada",
         description: "La postulación ha sido creada exitosamente.",
-      }));
+      })
 
-      router.push('/inquilino-dashboard/postulaciones')
+      router.push("/inquilino-dashboard/postulaciones")
     } else {
-      console.log('Postulacion no creada')
-      toast(() => ({
+      console.log("Postulacion no creada")
+      toast({
         title: "Error",
         description: "Ha ocurrido un error al crear la postulación, intente de nuevo.",
         variant: "destructive",
-      }));
+      })
     }
   }
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <div className="mb-6">
-        <Button variant="outline" onClick={() => router.back()} className="group transition-all duration-300 ease-in-out">
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="group transition-all duration-300 ease-in-out"
+        >
           <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
           Volver
         </Button>
@@ -280,7 +331,6 @@ export default function PostulateForm({ params }) {
                   "Documento de identidad",
                   "Soporte de pago de nómina (últimos 3 meses)",
                   "Extractos bancarios (últimos 3 meses)",
-                  "Antecedentes Penales"
                 ].map((doc, index) => (
                   <div
                     key={index}
@@ -293,21 +343,94 @@ export default function PostulateForm({ params }) {
                       className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
                     {errors.applicationMedias && <p className="text-red-500">{errors.applicationMedias}</p>}
+
+                    {/* Show files for this specific document type */}
+                    {filesByType[doc]?.length > 0 && (
+                      <div className="mt-2">
+                        <ul className="space-y-1">
+                          {filesByType[doc].map((file, fileIndex) => (
+                            <li
+                              key={fileIndex}
+                              className="flex items-center justify-between text-sm text-gray-600 bg-white p-2 rounded"
+                            >
+                              <span className="truncate">{file.file.name}</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteFile(doc, fileIndex)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 ))}
-              </div>
-              {formData.applicationMedias.length > 0 && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium mb-2 text-blue-700">Documentos cargados:</h4>
-                  <ul className="list-disc list-inside">
-                    {formData.applicationMedias.map((media, index) => (
-                      <li key={index} className="text-sm text-gray-600">
-                        {media.file.name}
+
+                {/* Antecedentes Penales section */}
+                <div className="border p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 md:col-span-2">
+                  <Label className="block mb-2 text-sm font-medium text-gray-700">Antecedentes Penales</Label>
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg text-sm text-gray-600">
+                    <p className="font-medium text-blue-700 mb-2">¿Cómo obtener sus antecedentes penales?</p>
+                    <ol className="list-decimal list-inside space-y-2">
+                      <li>
+                        Visite el portal oficial de la Policía Nacional en{" "}
+                        <a
+                          href="https://antecedentes.policia.gov.co:7005/WebJudicial/index.xhtml"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          antecedentes.policia.gov.co
+                        </a>
                       </li>
-                    ))}
-                  </ul>
+                      <li>Acepte los términos y condiciones del servicio</li>
+                      <li>Ingrese su número de cédula y complete el proceso de verificación</li>
+                      <li>Tome una captura de pantalla del resultado o descargue el PDF generado</li>
+                      <li>Suba el archivo en este campo</li>
+                    </ol>
+                    <p className="mt-4 text-xs text-gray-500">
+                      Nota: Este documento es gratuito y puede ser obtenido inmediatamente a través del portal web
+                      oficial.
+                    </p>
+                  </div>
+                  <Input
+                    type="file"
+                    onChange={(e) => handleFileUpload(e, "Antecedentes Penales")}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {errors.applicationMedias && <p className="text-red-500">{errors.applicationMedias}</p>}
+
+                  {/* Show files for Antecedentes Penales */}
+                  {filesByType["Antecedentes Penales"]?.length > 0 && (
+                    <div className="mt-2">
+                      <ul className="space-y-1">
+                        {filesByType["Antecedentes Penales"].map((file, fileIndex) => (
+                          <li
+                            key={fileIndex}
+                            className="flex items-center justify-between text-sm text-gray-600 bg-white p-2 rounded"
+                          >
+                            <span className="truncate">{file.file.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteFile("Antecedentes Penales", fileIndex)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             <Separator className="my-8" />
@@ -324,3 +447,4 @@ export default function PostulateForm({ params }) {
     </div>
   )
 }
+
