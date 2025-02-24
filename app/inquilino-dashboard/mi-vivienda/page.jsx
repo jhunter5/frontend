@@ -238,7 +238,7 @@ export default function PropertyDetails({ params }) {
 
         <CardContent className="p-6">
           <div className="grid gap-8">
-            {/* Galería de imágenes mejorada */}
+            {/* Galería de imágenes */}
             <div className="space-y-4">
               {images.length > 0 ? (
                 <>
@@ -308,9 +308,9 @@ export default function PropertyDetails({ params }) {
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <MapPin className="h-5 w-5 text-blue-600" />
                     </div>
-                    <h2 className="text-lg font-semibold text-blue-900">Ubicación</h2>
+                    <h2 className="text-lg font-semibold text-blue-900 font-inter">Ubicación</h2>
                   </div>
-                  <p className="text-gray-700 text-lg mb-1">{property.direccion}</p>
+                  <p className="text-gray-700 text-lg mb-1 font-inter">{property.direccion}</p>
                   <p className="text-gray-600">
                     {property.municipio}, {property.departamento}
                   </p>
@@ -350,7 +350,7 @@ export default function PropertyDetails({ params }) {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">{item.label}</p>
-                        <p className="font-semibold text-gray-900">{item.value}</p>
+                        <p className="font-inter text-gray-900">{item.value}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -369,7 +369,7 @@ export default function PropertyDetails({ params }) {
                   </div>
                   <h2 className="text-lg font-semibold text-blue-900">Descripción</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed">{property.descripcion}</p>
+                <p className="text-gray-700 font-inter leading-relaxed">{property.descripcion}</p>
               </CardContent>
             </Card>
 
