@@ -13,6 +13,7 @@ export default function Navbar() {
                     <Link href="/" className="hover:text-gray-200">Home</Link>
                     <Link href="/about-us" className="hover:text-gray-200">About Us</Link>
                     <Link href="/contact-us" className="hover:text-gray-200">Contact Us</Link>
+                    <Link href="/legal-datos" className="hover:text-gray-200">Habeas Data</Link>
                     {!isAuthenticated && (
                         <button onClick={() => loginWithRedirect()} className="hover:text-gray-200">
                             Login
