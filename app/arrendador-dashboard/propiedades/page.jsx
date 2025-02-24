@@ -19,8 +19,7 @@ export default function PropertiesPage() {
 
   const fetchProperties = async () => {
     const userId = getAuth0Id(user.sub)
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/user/${userId}`)
-    // const response = await fetch(`http://localhost:3001/api/property/user/${userId}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/user/${userId}`)
 
     if (!response.ok) {
       throw new Error('Ocurrio un error consultando la base de datos')
@@ -74,7 +73,7 @@ export default function PropertiesPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paginatedProperties.map((property) => (
-          <PropertyCard key={property._id} property={property} />
+          <PropertyCard key={property.id} property={property} />
         ))}
       </div>
 

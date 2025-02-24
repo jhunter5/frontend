@@ -81,12 +81,8 @@ export default function CreateProfile() {
         formData.append(key, value)
       })
 
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`)
-      }
-
-      const response = await fetch("https://backend-khaki-three-90.vercel.app/api/tenant", {
-        method: "POST",
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant', {
+        method: 'POST',
         body: formData,
       })
 
@@ -107,8 +103,8 @@ export default function CreateProfile() {
         formData.append(key, value)
       })
 
-      const response = await fetch("https://backend-khaki-three-90.vercel.app/api/landlord", {
-        method: "POST",
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord', {
+        method: 'POST',
         body: formData,
       })
 
@@ -123,8 +119,8 @@ export default function CreateProfile() {
 
   const LandlordPreferences = useMutation({
     mutationFn: async ({ landlordAuthId, preferenceType, preferenceValue }) => {
-      const response = await fetch("https://backend-khaki-three-90.vercel.app/api/landlord-preferences", {
-        method: "POST",
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord-preferences', {
+        method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
@@ -146,8 +142,8 @@ export default function CreateProfile() {
 
   const TenantPreferences = useMutation({
     mutationFn: async ({ tenantAuthId, preferenceType, preferenceValue }) => {
-      const response = await fetch("https://backend-khaki-three-90.vercel.app/api/tenant-preferences", {
-        method: "POST",
+      const response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant-preferences', {
+        method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
@@ -216,16 +212,17 @@ export default function CreateProfile() {
                     preferenceValue,
                   })
                 }),
-              )
-              toast({
-                title: "Perfil creado",
-                description: "Tu perfil ha sido creado exitosamente.",
-                status: "success",
-                duration: 2000,
-              })
-              router.push("/arrendador-dashboard/propiedades")
-            } catch (error) {
-              throw new Error(error.message)
+            );
+            toast({
+              title: "Perfil creado",
+              description: "Tu perfil ha sido creado exitosamente.",
+              status: "success",
+              duration: 2000,
+            });
+            router.push('/mercado-pago');
+            } 
+            catch (error) {
+              throw new Error(error.message);
             }
           },
           onError: (error) => {

@@ -17,7 +17,7 @@ const ValidateRole = () => {
       const userId = getAuth0Id(user.sub);
       let response; 
 
-      response = await fetch('https://backend-khaki-three-90.vercel.app/api/auth/verifyProfile', {
+      response = await fetch('https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/auth/verifyProfile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userId })
@@ -28,7 +28,13 @@ const ValidateRole = () => {
 
       if (hasProfile) {
         if (role === 'Arrendatario') {
-          router.push('/arrendador-dashboard/propiedades');
+          const mercadoPago = await checkAccesToken();
+          if (mercadoPago) {
+            router.push('/arrendador-dashboard/propiedades');
+          }
+          else {
+            router.push('/mercado-pago');
+          }
         }
         else if (role === 'Inquilino') {
           router.push('/inquilino-dashboard/buscador-propiedades');
@@ -57,6 +63,22 @@ const ValidateRole = () => {
       router.push('/selecciona-rol');
     }
   };
+
+  const checkAccesToken = async () => {
+    try {
+      const userId = getAuth0Id(user.sub);
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord/mercado-pago/validate-access-token/${userId}`)
+      if (response.status === 200) {
+        return true;
+      } else if (response.status === 404) {
+        return false;
+      }
+    }
+    catch (error) {
+      console.error('Error al verificar el token:', error);
+      router.push('/error');
+    }
+  }
 
   useEffect(() => {
     if (isLoading) return;

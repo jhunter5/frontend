@@ -13,7 +13,8 @@ import { Input } from '@/components/ui/input'
 
 
 const fetchProperty = async (id) => {
-  const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${id}`)
+  const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
+  
 
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
@@ -37,7 +38,7 @@ export default function PropertyDetails({ params }) {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${params.id}`, {
         method: 'DELETE',
       })
 
@@ -67,7 +68,7 @@ export default function PropertyDetails({ params }) {
 
   const setAvailable = useMutation({
     mutationFn: async ({rentPrice}) => {
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/onSearch/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -115,7 +116,7 @@ export default function PropertyDetails({ params }) {
 
   const setUnavailable = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${params.id}`, {
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/onSearch/${params.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -303,14 +304,14 @@ export default function PropertyDetails({ params }) {
             )}
             {data.contract !== null && (
               <Button asChild className="bg-[#1C2671] text-white">
-                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenantAuthID.authID}`}>
+                <Link href={`/arrendador-dashboard/inquilinos/${data.contract.tenantAuthID}`}>
                   Ver perfil del inquilino
                 </Link>
               </Button>
             )}
             {data.contract !== null && (
               <Button asChild className="bg-[#1C2671] text-white">
-                <Link href={`/arrendador-dashboard/contratos/ver/${data.contract._id}`}>
+                <Link href={`/arrendador-dashboard/contratos/ver/${data.contract.id}`}>
                   Ver contrato
                 </Link>
               </Button>

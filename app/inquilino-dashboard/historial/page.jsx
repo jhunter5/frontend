@@ -34,25 +34,30 @@ export default function ExperienciasAlojamiento() {
       if (!user) return
       try {
         const userId = getAuth0Id(user.sub)
-        const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/contract/tenant/${userId}`)
+        const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/contract/tenant/${userId}`)
         const data = await response.json()
-
+      
         if (Array.isArray(data)) {
           const experienciasConImagenes = await Promise.all(
             data.map(async (contract) => {
-              const propertyId = contract.propertyId._id
+              const propertyId = contract.propertyId
+
               const propertyResponse = await fetch(
-                `https://backend-khaki-three-90.vercel.app/api/property/${propertyId}`,
+                `https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${propertyId}`,
               )
+              // const propertyResponse = await fetch(
+              //   `https://backend-khaki-three-90.vercel.app/api/property/${propertyId}`,
+              // )
               if (!propertyResponse.ok) throw new Error("Error fetching property data")
 
               const propertyData = await propertyResponse.json()
+
               const imagen = propertyData.media?.[0]?.mediaUrl || "https://via.placeholder.com/400"
 
               return {
-                id: contract._id,
-                nombre: contract.propertyId.address,
-                direccion: `${contract.propertyId.city}, ${contract.propertyId.state}`,
+                id: propertyData.property.id,
+                nombre: propertyData.property.address,
+                direccion: `${propertyData.property.city}, ${propertyData.property.state}`,
                 imagen,
                 fechaIngreso: new Date(contract.startDate).toLocaleDateString(),
                 fechaSalida: new Date(contract.endDate).toLocaleDateString(),

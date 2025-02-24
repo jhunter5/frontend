@@ -123,6 +123,7 @@ function MonthView({ currentDate, appointments }) {
                 <Info className="h-6 w-6 text-primary-400" />
                 <p className="col-span-3 text-sm">{selectedAppointment.description}</p>
               </div>
+
               <div className="grid grid-cols-4 items-center gap-4">
                 <Home className="h-6 w-6 text-primary-400" />
                 <p className="col-span-3 text-sm truncate">{selectedAppointment.property?.description}</p>
@@ -131,6 +132,7 @@ function MonthView({ currentDate, appointments }) {
                 <User className="h-6 w-6 text-primary-400" />
                 <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord[0]?.firstName + ' ' + selectedAppointment.landlord[0]?.lastName}</p>
               </div>
+             
             </div>
             <DialogFooter>
               <Button onClick={() => setSelectedAppointment(null)} className="bg-primary-500 hover:bg-primary-600 text-white">Cerrar</Button>
@@ -149,7 +151,8 @@ export default function CalendarPage() {
 
   const fetchAppointments = async () => {
     const userId = getAuth0Id(user.sub)
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/appointment/tenant/${userId}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/appointment/tenant/${userId}`)
+
     if (!response.ok) {
       throw new Error('Ocurrió un error consultando la base de datos')
     }

@@ -15,8 +15,7 @@ export default function TenantProfile({ params }) {
 
   const fetchTenant = async () => {
     const { id } = params
-    const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/tenant/${id}`)
-    // const response = await fetch(`http://localhost:3001/api/tenant/${id}`)
+    const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/tenant/${id}`)
 
     if (!response.ok) {
       throw new Error('Error al obtener el inquilino')

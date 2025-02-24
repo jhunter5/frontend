@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 const queryClient = new QueryClient();
 const callbackUrl = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:3000/set-usuario' 
-  : 'https://frontend-mocha-seven-79.vercel.app/set-usuario';
+  : 'https://www.limitlessholdings.site/set-usuario';
 
 export default function RootLayout({ children }) {
   

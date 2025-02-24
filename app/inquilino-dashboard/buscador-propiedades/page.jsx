@@ -13,7 +13,7 @@ const normalizeString = (str) => {
 };
 
 const fetchProperties = async () => {
-  const response = await fetch("https://backend-khaki-three-90.vercel.app/api/property/available/no-filters");
+  const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/available/no-filters");
 
   if (!response.ok) {
     throw new Error("Ocurrió un error al obtener las propiedades");

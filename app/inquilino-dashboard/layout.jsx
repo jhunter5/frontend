@@ -167,8 +167,8 @@ export default function DashboardLayout({ children }) {
           ) 
           : (
           <>
-            <span className="text-xs font-medium font-inter text-white truncate">{data.firstName + " " + data.lastName}</span>
-            <span className="text-xs font-medium font-inter text-muted-foreground truncate">{data.email}</span>
+            <span className="text-xs font-medium font-inter text-white truncate">{data?.firstName + " " + data?.lastName}</span>
+            <span className="text-xs font-medium font-inter text-muted-foreground truncate">{data?.email}</span>
           </>
           )
           }
@@ -183,7 +183,7 @@ export default function DashboardLayout({ children }) {
             logoutParams: {
               returnTo: process.env.NODE_ENV === 'development'
               ? 'http://localhost:3000/'
-              : 'https://frontend-mocha-seven-79.vercel.app/',
+              : 'https://www.limitlessholdings.site/',
             }
           })
         }

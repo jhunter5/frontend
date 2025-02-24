@@ -11,7 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 
 const STATUS_MAP = {
   0: { label: "En revisión", icon: <Clock className="h-6 w-6 text-yellow-500" /> },
-  1: { label: "Aceptada", icon: <CheckCircle className="h-6 w-6 text-green-500" /> },
+  1: { label: "Preaprobada", icon: <CheckCircle className="h-6 w-6 text-green-500" /> },
   2: { label: "Rechazada", icon: <XCircle className="h-6 w-6 text-red-500" /> }
 };
 
@@ -24,13 +24,13 @@ export default function MisPostulaciones() {
     const fetchPostulaciones = async () => {
       try {
         const userId = getAuth0Id(user.sub)
-        const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/application/tenant/${userId}?year=2025`)
+        const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/application/tenant/${userId}?year=2025`)
         const data = await response.json()
 
         const postulacionesConInfo = await Promise.all(
           data.applications.map(async (app) => {
             try {
-              const propertyResponse = await fetch(`https://backend-khaki-three-90.vercel.app/api/property/${app.application.property}`)
+              const propertyResponse = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${app.application.propertyId}`)
               const propertyData = await propertyResponse.json()
 
               return {

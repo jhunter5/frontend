@@ -9,12 +9,17 @@ import Link from "next/link"
 import { useQuery } from '@tanstack/react-query'
 import { getAuth0Id } from "@/app/utils/getAuth0id"
 
+const arrendatario = {
+  numeroPropiedades: 5,
+  avgRating: 4.5
+}
+
 export default function ArrendatarioProfile() {
   const { user } = useAuth0()
 
   const fecthUser = async () => {
       const userId = getAuth0Id(user.sub);
-      const response = await fetch(`https://backend-khaki-three-90.vercel.app/api/landlord/${userId}`)
+      const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/landlord/${userId}`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -110,13 +115,14 @@ export default function ArrendatarioProfile() {
               <Calendar className="h-5 w-5 text-blue-500"/>
               <div>
                 <p className="text-sm text-muted-foreground">Edad</p>
-                <p className="font-medium">{data.age} años</p>
+                <p className="font-medium">22 años</p>
               </div> 
             </div>
           </CardContent>
         </Card>
 
         {/* Información de Arrendamientos */}
+
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="bg-yellow-50">
             <CardTitle className="text-yellow-700">Información de Arrendamientos</CardTitle>
@@ -126,10 +132,10 @@ export default function ArrendatarioProfile() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Home className="h-6 w-6 text-primary" />
               </div>
-              {/* <div>
+              <div>
                 <p className="text-sm text-muted-foreground">Número de Propiedades</p>
                 <p className="text-2xl font-bold">{arrendatario.numeroPropiedades}</p>
-              </div> */}
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -155,24 +161,6 @@ export default function ArrendatarioProfile() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle2 className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Porcentaje de Cumplimiento</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{arrendatario.porcentajeCumplimiento}%</p>
-                  <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full bg-green-500 transition-all duration-500 ease-out"
-                      style={{ width: `${arrendatario.porcentajeCumplimiento}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </CardContent>
         </Card>
       </div>
