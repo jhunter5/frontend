@@ -198,7 +198,7 @@ export default function CreateProfile() {
           // const arrendatarioId = response._id;
           const landlordId = getAuth0Id(user.sub);
           const preferences = formData.preferences;
-
+          
             try {
             await Promise.all(
               Object.entries(preferences).map(([preferenceType, preferenceValue]) => {
