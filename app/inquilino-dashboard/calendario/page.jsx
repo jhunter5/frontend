@@ -130,7 +130,7 @@ function MonthView({ currentDate, appointments }) {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <User className="h-6 w-6 text-primary-400" />
-                <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord[0]?.firstName + ' ' + selectedAppointment.landlord[0]?.lastName}</p>
+                <p className="col-span-3 text-sm">Arrendador potencial: {selectedAppointment.landlord?.firstName + ' ' + selectedAppointment.landlord?.lastName}</p>
               </div>
              
             </div>
