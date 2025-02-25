@@ -29,7 +29,7 @@ export default function HomePage() {
 
             <p className="text-gray-600 mb-8">
               Gestiona tus propiedades y contratos con facilidad, automatiza los cobros y mantenimientos, y toma
-              decisiones inteligentes con análisis de datos y IA.
+              decisiones inteligentes con análisis de datos.
             </p>
 
             <div className="space-y-4 mb-8">
