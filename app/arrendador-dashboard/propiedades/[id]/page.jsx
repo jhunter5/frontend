@@ -1,21 +1,22 @@
 "use client"
-import { useState} from 'react'
+import { useState, useEffect} from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info } from 'lucide-react'
+import { ArrowLeft, MapPin, Home, Bed, Car, Bath, Calendar, Ruler, Building, Info, HomeIcon, ChevronLeft,
+  ChevronRight, } from 'lucide-react'
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { Input } from '@/components/ui/input'
+import { cn } from "@/lib/utils"
 
 
 const fetchProperty = async (id) => {
   const response = await fetch(`https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${id}`)
   
-
   if (!response.ok) {
     throw new Error('No se pudo cargar la propiedad')
   }
@@ -27,6 +28,8 @@ export default function PropertyDetails({ params }) {
   const [showUnrentDialog, setShowUnrentDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [rentPrice, setRentPrice] = useState('')
+  const [images, setImages] = useState([])
+  const [currentImage, setCurrentImage] = useState(0)
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -35,6 +38,12 @@ export default function PropertyDetails({ params }) {
     queryKey: ['property', params.id],
     queryFn: () => fetchProperty(params.id),
   }) 
+
+  useEffect(() => {
+    if (data?.property?.PropertyMedia) {
+      setImages(data.property.PropertyMedia.map((item) => item.mediaUrl));
+    }
+  }, [data?.property?.PropertyMedia]);
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -161,6 +170,14 @@ export default function PropertyDetails({ params }) {
     deleteProperty()
   }
 
+  const nextImage = () => {
+    setCurrentImage((prev) => (prev + 1) % images.length)
+  }
+
+  const previousImage = () => {
+    setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
+  }
+
   if (isError) {
     return <div>Error: {error.message}</div>;
   }
@@ -168,6 +185,8 @@ export default function PropertyDetails({ params }) {
   if (isPending) {
     return <p>Cargando...</p>
   }
+
+
 
   return (
     <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen">
@@ -185,9 +204,9 @@ export default function PropertyDetails({ params }) {
         <CardTitle className="text-5xl font-bold font-spaceGrotesk">Detalles de la Propiedad</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="grid gap-6">
+        <div className="grid gap-8">
           {/* Galería de imágenes */}
-          <div className="grid grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-3 gap-4">
             {data.media.map((image, index) => (
               <img
                 key={index}
@@ -196,7 +215,69 @@ export default function PropertyDetails({ params }) {
                 className="rounded-lg object-cover w-full h-48"
               />
             ))}
-          </div>
+          </div> */}
+
+           {/* Galería de imágenes mejorada */}
+           <div className="space-y-4">
+              {images.length > 0 ? (
+                <>
+                  <div className="relative h-[550px] rounded-xl overflow-hidden shadow-lg">
+                    <img
+                      src={images[currentImage] || "/placeholder.svg"}
+                      alt={`Vista principal ${currentImage + 1}`}
+                      className="w-full h-full"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30" />
+
+                    <button
+                      onClick={previousImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white transition-colors shadow-lg"
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white transition-colors shadow-lg"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-full text-white text-sm">
+                      {currentImage + 1} / {images.length}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-3">
+                    {images.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImage(index)}
+                        className={cn(
+                          "relative h-20 rounded-lg overflow-hidden transition-all duration-200 hover:opacity-90 shadow-sm hover:shadow-md",
+                          currentImage === index && "ring-2 ring-blue-600 ring-offset-2",
+                        )}
+                      >
+                        <img
+                          src={image || "/placeholder.svg"}
+                          alt={`Vista ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="w-full h-[400px] bg-blue-50 rounded-xl flex items-center justify-center">
+                  <div className="text-center space-y-2">
+                    <div className="p-3 bg-blue-100 rounded-full inline-block">
+                      <HomeIcon className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <p className="text-blue-600">No hay imágenes disponibles</p>
+                  </div>
+                </div>
+              )}
+            </div>
 
           {/* Información principal */}
           <div className="grid gap-6 md:grid-cols-2">

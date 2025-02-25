@@ -195,14 +195,12 @@ export default function CreateProfile() {
         files: updatedFormData.personal.avatar,
       }
 
-      LandlordProfile.mutate(
-        { ...profileData },
-        {
-          onSuccess: async () => {
-            // const arrendatarioId = response._id;
-            const landlordId = getAuth0Id(user.sub)
-            const preferences = formData.preferences
-
+      LandlordProfile.mutate({ ...profileData }, {
+        onSuccess: async () => {
+          // const arrendatarioId = response._id;
+          const landlordId = getAuth0Id(user.sub);
+          const preferences = formData.preferences;
+          
             try {
               await Promise.all(
                 Object.entries(preferences).map(([preferenceType, preferenceValue]) => {
