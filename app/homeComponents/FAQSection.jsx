@@ -49,7 +49,7 @@ export default function FAQSection() {
           },
           {
             "question": "¿La plataforma cobra alguna comisión por los pagos?",
-            "answer": "Sí, aplicamos una comisión del 5% sobre cada transacción procesada a través de la plataforma. Esta tarifa cubre los costos operativos y el uso de nuestra infraestructura digital."
+            "answer": "No cobramos comisiones por los pagos realizados en la plataforma. Solo se aplica la tarifa estándar de Mercado Pago según el método de pago utilizado."
           },
           {
             "question": "¿Cómo puedo contactar soporte en caso de problemas?",
