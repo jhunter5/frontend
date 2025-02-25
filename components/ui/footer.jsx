@@ -35,10 +35,9 @@ export default function Footer() {
             <h3 className="font-semibold">Enlaces Rápidos</h3>
             <nav className="flex flex-col space-y-2">
               <Link href="/" className="hover:text-gray-300">Inicio</Link>
-              <Link href="/about" className="hover:text-gray-300">Sobre Nosotros</Link>
-              <Link href="/services" className="hover:text-gray-300">Servicios</Link>
-              <Link href="/projects" className="hover:text-gray-300">Proyectos</Link>
-              <Link href="/contact" className="hover:text-gray-300">Contacto</Link>
+              <Link href="/about-us" className="hover:text-gray-300">Sobre Nosotros</Link>
+              <Link href="/contact-us" className="hover:text-gray-300">Contacto</Link>
+              <Link href="/legal-datos" className="hover:text-gray-300">Habes data</Link>
             </nav>
           </div>
 
@@ -87,12 +86,12 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-sm text-gray-200">
-          <p>© 2024 Limitless. Todos los derechos reservados.</p>
+          <p>© 2025 Limitless. Todos los derechos reservados.</p>
           <div className="flex space-x-4">
-            <Link href="/privacy" className="hover:text-gray-300">
+            <Link href="/legal-datos" className="hover:text-gray-300">
               Política de Privacidad
             </Link>
-            <Link href="/terms" className="hover:text-gray-300">
+            <Link href="/legal-datos" className="hover:text-gray-300">
               Términos y Condiciones
             </Link>
           </div>
