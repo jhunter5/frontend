@@ -279,7 +279,8 @@ export default function PostulateForm({ params }) {
                   "Certificación laboral",
                   "Documento de identidad",
                   "Soporte de pago de nómina (últimos 3 meses)",
-                  "Extractos bancarios (últimos 3 meses)"
+                  "Extractos bancarios (últimos 3 meses)",
+                  "Antecedentes Penales"
                 ].map((doc, index) => (
                   <div
                     key={index}

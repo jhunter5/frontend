@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Clock,
   BookOpen,
+  Building2,
 } from "lucide-react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { getAuth0Id } from "@/app/utils/getAuth0id"
@@ -78,7 +79,6 @@ export default function ExperienciasAlojamiento() {
     if (!isLoading) fetchHistorial()
   }, [user, isLoading])
 
-  // Mostrar el estado de carga mientras isLoading es true o experiencias es null
   if (isLoading || experiencias === null) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -92,42 +92,69 @@ export default function ExperienciasAlojamiento() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center">
-        <Button variant="outline" asChild className="mb-4 md:mb-0">
-          <Link href="/inquilino-dashboard/buscador-propiedades">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+      {/* Header Section */}
+      <div className="flex items-center justify-between mb-8">
+        <Button variant="outline" asChild className="hover:bg-blue-50 transition-colors group">
+          <Link href="/inquilino-dashboard/buscador-propiedades" className="text-gray-600">
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Volver al Buscador
           </Link>
         </Button>
-        <h1 className="text-4xl font-bold text-primary">Mis Experiencias de Alojamiento</h1>
+        <div className="flex items-center space-x-4">
+          <div className="flex -space-x-2">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center shadow-inner transform -rotate-6">
+              <Building2 className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center shadow-inner transform rotate-6">
+              <Home className="w-5 h-5 text-blue-600" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold bg-black bg-clip-text text-transparent font-spaceGrotesk">
+            Mis Experiencias de Alojamiento
+          </h1>
+        </div>
       </div>
 
-      <div className="mb-6 flex justify-center">
-        <div className="inline-flex rounded-md shadow-sm" role="group">
+      {/* Filter Buttons */}
+      <div className="flex justify-center mb-8">
+        <div className="inline-flex rounded-xl shadow-sm p-1.5 bg-white border border-blue-100" role="group">
           <Button
-            variant={filtro === "todas" ? "default" : "outline"}
+            variant={filtro === "todas" ? "default" : "ghost"}
             onClick={() => setFiltro("todas")}
-            className="rounded-l-md"
+            className={`rounded-lg px-6 ${
+              filtro === "todas"
+                ? "bg-gradient-to-r from-blue-800 to-blue-800 text-white shadow-md"
+                : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            }`}
           >
             Todas
           </Button>
           <Button
-            variant={filtro === "arrendado" ? "default" : "outline"}
+            variant={filtro === "arrendado" ? "default" : "ghost"}
             onClick={() => setFiltro("arrendado")}
-            className="-ml-px"
+            className={`rounded-lg px-6 ${
+              filtro === "arrendado"
+                ? "bg-gradient-to-r from-blue-800 to-blue-800 text-white shadow-md"
+                : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            }`}
           >
             Arrendadas
           </Button>
           <Button
-            variant={filtro === "finalizado" ? "default" : "outline"}
+            variant={filtro === "finalizado" ? "default" : "ghost"}
             onClick={() => setFiltro("finalizado")}
-            className="-ml-px rounded-r-md"
+            className={`rounded-lg px-6 ${
+              filtro === "finalizado"
+                ? "bg-gradient-to-r from-blue-800 to-blue-800 text-white shadow-md"
+                : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            }`}
           >
             Finalizadas
           </Button>
         </div>
       </div>
 
+      {/* Content */}
       {experiencias.length === 0 ? (
         <div className="container mx-auto py-8 px-4 bg-gray-50 min-h-screen max-w-5xl">
           <Card className="overflow-hidden">
