@@ -15,17 +15,17 @@ export default function Navbar() {
         Home
       </Link>
       <Link href="/about-us" className="hover:text-gray-200">
-        About Us
+        Sobre Nosotros
       </Link>
       <Link href="/contact-us" className="hover:text-gray-200">
-        Contact Us
+        Contacto
       </Link>
       <Link href="/legal-datos" className="hover:text-gray-200">
         Habeas Data
       </Link>
       {!isAuthenticated && (
         <button onClick={() => loginWithRedirect()} className="hover:text-gray-200">
-          Login
+          Logueate
         </button>
       )}
       {isAuthenticated && (
