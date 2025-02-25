@@ -43,11 +43,6 @@ const sidebarNavItems = {
       href: "/arrendador-dashboard/perfil",
       icon: User
     },
-    {
-      title: "Configuración",
-      href: "/dashboard/settings",
-      icon: Settings,
-    }
   ]
 } 
 
