@@ -334,12 +334,9 @@ export default function CreateProfile() {
               {currentStep === 0 && (
                 <PersonalInfoForm onNext={handleNext} initialData={formData.personal} userRole={userRole} />
               )}
-              {currentStep === 1 && (
-                <CreditCardForm onNext={handleNext} onBack={handleBack} initialData={formData.creditCard} />
-              )}
-              {currentStep === 2 &&
+              {currentStep === 1 && 
                 (userRole === "Inquilino" ? (
-                  <EconomicInfoForm onNext={handleNext} onBack={handleBack} initialData={formData.economic} />
+                  <CreditCardForm onNext={handleNext} onBack={handleBack} initialData={formData.creditCard} />
                 ) : (
                   <PreferencesForm
                     onNext={handleFinish}
@@ -348,6 +345,10 @@ export default function CreateProfile() {
                     userRole={userRole}
                   />
                 ))}
+              {currentStep === 2 &&
+                (
+                  <EconomicInfoForm onNext={handleNext} onBack={handleBack} initialData={formData.economic} />
+                ) }
               {currentStep === 3 && (
                 <PreferencesForm
                   onNext={handleFinish}
