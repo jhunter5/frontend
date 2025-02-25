@@ -27,7 +27,7 @@ const creators = [
       email: "jhunter@limitless.com"
     },
     {
-        name: "Eder Rodriguez",
+        name: "Eder Hernandez",
         role: "CTO & Co-fundador",
         image: "/eder.jpg",
         bio: "Ingeniero de software con experiencia en startups de proptech",
