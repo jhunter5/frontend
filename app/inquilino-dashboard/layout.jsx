@@ -52,11 +52,6 @@ const sidebarNavItems = {
       title: "Perfil",
       href: "/inquilino-dashboard/perfil",
       icon: UserCheck,
-    },
-    {
-      title: "Configuración",
-      href: "/dashboard/settings",
-      icon: Settings,
     }
   ]
 }

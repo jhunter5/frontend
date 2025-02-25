@@ -32,11 +32,6 @@ const sidebarNavItems = {
       icon: UserCheck,
     },
     {
-      title: "Estadísticas",
-      href: "/dashboard/statistics",
-      icon: BarChart3,
-    },
-    {
       title: "Calendario",
       href: "/arrendador-dashboard/calendario",
       icon: CalendarDays,
@@ -48,11 +43,6 @@ const sidebarNavItems = {
       href: "/arrendador-dashboard/perfil",
       icon: User
     },
-    {
-      title: "Configuración",
-      href: "/dashboard/settings",
-      icon: Settings,
-    }
   ]
 } 
 
