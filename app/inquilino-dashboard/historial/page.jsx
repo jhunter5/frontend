@@ -47,9 +47,6 @@ export default function ExperienciasAlojamiento() {
               const propertyResponse = await fetch(
                 `https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/property/${propertyId}`,
               )
-              // const propertyResponse = await fetch(
-              //   `https://backend-khaki-three-90.vercel.app/api/property/${propertyId}`,
-              // )
               if (!propertyResponse.ok) throw new Error("Error fetching property data")
 
               const propertyData = await propertyResponse.json()
