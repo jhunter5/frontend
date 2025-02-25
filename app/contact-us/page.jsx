@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import emailjs from 'emailjs-com';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,12 +12,44 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { User2, Users } from 'lucide-react';
+import { User2 } from 'lucide-react';
 import Navbar from "@/components/ui/navbar";
 
 export default function ContactForm() {
-  const [phoneNumber, setPhoneNumber] = useState('+57');
-  const [accountType, setAccountType] = useState(''); // Estado para manejar la selección de tipo de cuenta
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '+57',
+    accountType: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSendEmail = (e) => {
+    e.preventDefault();
+
+    emailjs.send(
+      'service_o28y0qm', 
+      'template_xwi0jrb', 
+      {
+        nombre: formData.firstName,
+        apellido: formData.lastName,
+        correo: formData.email,
+        telefono: formData.phoneNumber,
+        tipoCuenta: formData.accountType,
+      },
+      'uQvOfIWQ1qIjsNu2x'
+    ).then((response) => {
+      console.log("Correo enviado con éxito:", response);
+      alert("Tu mensaje ha sido enviado. Te contactaremos pronto.");
+    }).catch((error) => {
+      console.error("Error al enviar el correo:", error);
+      alert("Hubo un problema al enviar el mensaje. Inténtalo nuevamente.");
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800">
@@ -30,77 +63,47 @@ export default function ContactForm() {
               ¿Tienes preguntas o necesitas ayuda? Completa el formulario y nuestro equipo se pondrá en contacto contigo en menos de 24 horas.
             </p>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSendEmail}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-gray-700">Nombre</Label>
-                  <Input 
-                    id="firstName"
-                    className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500"
-                    placeholder="Ingresa tu nombre"
-                  />
+                  <Label htmlFor="firstName">Nombre</Label>
+                  <Input className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500" id="firstName" value={formData.firstName} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-gray-700">Apellido</Label>
-                  <Input 
-                    id="lastName"
-                    className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500"
-                    placeholder="Ingresa tu apellido"
-                  />
+                  <Label htmlFor="lastName">Apellido</Label>
+                  <Input className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500" id="lastName" value={formData.lastName} onChange={handleChange} required />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Correo Electrónico</Label>
-                <Input 
-                  id="email"
-                  type="email"
-                  className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500"
-                  placeholder="Ingresa tu correo"
-                />
+                <Label htmlFor="email">Correo Electrónico</Label>
+                <Input className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500" id="email" type="email" value={formData.email} onChange={handleChange} required />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-gray-700">Número de Teléfono</Label>
-                <div className="flex gap-4">
-                  <Select defaultValue="CO">
-                    <SelectTrigger className="w-full max-w-[6rem] bg-blue-100 border-blue-300 text-gray-800">
-                      <SelectValue placeholder="País" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CO">🇨🇴 Colombia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input 
-                    id="phone"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500 flex-1"
-                    placeholder="+57 123 456 7890"
-                  />
-                </div>
+                <Label htmlFor="phone">Número de Teléfono</Label>
+                <Input className="bg-blue-100 border-blue-300 text-gray-800 placeholder-gray-500" id="phoneNumber" type="tel" value={formData.phoneNumber} onChange={handleChange} required />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-700">Tipo de Cuenta</Label>
+                <Label>Tipo de Cuenta</Label>
                 <div className="space-y-4">
                   <div
-                    onClick={() => setAccountType('propietario')}
+                    onClick={() => setFormData({ ...formData, accountType: 'Propietario' })}
                     className={`flex items-center space-x-4 rounded-lg border p-4 cursor-pointer ${
-                      accountType === 'propietario' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                      formData.accountType === 'Propietario' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                     }`}
                   >
                     <User2 className="h-5 w-5 text-gray-600" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Soy Propietario</p>
+                      <p className="text-sm font-medium text-gray-900">Soy Arrendador</p>
                       <p className="text-sm text-gray-600">Quiero administrar mis propiedades.</p>
                     </div>
                   </div>
                   <div
-                    onClick={() => setAccountType('arrendatario')}
+                    onClick={() => setFormData({ ...formData, accountType: 'Arrendatario' })}
                     className={`flex items-center space-x-4 rounded-lg border p-4 cursor-pointer ${
-                      accountType === 'arrendatario' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                      formData.accountType === 'Arrendatario' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                     }`}
                   >
                     <User2 className="h-5 w-5 text-gray-600" />
@@ -111,13 +114,13 @@ export default function ContactForm() {
                   </div>
                 </div>
               </div>
-              <Button className="w-full bg-primary-500 hover:bg-primary-600 text-white">
+
+              <Button type="submit" className="w-full bg-primary-500 hover:bg-primary-600 text-white">
                 Enviar
               </Button>
             </form>
           </div>
         </div>
-
         {/* Sección de Testimonios */}
         <div className="relative hidden lg:block">
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-black/50 z-10" />

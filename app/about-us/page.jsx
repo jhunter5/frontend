@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import Navbar from "@/components/ui/navbar"
 import Footer from "@/components/ui/footer"
-import { RocketIcon, EyeIcon, Lightbulb, Shield, Target, Leaf, Users, Shuffle, LinkedinIcon, TwitterIcon, MailIcon, Building2 } from 'lucide-react'
+import { RocketIcon, EyeIcon, Lightbulb, Shield, Gem, Leaf, Users, Shuffle, LinkedinIcon, TwitterIcon, MailIcon, Building2 } from 'lucide-react'
 
 const creators = [
     { 
@@ -16,15 +16,6 @@ const creators = [
       linkedin: "#",
       twitter: "#",
       email: "gguzman@limitless.com"
-    },
-    { 
-      name: "Carlos Muricia", 
-      role: "Co-fundador",
-      image: "/carlos_murcia.jpg",
-      bio: "Ingeniero de software con experiencia en startups de proptech",
-      linkedin: "https://www.linkedin.com/in/carlosmurcia72/",
-      twitter: "#",
-      email: "carlos@limitless.com"
     },
     { 
       name: "Juan Hunter", 
@@ -137,7 +128,7 @@ return (
                 <div>
                   <h2 className="text-2xl font-semibold mb-4 text-[#27317E]">Nuestra Misión</h2>
                   <p className="text-gray-700">
-                  Proveer servicios de acompañamiento integral en la búsqueda de soluciones inmobiliarias de arrendamiento permitiendo a los propietarios gestionar sus inmuebles e inquilinos de forma eficiente y autónoma, facilitando un entorno de colaboración, comprensión mutua y empoderamiento. A través de una plataforma web que se apoya en el compromiso, la integridad y el profesionalismo, buscamos transformar la experiencia de arrendamiento al ofrecer soluciones responsables y de alta calidad, asegurando la satisfacción de todas las partes involucradas
+                  Gestionar integralmente los procesos de arrendamiento en Colombia, siendo el medio que facilite la vinculación de los arrendadores y arrendatarios, garantizando la seguridad, calidad y efectividad de los trámites de renta por medio de funcionalidades de seguimiento, registro, revisión y aprobación de candidatos y propietarios.
                   </p>
                 </div>
               </div>
@@ -161,7 +152,7 @@ return (
         {/* Perfiles de los Creadores */}
         <section className="mb-16">
           <h2 className="text-3xl font-semibold mb-8 text-center text-[#27317E]">Nuestro Equipo Fundador</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {creators.map((creator) => (
               <Card key={creator.name} className="overflow-hidden group">
                 <div className="relative">
@@ -202,7 +193,7 @@ return (
           <h2 className="text-3xl font-semibold mb-8 text-center text-[#27317E]">Nuestros Valores</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Profesionalismo", description: "Somos un equipo que actúa pensando en la calidad del servicio que se ofrece y en el impacto del mismo en sus clientes.", icon: <Target /> },
+              { title: "Empatía", description: "Nos permite conocer las necesidades de los usuarios y generar soluciones que aporten valor. Además, ayuda a mejorar la comunicación interna y a ser eficaces trabajando en equipo, para que así todos nos alineemos hacia el objetivo del proyecto. ", icon: <Gem /> },
               { title: "Independencia", description: "La autonomía de nuestros clientes es muy valiosa para nosotros, por eso ofrecemos una herramienta para liberar a los propietarios e inquilinos de los procesos dependientes.", icon: <Leaf /> },
               { title: "Colaboración", description: "Trabajamos en estrecha colaboración con nuestros clientes y socios para lograr objetivos comunes.", icon: <Users /> },
             ].map((value) => (

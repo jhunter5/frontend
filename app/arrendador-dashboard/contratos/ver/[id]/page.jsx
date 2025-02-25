@@ -115,14 +115,16 @@ export default function ContractDetails({ params }) {
   </CardContent>
 
   {/* Botón siempre pegado abajo */}
+  {contract?.ContractDocument?.length > 0 && (
   <CardFooter className="mt-auto">
     <Button className="w-full bg-primary-400">
-      <a href={contract?.ContractDocument[0]?.documentUrl} target="_blank" rel="noopener noreferrer">
+      <a href={contract.ContractDocument[0].documentUrl} target="_blank" rel="noopener noreferrer">
         <Download className="mr-2 h-4 w-4" />
         Descargar Contrato
       </a>
     </Button>
   </CardFooter>
+  )}
 </Card>
 
 

@@ -134,12 +134,6 @@ export default function MisPostulaciones() {
                         {postulacion.estado}
                       </span>
                     </div>
-                    <Button variant="outline" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                      <Link href={`/inquilino-dashboard/postulaciones/${postulacion.id}`}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Ver detalles
-                      </Link>
-                    </Button>
                   </div>
                 </CardContent>
               </Card>

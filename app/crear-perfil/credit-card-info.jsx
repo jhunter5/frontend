@@ -15,7 +15,6 @@ import { Elements, CardElement, useStripe, useElements } from "@stripe/react-str
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
 
-// Sólo validamos el campo del titular; el resto se gestiona con Stripe
 const formSchema = z.object({
   cardHolder: z.string().min(1, "El nombre del titular es requerido"),
 })
@@ -29,6 +28,12 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
   })
   const [isProcessing, setIsProcessing] = useState(false)
   const [serverError, setServerError] = useState("")
+  const [cardDetails, setCardDetails] = useState({
+    number: "•••• •••• •••• ••••",
+    expiry: "MM/AA",
+    cvc: "•••",
+    brand: "",
+  })
 
   async function onSubmit(values) {
     if (!stripe || !elements) return
@@ -36,7 +41,6 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
     setIsProcessing(true)
     setServerError("")
 
-    // Crear PaymentMethod usando CardElement
     const cardElement = elements.getElement(CardElement)
     if (!cardElement) {
       setIsProcessing(false)
@@ -54,13 +58,15 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
       return
     }
 
-    // Llamada al endpoint de validación de tarjeta
     try {
-      const response = await fetch("https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/validate-card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentMethodId: paymentMethod.id }),
-      })
+      const response = await fetch(
+        "https://back-prisma-git-mercadopago-edr668s-projects.vercel.app/api/validate-card",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentMethodId: paymentMethod.id }),
+        },
+      )
 
       const result = await response.json()
       if (!response.ok || !result.verified) {
@@ -92,33 +98,93 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
             <Info className="h-5 w-5 text-blue-500" />
             <AlertTitle className="text-blue-700">Proceso de Verificación</AlertTitle>
             <AlertDescription className="text-blue-600">
-              Se realizará un cargo temporal de €1.00 que será reembolsado automáticamente dentro de los próximos 7 días hábiles después de la verificación exitosa.
+              Se realizará un cargo temporal de 0.50 USD que será reembolsado automáticamente dentro de los próximos 7
+              días hábiles después de la verificación exitosa.
             </AlertDescription>
           </Alert>
 
           {/* Tarjeta visual */}
           <div className="relative perspective-1000">
-            <Card className="relative w-full aspect-[1.586/1] max-w-md mx-auto bg-gradient-to-br from-[#27317E] to-[#1f2666] text-white shadow-xl rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105">
-              <div className="absolute inset-0 opacity-30 mix-blend-overlay">
-                <div
-                  className="absolute inset-0 bg-repeat opacity-10"
-                  style={{
-                    backgroundImage:
-                      "url('data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E')",
-                  }}
-                />
+            <Card
+              className={`relative w-full aspect-[1.586/1] max-w-md mx-auto text-white shadow-xl rounded-xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-105 ${
+                cardDetails.brand === "visa"
+                  ? "bg-gradient-to-br from-[#1A1F71] via-[#2B3187] to-[#1A1F71]"
+                  : cardDetails.brand === "mastercard"
+                    ? "bg-gradient-to-br from-[#EB001B] via-[#C79000] to-[#EB001B]"
+                    : cardDetails.brand === "amex"
+                      ? "bg-gradient-to-br from-[#006FCF] via-[#0099DF] to-[#006FCF]"
+                      : "bg-gradient-to-br from-[#27317E] via-[#1f2666] to-[#27317E]"
+              }`}
+            >
+              <div className="absolute inset-0">
+                {/* Efecto de brillo */}
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute transform -rotate-45 translate-x-1/2 translate-y-1/2 w-[200%] h-32 bg-gradient-to-r from-transparent via-white to-transparent" />
+                </div>
+                {/* Patrón de fondo */}
+                <div className="absolute inset-0 opacity-10">
+                  <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <defs>
+                      <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
+                      </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#grid)" />
+                  </svg>
+                </div>
               </div>
               <CardContent className="relative h-full flex flex-col justify-between p-6">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-8 rounded bg-white/10 backdrop-blur-sm" />
+                  <div className="flex space-x-2">
+                    {/* Chip de la tarjeta */}
+                    <div className="w-12 h-9 rounded-md bg-gradient-to-br from-yellow-200 via-yellow-300 to-yellow-200 relative overflow-hidden">
+                      <div className="absolute inset-0 opacity-30">
+                        <svg className="w-full h-full" viewBox="0 0 40 40">
+                          <pattern id="chip" width="8" height="8" patternUnits="userSpaceOnUse">
+                            <path d="M 0 4 H 8 M 4 0 V 8" stroke="black" strokeWidth="0.5" />
+                          </pattern>
+                          <rect width="40" height="40" fill="url(#chip)" />
+                        </svg>
+                      </div>
+                    </div>
+                    {/* Indicador de contactless */}
+                    <div className="w-8 h-8 flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" className="w-6 h-6 text-white/70">
+                        <path
+                          fill="currentColor"
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                        />
+                        <path
+                          fill="currentColor"
+                          d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"
+                        />
+                        <path fill="currentColor" d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Logo del banco o entidad (opcional) */}
+                  <div className="text-white/90 font-semibold tracking-wider">
+                    {cardDetails.brand === "visa" && "VISA"}
+                    {cardDetails.brand === "mastercard" && "MASTERCARD"}
+                    {cardDetails.brand === "amex" && "AMERICAN EXPRESS"}
+                    {cardDetails.brand === "discover" && "DISCOVER"}
+                    {cardDetails.brand === "diners" && "DINERS CLUB"}
+                    {cardDetails.brand === "jcb" && "JCB"}
+                    {cardDetails.brand === "unionpay" && "UNION PAY"}
+                    {!cardDetails.brand && "SECURE BANK"}
+                  </div>
                 </div>
+
                 <div className="space-y-6">
-                  <p className="font-mono text-2xl tracking-wider">•••• •••• •••• ••••</p>
+                  <div className="flex justify-between items-center">
+                    <p className="font-mono text-2xl tracking-[0.2em] text-white/90">•••• •••• •••• ••••</p>
+                  </div>
                 </div>
+
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
                     <p className="text-xs text-white/70">Titular de la Tarjeta</p>
-                    <p className="font-medium tracking-wide">
+                    <p className="font-medium tracking-wide uppercase">
                       {form.watch("cardHolder") || "NOMBRE DEL TITULAR"}
                     </p>
                   </div>
@@ -163,6 +229,22 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
                     invalid: { color: "#e53e3e" },
                   },
                 }}
+                onChange={(e) => {
+                  setCardDetails({
+                    number: e.empty
+                      ? "•••• •••• •••• ••••"
+                      : e.complete
+                        ? "•••• •••• •••• " + e.value?.card?.last4
+                        : "•••• •••• •••• ••••",
+                    expiry: e.empty
+                      ? "MM/AA"
+                      : e.value?.card?.exp_month && e.value?.card?.exp_year
+                        ? `${String(e.value.card.exp_month).padStart(2, "0")}/${String(e.value.card.exp_year).slice(-2)}`
+                        : "MM/AA",
+                    cvc: e.empty ? "•••" : "•••",
+                    brand: e.brand || "",
+                  })
+                }}
               />
             </div>
           </div>
@@ -178,7 +260,8 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
             <CheckCircle2 className="h-5 w-5 text-green-500" />
             <AlertTitle className="text-green-700">Transacción Segura</AlertTitle>
             <AlertDescription className="text-green-600">
-              Utilizamos encriptación de grado bancario para proteger tu información. Tus datos nunca son almacenados en nuestros servidores.
+              Utilizamos encriptación de grado bancario para proteger tu información. Tus datos nunca son almacenados en
+              nuestros servidores.
             </AlertDescription>
           </Alert>
         </div>
@@ -188,7 +271,13 @@ function CreditCardForm({ onNext, onBack, initialData = {} }) {
             <ChevronLeft className="w-4 h-4 mr-2" /> Atrás
           </Button>
           <Button type="submit" className="bg-[#27317E] hover:bg-[#1f2666] h-11 px-6" disabled={isProcessing}>
-            {isProcessing ? "Procesando..." : <>Continuar <ChevronRight className="w-4 h-4 ml-2" /></>}
+            {isProcessing ? (
+              "Procesando..."
+            ) : (
+              <>
+                Continuar <ChevronRight className="w-4 h-4 ml-2" />
+              </>
+            )}
           </Button>
         </div>
       </form>
@@ -203,3 +292,4 @@ export default function WrappedCreditCardForm(props) {
     </Elements>
   )
 }
+
