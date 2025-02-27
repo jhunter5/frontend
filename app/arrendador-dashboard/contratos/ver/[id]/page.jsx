@@ -119,7 +119,6 @@ export default function ContractDetails({ params }) {
   <CardFooter className="mt-auto">
     <Button className="w-full bg-primary-400">
       <a href={contract.ContractDocument[0].documentUrl} target="_blank" rel="noopener noreferrer">
-        <Download className="mr-2 h-4 w-4" />
         Descargar Contrato
       </a>
     </Button>
