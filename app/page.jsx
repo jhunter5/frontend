@@ -72,8 +72,8 @@ export default function HomePage() {
       <div className="bg-primary-500 text-white py-12">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="flex flex-col items-center space-y-4">
-            <h2 className="text-4xl font-bold">+100</h2>
-            <p className="text-3xl">Propiedades gestionadas</p>
+            <h2 className="text-5xl font-bold">+100</h2>
+            <p className="text-2xl">Propiedades gestionadas</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
             <h2 className="text-5xl font-bold">+500</h2>
