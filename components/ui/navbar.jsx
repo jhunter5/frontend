@@ -19,14 +19,13 @@ export default function Navbar() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const { toast } = useToast(); // Usamos el hook de toast
+  const { toast } = useToast();
 
-  // Abrir el modal para el registro
+
   const handleSignUpClick = () => {
     setIsTermsModalOpen(true);
   };
 
-  // Confirmar registro con términos aceptados
   const handleConfirmSignUp = () => {
     if (termsAccepted) {
       setIsTermsModalOpen(false);
@@ -64,7 +63,7 @@ export default function Navbar() {
             Registrate
           </button>
           <button onClick={() => loginWithRedirect()} className="hover:text-gray-200">
-            Login
+            Logueate
           </button>
         </>
       )}

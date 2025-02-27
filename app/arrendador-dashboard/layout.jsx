@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Building2, Users, UserCheck, BarChart3, User, Settings, LogOut, Menu, CalendarDays} from 'lucide-react'
+import { Building2, Users, UserCheck, BarChart3, User, LogOut, Menu, CalendarDays, Banknote} from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth0 } from "@auth0/auth0-react"
 import { useQuery } from "@tanstack/react-query"
 import { getAuth0Id } from "../utils/getAuth0id"
+import { title } from "process"
 
 const sidebarNavItems = {
   administracion: [
@@ -43,6 +44,11 @@ const sidebarNavItems = {
       href: "/arrendador-dashboard/perfil",
       icon: User
     },
+    {
+      title: "Pagar suscripción",
+      href: "/arrendador-dashboard/pago-suscripcion",
+      icon: Banknote
+    }
   ]
 } 
 
