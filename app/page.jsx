@@ -28,8 +28,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-gray-600 mb-8">
-              Gestiona tus propiedades y contratos con facilidad, automatiza los cobros y mantenimientos, y toma
-              decisiones inteligentes con análisis de datos.
+              Facilita tu proceso de arrendamiento con una gestión segura y automatizada, diseñada tanto para arrendadores como para inquilinos.
             </p>
 
             <div className="space-y-4 mb-8">
